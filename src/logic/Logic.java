@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.util.Collections;
 
+import common.Result;
 import storage.Storage;
 import logic.TaskList;
 import logic.parser.Parser;
@@ -47,7 +48,6 @@ public class Logic{
         Command command = this.parser.parseCommand(input);    // parse the input, and returns the correct command class to go into
         
         Result result = command.execute();  // goes into whatever command it is and execute and return a result
-                                            // need to create a Result class for this architecture
         return result;
     }
     

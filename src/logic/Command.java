@@ -1,5 +1,7 @@
 package logic;
 
+import common.Result;
+
 public class Command {
     
     public static final int ADD_TYPE = 1;
@@ -41,5 +43,10 @@ public class Command {
 
     public int getId() {
         return id;
+    }
+
+    public Result execute() {
+        // TODO Auto-generated method stub
+        return new Result();
     }
 }

@@ -3,7 +3,7 @@ package ui;
 import java.util.ArrayList;
 
 import common.Category;
-import common.Feedback;
+import common.Result;
 import common.Task;
 
 import javafx.application.Application;
@@ -285,7 +285,7 @@ public class GRIDTaskUI extends Application {
                 String input = userInput.getText();
                 System.out.println(input);
                 userInput.setText("");
-                Feedback feedback = GRIDTaskLogic.executeCommand(input);
+                Result feedback = GRIDTaskLogic.executeCommand(input);
                 if (feedback.isSearchCommand()) {
                     updateSearchView(feedback);
                     stage.setScene(searchView);
@@ -301,7 +301,7 @@ public class GRIDTaskUI extends Application {
                 String input = searchInput.getText();
                 System.out.println(input);
                 searchInput.setText("");
-                Feedback feedback = GRIDTaskLogic.executeCommand(input);
+                Result feedback = GRIDTaskLogic.executeCommand(input);
                 if (feedback.isSearchCommand()) {
                     updateSearchView(feedback);
                     stage.setScene(searchView);
@@ -314,7 +314,7 @@ public class GRIDTaskUI extends Application {
         });
     }
  
-    private void showFeedback(Feedback feedback) {
+    private void showFeedback(Result feedback) {
         final Popup window = new Popup();
         window.setAutoHide(true);
         window.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
@@ -345,7 +345,7 @@ public class GRIDTaskUI extends Application {
         window.show(stage);
     }
 
-    private void updateSearchView(Feedback feedback) {
+    private void updateSearchView(Result feedback) {
         ArrayList<Task> results = feedback.getResults();
         ArrayList<VBox> tasks = retrieveSearchTasks(results);
         panelSearch.getChildren().clear();
@@ -362,7 +362,7 @@ public class GRIDTaskUI extends Application {
         return entries;
     }
             
-    private void updateMainView(Feedback feedback) {
+    private void updateMainView(Result feedback) {
         ArrayList<HBox> categories = retrieveCategories();
         panelCat.getChildren().clear();
         panelCat.getChildren().addAll(categories);

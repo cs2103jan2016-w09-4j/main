@@ -2,13 +2,17 @@ package common;
 
 import java.util.ArrayList;
 
-public class Feedback {
+public class Result {
     
     private boolean _isSuccess;
     private String _message;
     private ArrayList<Task> _results;
+
+    public Result() {
+        this(true, "PLACEHOLDER TEXT", new ArrayList<Task>());
+    }
     
-    public Feedback(boolean isSuccess, String message, ArrayList<Task> results) {
+    public Result(boolean isSuccess, String message, ArrayList<Task> results) {
         _isSuccess = isSuccess;
         _message = message;
         _results = results;

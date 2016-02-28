@@ -3,17 +3,17 @@ package ui;
 import java.util.ArrayList;
 
 import common.Category;
-import common.Feedback;
+import common.Result;
 import common.Task;
 
 public class GRIDTaskLogic {
 
-    public static Feedback executeCommand(String input) {
+    public static Result executeCommand(String input) {
         ArrayList<Task> tasks = new ArrayList<Task>();
         for (int i = 0; i < 5; i++) {
             tasks.add(new Task());
         }
-        return new Feedback(true, "Added task!", tasks);
+        return new Result(true, "Added task!", tasks);
     }
 
     public static ArrayList<Category> getCategories() {
