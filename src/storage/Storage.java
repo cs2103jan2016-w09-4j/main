@@ -118,6 +118,10 @@ public class Storage {
 		return searchResults;
 	}
 	
+	public void save() {
+	    writeToFile();
+	}
+	
 	public ArrayList<Task> getMainList() {
 		return mainList;
 	}

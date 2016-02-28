@@ -11,7 +11,7 @@ public class GRIDTaskLogic {
     public static Result executeCommand(String input) {
         ArrayList<Task> tasks = new ArrayList<Task>();
         for (int i = 0; i < 5; i++) {
-            tasks.add(new Task());
+            tasks.add(new Task("PLACEHOLDER"));
         }
         return new Result(true, "Added task!", tasks);
     }
@@ -27,7 +27,7 @@ public class GRIDTaskLogic {
     public static ArrayList<Task> getTodayTasks() {
         ArrayList<Task> tasks = new ArrayList<Task>();
         for (int i = 0; i < 1; i++) {
-            tasks.add(new Task());
+            tasks.add(new Task("PLACEHOLDER FOR TODAY"));
         }
         return tasks;
     }
@@ -35,7 +35,7 @@ public class GRIDTaskLogic {
     public static ArrayList<Task> getOtherTasks() {
         ArrayList<Task> tasks = new ArrayList<Task>();
         for (int i = 0; i < 5; i++) {
-            tasks.add(new Task());
+            tasks.add(new Task("PLACEHOLDER FOR OTHERS"));
         }
         return tasks;
     }

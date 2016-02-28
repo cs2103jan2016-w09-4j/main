@@ -29,10 +29,6 @@ public class Logic{
     private final ArrayList<String> textList = new ArrayList<String>();
     private final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-    public static void main(String[] args) {
-        Logic logic = new Logic();
-    }
-
     public Logic() {
         this.storage = new Storage();
         this.parser = new Parser();
@@ -46,7 +42,6 @@ public class Logic{
     
     public Result processCommand(String input) {
         Command command = this.parser.parseCommand(input);    // parse the input, and returns the correct command class to go into
-        
         Result result = command.execute();  // goes into whatever command it is and execute and return a result
         return result;
     }

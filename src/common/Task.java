@@ -9,12 +9,12 @@ public class Task {
     private Date end;
     private int id;
     
-    // for placeholder id
+    // TODO: replace placeholder id
     private static int num = 0;
 	
 	public Task(String description) {
 		this.description = description;
-		// use placeholder dates and id for now
+		// TODO: replace placeholder dates and id
         start = new Date();
         end = new Date();
         id = ++num;

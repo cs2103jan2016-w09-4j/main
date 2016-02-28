@@ -51,7 +51,7 @@ public class TaskList {
     }
     
     public void exit() {
-        storage.writeToFile(); // writing not public :(
+        storage.save();
         // is that all...?
     }
 }

@@ -1,6 +1,9 @@
 package logic;
 
+import java.util.ArrayList;
+
 import common.Result;
+import common.Task;
 
 public class Command {
     
@@ -46,7 +49,11 @@ public class Command {
     }
 
     public Result execute() {
-        // TODO Auto-generated method stub
-        return new Result();
+        // TODO: this is just a stub to return usable results
+        ArrayList<Task> tasks = new ArrayList<Task>();
+        for (int i = 0; i < 3; i++) {
+            tasks.add(new Task("Lorem ipsum dolor sit amet dolores umbridge eco llama"));
+        }
+        return new Result(true, "Added task!", tasks);
     }
 }

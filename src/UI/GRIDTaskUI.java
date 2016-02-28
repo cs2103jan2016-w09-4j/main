@@ -26,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import logic.Logic;
 
 public class GRIDTaskUI extends Application {
     
@@ -38,6 +39,8 @@ public class GRIDTaskUI extends Application {
     private static Scene searchView;
     private static TextField userInput;
     private static TextField searchInput;
+    
+    private static Logic logic;
 
     private static final int WINDOW_HEIGHT = 350;
     private static final int WINDOW_WIDTH = 450;    
@@ -280,18 +283,19 @@ public class GRIDTaskUI extends Application {
     }
     
     private void handleUserInteractions() {
+        logic = new Logic();
         userInput.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 String input = userInput.getText();
                 System.out.println(input);
                 userInput.setText("");
-                Result feedback = GRIDTaskLogic.executeCommand(input);
-                if (feedback.isSearchCommand()) {
-                    updateSearchView(feedback);
+                Result result = logic.processCommand(input);
+                if (result.isSearchCommand()) {
+                    updateSearchView(result);
                     stage.setScene(searchView);
                 } else {
-                    showFeedback(feedback);
-                    updateMainView(feedback);
+                    showFeedback(result);
+                    updateMainView(result);
                     stage.setScene(mainView);
                 }
             }
@@ -301,7 +305,7 @@ public class GRIDTaskUI extends Application {
                 String input = searchInput.getText();
                 System.out.println(input);
                 searchInput.setText("");
-                Result feedback = GRIDTaskLogic.executeCommand(input);
+                Result feedback = logic.processCommand(input);
                 if (feedback.isSearchCommand()) {
                     updateSearchView(feedback);
                     stage.setScene(searchView);
