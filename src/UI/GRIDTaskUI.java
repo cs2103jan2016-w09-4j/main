@@ -46,9 +46,9 @@ public class GRIDTaskUI extends Application {
     private static final int WINDOW_WIDTH = 450;    
     private static final String PROGRAM_NAME = "GRIDTask";
     private static final String USER_INPUT_PROMPT = "Enter a task here!";
-    private static final String HEADER_OTHERS = "Others";
     private static final String HEADER_CATEGORY = "Categories";
     private static final String HEADER_TODAY = "Today";
+    private static final String HEADER_OTHERS = "Others";
     private static final String HEADER_SEARCH = "Search results";
     
     private static final String CSS_MAIN_VIEW = "mainView.css";
@@ -332,12 +332,12 @@ public class GRIDTaskUI extends Application {
         if (feedback.isSuccess()) {
             box.setId("popup-success");
             message.setId("popup-success-text");
-            icon = new ImageView(new Image("File:resources/icons/success-smaller.png"));
+            icon = new ImageView(new Image("File:main/resources/icons/success-smaller.png"));
             icon.setId("popup-success-icon");
         } else {
             box.setId("popup-fail");
             message.setId("popup-fail-text");
-            icon = new ImageView(new Image("File:resources/icons/fail-smaller.png"));
+            icon = new ImageView(new Image("File:main/resources/icons/fail-smaller.png"));
             icon.setId("popup-fail-icon");
         }
         box.getChildren().addAll(icon, message);
@@ -349,8 +349,8 @@ public class GRIDTaskUI extends Application {
         window.show(stage);
     }
 
-    private void updateSearchView(Result feedback) {
-        ArrayList<Task> results = feedback.getResults();
+    private void updateSearchView(Result result) {
+        ArrayList<Task> results = result.getResults();
         ArrayList<VBox> tasks = retrieveSearchTasks(results);
         panelSearch.getChildren().clear();
         panelSearch.getChildren().addAll(tasks);
@@ -366,12 +366,12 @@ public class GRIDTaskUI extends Application {
         return entries;
     }
             
-    private void updateMainView(Result feedback) {
+    private void updateMainView(Result result) {
         ArrayList<HBox> categories = retrieveCategories();
         panelCat.getChildren().clear();
         panelCat.getChildren().addAll(categories);
         
-        ArrayList<Task> results = feedback.getResults();
+        ArrayList<Task> results = result.getResults();
         
         ArrayList<VBox> todayTasks = retrieveTodayTasks(results);
         panelToday.getChildren().clear();
@@ -385,10 +385,10 @@ public class GRIDTaskUI extends Application {
     private ArrayList<VBox> retrieveTodayTasks(ArrayList<Task> results) {
         ArrayList<VBox> entries = new ArrayList<VBox>();
         for (Task result : results) {
-            //if (isToday(result)) {
+            if (isToday(result)) {
                 VBox entry = createTaskEntry(result);
                 entries.add(entry);
-            //}
+            }
         }
         return entries;
     }
@@ -406,7 +406,7 @@ public class GRIDTaskUI extends Application {
     
     private boolean isToday(Task task) {
         // TODO
-        return false;
+        return true;
     }
 
 }
