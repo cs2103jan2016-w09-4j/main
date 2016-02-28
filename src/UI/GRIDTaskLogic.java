@@ -1,6 +1,10 @@
-package application;
+package ui;
 
 import java.util.ArrayList;
+
+import common.Category;
+import common.Feedback;
+import common.Task;
 
 public class GRIDTaskLogic {
 

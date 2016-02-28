@@ -1,6 +1,10 @@
-package application;
+package ui;
 
 import java.util.ArrayList;
+
+import common.Category;
+import common.Feedback;
+import common.Task;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;

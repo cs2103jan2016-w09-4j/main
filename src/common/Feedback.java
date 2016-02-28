@@ -1,4 +1,4 @@
-package application;
+package common;
 
 import java.util.ArrayList;
 
@@ -24,6 +24,14 @@ public class Feedback {
 
     public boolean isSuccess() {
         return _isSuccess;
+    }
+    
+    public boolean isSearchCommand() {
+        if (_message.toLowerCase().contains("search")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

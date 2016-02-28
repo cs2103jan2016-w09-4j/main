@@ -1,7 +1,11 @@
+package storage;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import common.Task;
 
 public class Storage {
 
@@ -12,13 +16,13 @@ public class Storage {
 	private static final String MESSAGE_IOEXCEPTION_ERROR = "IO Exception error";
 	
 	// default file name is "mytextfile.txt"
-	public Storage(){
+	public Storage() {
 		mainList = new ArrayList<Task>();
 		searchResults = new ArrayList<Task>();	
 		fileName = "mytextfile.txt";
 	}
 	
-	public Storage(String newFileName){
+	public Storage(String newFileName) {
 		mainList = new ArrayList<Task>();
 		searchResults = new ArrayList<Task>();
 		fileName = newFileName;
