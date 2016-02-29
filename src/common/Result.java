@@ -9,7 +9,7 @@ public class Result {
     private ArrayList<Task> _results;
 
     public Result() {
-        this(true, "PLACEHOLDER TEXT", new ArrayList<Task>());
+        this(false, "Something went wrong!", new ArrayList<Task>());
     }
     
     public Result(boolean isSuccess, String message, ArrayList<Task> results) {
@@ -31,6 +31,8 @@ public class Result {
     }
     
     public boolean isSearchCommand() {
+        // TODO: improve implementation
+        // put somewhere else?
         if (_message.toLowerCase().contains("search")) {
             return true;
         } else {

@@ -38,6 +38,11 @@
     -fx-background-color: #F6F6F6;
 }
 
+.panel-search {
+    -fx-spacing: 5;
+    -fx-background-color: #F6F6F6;
+}
+
 .entry-cat {
     -fx-padding: 2;
     -fx-background-color: derive( #A1E7C6 , 20% );

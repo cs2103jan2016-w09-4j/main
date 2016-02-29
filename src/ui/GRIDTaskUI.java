@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import common.Category;
 import common.Result;
 import common.Task;
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,18 +29,15 @@ import logic.Logic;
 
 public class GRIDTaskUI extends Application {
     
-    private static Stage stage;
-    private static Scene mainView;
-    private static VBox panelCat;
-    private static VBox panelToday;
-    private static VBox panelOthers;
-    private static VBox panelSearch;
-    private static Scene searchView;
-    private static TextField userInput;
-    private static TextField searchInput;
+    private Stage primaryStage;
+    private Scene mainView;
+    private GridPane root;
+    private VBox categoryPanel;
+    private VBox taskPanel;
+    private TextField userInput;
     
-    private static Logic logic;
-
+    private Logic logic;
+    
     private static final int WINDOW_HEIGHT = 350;
     private static final int WINDOW_WIDTH = 450;    
     private static final String PROGRAM_NAME = "GRIDTask";
@@ -52,7 +48,6 @@ public class GRIDTaskUI extends Application {
     private static final String HEADER_SEARCH = "Search results";
     
     private static final String CSS_MAIN_VIEW = "mainView.css";
-    private static final String CSS_SEARCH_VIEW = "searchView.css";
     private static final String CSS_CLASS_ROOT = "grid";
     private static final String CSS_CLASS_HEADER = "header";
     private static final String CSS_CLASS_PANEL_CAT = "panel-cat";
@@ -61,116 +56,121 @@ public class GRIDTaskUI extends Application {
     private static final String CSS_CLASS_ENTRY_CAT = "entry-cat";
     private static final String CSS_CLASS_ENTRY_TASK = "entry-task";
     private static final String CSS_CLASS_ENTRY_TASK_DESCRIPTION = "desc";
-
+    
     public static void main(String[] args) {
         launch(args);
     }
     
     public void start(Stage primaryStage) {
-        initialiseStage(primaryStage);
-        initialiseUserInput();
-        createMainView();
-        createSearchView();
-        stage.setScene(mainView);
+        initStage(primaryStage);
+        initMainView();
+        initLogic();
+        initUserInput();
         handleUserInteractions();
     }
 
-    private void initialiseStage(Stage primaryStage) {
-        stage = primaryStage;
-        stage.setTitle(PROGRAM_NAME);
-        stage.show();
-    }
-
-    private void initialiseUserInput() {
-        // create text field for user input
-        userInput = new TextField();
-        userInput.setPromptText(USER_INPUT_PROMPT);
-        searchInput = new TextField();
-        searchInput.setPromptText(USER_INPUT_PROMPT);
+    private void initStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle(PROGRAM_NAME);
+        this.primaryStage.show();
     }
     
-    private void createMainView() {
-        GridPane root = new GridPane();
+    private void initMainView() {
+        root = new GridPane();
         root.getStyleClass().add(CSS_CLASS_ROOT);
         
+        setColumnWidths();
+        setRowWidths();
+        initCategoryPanel();
+        initTaskPanel();
+        
         mainView = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        mainView.getStylesheets().add(GRIDTaskUI.class.getResource(CSS_MAIN_VIEW).toExternalForm());
-        
-        addCategoryPanel(root);
-        addTodayPanel(root);
-        addOthersPanel(root);
-        root.add(userInput, 0, 4, 2, 1);
-        
-        setColumnWidths(root);
+        mainView.getStylesheets().add(getClass().getResource(CSS_MAIN_VIEW).toExternalForm()); 
+        primaryStage.setScene(mainView);
     }
 
-    private void addCategoryPanel(GridPane parent) {
-        Label header = new Label(HEADER_CATEGORY);
-        header.getStyleClass().add(CSS_CLASS_HEADER);
-        parent.add(header, 0, 0);
-        
-        panelCat = createPanelCategory();
-        ScrollPane scrollPanelCat = new ScrollPane();
-        scrollPanelCat.setContent(panelCat);
-        parent.add(scrollPanelCat, 0, 1, 1, 3);
-        
-        GridPane.setVgrow(scrollPanelCat, Priority.ALWAYS);
+    // Initialise the left panel that displays categories
+    private void initCategoryPanel() {
+        categoryPanel = createCategoryPanel();
+        root.add(categoryPanel, 0, 0);
+    }    
+
+    // Initialise the right panel that displays tasks
+    private void initTaskPanel() {
+        taskPanel = createTaskPanel();
+        root.add(taskPanel, 1, 0);
+    }
+    
+    private void initLogic() {
+        logic = new Logic();
+    }
+    
+    // Initialise text field for user input
+    private void initUserInput() {
+        userInput = new TextField();
+        userInput.setPromptText(USER_INPUT_PROMPT);
+        root.add(userInput, 0, 1, 2, 1);
+        handleUserInteractions();
     }
 
-    private void addTodayPanel(GridPane parent) {
-        Label header = new Label(HEADER_TODAY);
-        header.getStyleClass().add(CSS_CLASS_HEADER);
-        parent.add(header, 1, 0);
-        
-        panelToday = createPanelToday();
-        ScrollPane scrollPanelToday = new ScrollPane();
-        scrollPanelToday.setContent(panelToday);
-        parent.add(scrollPanelToday, 1, 1);
-        
-        GridPane.setVgrow(scrollPanelToday, Priority.SOMETIMES);
-    }
-
-    private void addOthersPanel(GridPane parent) {
-        Label header = new Label(HEADER_OTHERS);
-        header.getStyleClass().add(CSS_CLASS_HEADER);
-        parent.add(header, 1, 2);
-        
-        panelOthers = createPanelOthers();
-        ScrollPane scrollPanelOthers = new ScrollPane();
-        scrollPanelOthers.setContent(panelOthers);
-        parent.add(scrollPanelOthers, 1, 3);
-        
-        GridPane.setVgrow(scrollPanelOthers, Priority.ALWAYS);
-    }
-
-    private void setColumnWidths(GridPane parent) {
-        // set width of left column
+    private void setColumnWidths() {
         ColumnConstraints left = new ColumnConstraints();
         left.setPercentWidth(30);
-        // set width of right column
         ColumnConstraints right = new ColumnConstraints();
         right.setPercentWidth(70);
-        parent.getColumnConstraints().addAll(left, right);
+        root.getColumnConstraints().addAll(left, right);
     }
     
-    private void setRowWidths(GridPane parent) {
-        RowConstraints row2 = new RowConstraints();
-        row2.setVgrow(Priority.ALWAYS);
-        RowConstraints row4 = new RowConstraints();
-        row4.setVgrow(Priority.ALWAYS);
-        parent.getRowConstraints().addAll(new RowConstraints(), row2, new RowConstraints(), row4);
-    }
-
-    private VBox createPanelCategory() {
-        ArrayList<HBox> categories = retrieveCategories();
-        VBox pane = new VBox();
-        pane.getChildren().addAll(categories);
-        pane.getStyleClass().add(CSS_CLASS_PANEL_CAT);
-        return pane;
+    private void setRowWidths() {
+        RowConstraints row0 = new RowConstraints();
+        row0.setVgrow(Priority.ALWAYS);
+        RowConstraints row1 = new RowConstraints();
+        row1.setVgrow(Priority.NEVER);
+        root.getRowConstraints().addAll(row0, row1);
     }
     
-    private ArrayList<HBox> retrieveCategories() {
+    /* ||||||||||||||||||||||||||||||||||||||||||||||||
+     * ||                                            ||
+     * ||   METHODS FOR CATEGORY PANEL CREATION      ||
+     * ||                                            ||
+     * ||||||||||||||||||||||||||||||||||||||||||||||||
+     */
+    
+    // Create panel containing category label and entries from Logic
+    private VBox createCategoryPanel() {
+        // TODO: ask Logic to retrieve categories
         ArrayList<Category> cats = GRIDTaskLogic.getCategories();
+        return createCategoryPanel(cats);
+    }
+    
+    // Create panel containing category label and specified entries
+    private VBox createCategoryPanel(ArrayList<Category> cats) {
+        VBox panel = new VBox();
+        
+        Label header = new Label(HEADER_CATEGORY);
+        header.getStyleClass().add(CSS_CLASS_HEADER);
+        
+        VBox entries = createCategoryEntries(cats);
+        ScrollPane scrollCat = new ScrollPane();
+        scrollCat.setContent(entries);
+        
+        VBox.setVgrow(scrollCat, Priority.ALWAYS);
+        
+        panel.getChildren().addAll(header, scrollCat);
+        return panel;
+    }
+    
+    // Create category entries
+    private VBox createCategoryEntries(ArrayList<Category> cats) {
+        ArrayList<HBox> entries = getCategories(cats);
+        VBox panel = new VBox();
+        panel.getChildren().addAll(entries);
+        panel.getStyleClass().add(CSS_CLASS_PANEL_CAT);
+        return panel;
+    }
+    
+    // Retrieve categories from specified array
+    private ArrayList<HBox> getCategories(ArrayList<Category> cats) {
         ArrayList<HBox> entries = new ArrayList<HBox>();
         for (Category cat : cats) {
             HBox entry = createCategoryEntry(cat);
@@ -179,6 +179,7 @@ public class GRIDTaskUI extends Application {
         return entries;
     }
 
+    // Create usable UI element from category entry 
     private HBox createCategoryEntry(Category cat) {
         HBox entry = new HBox();
         Label name = new Label(cat.getName() + " [" + cat.getNum() + "]");
@@ -188,44 +189,68 @@ public class GRIDTaskUI extends Application {
         entry.getStyleClass().add(CSS_CLASS_ENTRY_CAT);
         return entry;
     }
+
+    /* ||||||||||||||||||||||||||||||||||||||||||||||||
+     * ||                                            ||
+     * ||   METHODS RELATED TO TASK PANEL CREATION   ||
+     * ||                                            ||
+     * ||||||||||||||||||||||||||||||||||||||||||||||||
+     */
     
-    private VBox createPanelToday() {
-        ArrayList<VBox> tasks = initialiseTodayTasks();
-        VBox pane = new VBox();
-        pane.getChildren().addAll(tasks);
-        pane.getStyleClass().add(CSS_CLASS_PANEL_TASK);
-        return pane;
+    // Create panel containing task labels and entries from Logic
+    private VBox createTaskPanel() {
+        // TODO: ask Logic to get tasks
+        ArrayList<Task> tasks = GRIDTaskLogic.getTasks();
+        return createTaskPanel(tasks);
     }
- 
-    private ArrayList<VBox> initialiseTodayTasks() {
-        ArrayList<Task> tasks = GRIDTaskLogic.getTodayTasks();
-        ArrayList<VBox> entries = new ArrayList<VBox>();
-        for (Task task : tasks) {
-            VBox entry = createTaskEntry(task);
-            entries.add(entry);
-        }
-        return entries;
-    }
-       
-    private VBox createPanelOthers() {
-        ArrayList<VBox> tasks = initialiseOtherTasks();
-        VBox pane = new VBox();
-        pane.getChildren().addAll(tasks);
-        pane.getStyleClass().add(CSS_CLASS_PANEL_TASK);
-        return pane;
+    
+ // Create panel containing task labels and specified entries
+    private VBox createTaskPanel(ArrayList<Task> tasks) {
+        VBox panel = new VBox();
+        
+        Label todayHeader = new Label(HEADER_TODAY);
+        todayHeader.getStyleClass().add(CSS_CLASS_HEADER);
+        
+        VBox todayEntries = createTodayEntries(tasks);
+        ScrollPane scrollToday = new ScrollPane();
+        scrollToday.setContent(todayEntries);
+        VBox.setVgrow(scrollToday, Priority.ALWAYS);
+
+        Label othersHeader = new Label(HEADER_OTHERS);
+        othersHeader.getStyleClass().add(CSS_CLASS_HEADER);
+        
+        VBox othersEntries = createOthersEntries();
+        ScrollPane scrollOthers = new ScrollPane();
+        scrollOthers.setContent(othersEntries);        
+        VBox.setVgrow(scrollOthers, Priority.ALWAYS);
+        
+        panel.getChildren().addAll(todayHeader, scrollToday, othersHeader, scrollOthers);
+        return panel;
     }
 
-    private ArrayList<VBox> initialiseOtherTasks() {
-        ArrayList<Task> tasks = GRIDTaskLogic.getOtherTasks();
+    // Create today task entries
+    private VBox createTodayEntries(ArrayList<Task> tasks) {
+        ArrayList<VBox> entries = getTodayTasks(tasks);
+        VBox panel = new VBox();
+        panel.getChildren().addAll(entries);
+        panel.getStyleClass().add(CSS_CLASS_PANEL_TASK);
+        return panel;
+    }
+    
+    // Retrieve today tasks from specified array
+    private ArrayList<VBox> getTodayTasks(ArrayList<Task> tasks) {
         ArrayList<VBox> entries = new ArrayList<VBox>();
         for (Task task : tasks) {
-            VBox entry = createTaskEntry(task);
-            entries.add(entry);
+            if (isToday(task)) {
+                VBox entry = createTodayTaskEntry(task);
+                entries.add(entry);
+            }
         }
         return entries;
     }
     
-    private VBox createTaskEntry(Task task) {
+    // Create usable UI element from Task
+    private VBox createTodayTaskEntry(Task task) {
         VBox entry = new VBox();
         entry.getStyleClass().add(CSS_CLASS_ENTRY_TASK);
         
@@ -233,6 +258,8 @@ public class GRIDTaskUI extends Application {
         desc.getStyleClass().add(CSS_CLASS_ENTRY_TASK_DESCRIPTION);
         
         HBox details = new HBox();
+        // TODO: extract fields
+        // update today entries to only display start and end times
         String field;
         if ((field = task.getStartDate()) != null) {
             Label startDate = new Label("From " + field);
@@ -248,77 +275,132 @@ public class GRIDTaskUI extends Application {
         entry.getChildren().addAll(desc, details);
         return entry;
     }
+
+    // Create other task entries from Logic
+    private VBox createOthersEntries() {
+        // TODO: ask Logic to get tasks
+        ArrayList<Task> tasks = GRIDTaskLogic.getTasks();
+        return createOthersEntries(tasks);
+    }
     
-    private void createSearchView() {
-        GridPane root = new GridPane();
-        root.getStyleClass().add(CSS_CLASS_ROOT);
-        
-        searchView = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        searchView.getStylesheets().add(GRIDTaskUI.class.getResource(CSS_SEARCH_VIEW).toExternalForm());
-        
-        addCategoryPanel(root);
-        addSearchPanel(root);
-        root.add(searchInput, 0, 4, 2, 1);
-        setColumnWidths(root);
-        setRowWidths(root);
+    // Create other task entries
+    private VBox createOthersEntries(ArrayList<Task> tasks) {
+        ArrayList<VBox> entries = getOthersTasks(tasks);
+        VBox panel = new VBox();
+        panel.getChildren().addAll(entries);
+        panel.getStyleClass().add(CSS_CLASS_PANEL_TASK);
+        return panel;
     }
 
-    private void addSearchPanel(GridPane parent) {
-        Label header = new Label(HEADER_SEARCH);
-        header.getStyleClass().add(CSS_CLASS_HEADER);
-        parent.add(header, 1, 0);
-        
-        panelSearch = createPanelSearch();
-        ScrollPane scrollPanel = new ScrollPane();
-        scrollPanel.setContent(panelSearch);
-        parent.add(scrollPanel, 1, 1, 1, 3);
-        
-        GridPane.setVgrow(scrollPanel, Priority.ALWAYS);
+    // Retrieve other tasks from specified array
+    private ArrayList<VBox> getOthersTasks(ArrayList<Task> tasks) {
+        ArrayList<VBox> entries = new ArrayList<VBox>();
+        for (Task task : tasks) {
+            if (!isToday(task)) {
+                VBox entry = createOthersTaskEntry(task);
+                entries.add(entry);
+            }
+        }
+        return entries;
     }
     
-    private VBox createPanelSearch() {
-        VBox pane = new VBox();
-        pane.getStyleClass().add(CSS_CLASS_PANEL_SEARCH);
-        return pane;
+    // Create usable UI element from Task
+    private VBox createOthersTaskEntry(Task task) {
+        VBox entry = new VBox();
+        entry.getStyleClass().add(CSS_CLASS_ENTRY_TASK);
+        
+        Label desc = new Label(task.getID() + ". " + task.getDescription());
+        desc.getStyleClass().add(CSS_CLASS_ENTRY_TASK_DESCRIPTION);
+        
+        HBox details = new HBox();
+        // TODO: extract fields
+        String field;
+        if ((field = task.getStartDate()) != null) {
+            Label startDate = new Label("From " + field);
+            details.getChildren().add(startDate);
+            startDate.getStyleClass().add("details");
+        }
+        if ((field = task.getEndDate()) != null) {
+            Label endDate = new Label("To " + field);
+            details.getChildren().add(endDate);
+            endDate.getStyleClass().add("details");
+        }
+        
+        entry.getChildren().addAll(desc, details);
+        return entry;
     }
+
+    // Create panel containing search label and entries
+    private VBox createSearchPanel(Result result) {
+        VBox panel = new VBox();
+        
+        Label searchHeader = new Label(HEADER_SEARCH);
+        searchHeader.getStyleClass().add(CSS_CLASS_HEADER);
+        
+        VBox searchEntries = createSearchEntries(result);
+        panel.getStyleClass().add(CSS_CLASS_PANEL_SEARCH);
+        ScrollPane scrollSearch = new ScrollPane();
+        scrollSearch.setContent(searchEntries);
+        
+        panel.getChildren().addAll(searchHeader, scrollSearch);
+        VBox.setVgrow(scrollSearch, Priority.ALWAYS);
+        return panel;
+    }
+    
+    // Create search task entries
+    private VBox createSearchEntries(Result result) {
+        ArrayList<VBox> entries = getSearchEntries(result);
+        VBox panel = new VBox();
+        panel.getChildren().addAll(entries);
+        panel.getStyleClass().add(CSS_CLASS_PANEL_TASK);
+        return panel;
+    }
+    
+    private ArrayList<VBox> getSearchEntries(Result result) {
+        ArrayList<Task> tasks = result.getResults();
+        ArrayList<VBox> entries = new ArrayList<VBox>();
+        for (Task task : tasks) {
+            VBox entry = createOthersTaskEntry(task);
+            entries.add(entry);
+        }
+        return entries;
+    }
+
+    /* ||||||||||||||||||||||||||||||||||||||||||||||||
+     * ||                                            ||
+     * ||     METHODS TO HANDLE USER INTERACTION     ||
+     * ||                                            ||
+     * ||||||||||||||||||||||||||||||||||||||||||||||||
+     */
     
     private void handleUserInteractions() {
-        logic = new Logic();
         userInput.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 String input = userInput.getText();
                 System.out.println(input);
                 userInput.setText("");
-                Result result = logic.processCommand(input);
+                // TODO: get result from Logic
+                Result result = GRIDTaskLogic.processCommand(input);
                 if (result.isSearchCommand()) {
-                    updateSearchView(result);
-                    stage.setScene(searchView);
+                    System.out.println("SEARCH"); //debug
+                    showSearchResults(result);
                 } else {
+                    System.out.println("NOT SEARCH"); //debug
                     showFeedback(result);
-                    updateMainView(result);
-                    stage.setScene(mainView);
-                }
-            }
-        });
-        searchInput.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                String input = searchInput.getText();
-                System.out.println(input);
-                searchInput.setText("");
-                Result feedback = logic.processCommand(input);
-                if (feedback.isSearchCommand()) {
-                    updateSearchView(feedback);
-                    stage.setScene(searchView);
-                } else {
-                    showFeedback(feedback);
-                    updateMainView(feedback);
-                    stage.setScene(mainView);
+                    showUpdatedTasks(result);
                 }
             }
         });
     }
- 
-    private void showFeedback(Result feedback) {
+    
+    private void showSearchResults(Result result) {
+        VBox newPanel = createSearchPanel(result);
+        taskPanel.getChildren().clear();
+        taskPanel.getChildren().addAll(newPanel.getChildren());
+    }
+    
+    private void showFeedback(Result result) {
+        // TODO: refactor this mess!!!!
         final Popup window = new Popup();
         window.setAutoHide(true);
         window.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
@@ -327,9 +409,9 @@ public class GRIDTaskUI extends Application {
             }
         });
         HBox box = new HBox();
-        Text message = new Text(feedback.getMessage());
+        Text message = new Text(result.getMessage());
         ImageView icon;
-        if (feedback.isSuccess()) {
+        if (result.isSuccess()) {
             box.setId("popup-success");
             message.setId("popup-success-text");
             icon = new ImageView(new Image("File:main/resources/icons/success-smaller.png"));
@@ -342,71 +424,27 @@ public class GRIDTaskUI extends Application {
         }
         box.getChildren().addAll(icon, message);
         window.getContent().add(box);
-        double x = stage.getX() + 10;
-        double y = stage.getY() + stage.getHeight();
+        double x = primaryStage.getX() + 10;
+        double y = primaryStage.getY() + primaryStage.getHeight();
         window.setX(x);
         window.setY(y);
-        window.show(stage);
-    }
-
-    private void updateSearchView(Result result) {
-        ArrayList<Task> results = result.getResults();
-        ArrayList<VBox> tasks = retrieveSearchTasks(results);
-        panelSearch.getChildren().clear();
-        panelSearch.getChildren().addAll(tasks);
-        panelSearch.getStyleClass().add(CSS_CLASS_PANEL_TASK);
+        window.show(primaryStage);
     }
     
-    private ArrayList<VBox> retrieveSearchTasks(ArrayList<Task> results) {
-        ArrayList<VBox> entries = new ArrayList<VBox>();
-        for (Task result : results) {
-            VBox entry = createTaskEntry(result);
-            entries.add(entry);
-        }
-        return entries;
-    }
-            
-    private void updateMainView(Result result) {
-        ArrayList<HBox> categories = retrieveCategories();
-        panelCat.getChildren().clear();
-        panelCat.getChildren().addAll(categories);
-        
-        ArrayList<Task> results = result.getResults();
-        
-        ArrayList<VBox> todayTasks = retrieveTodayTasks(results);
-        panelToday.getChildren().clear();
-        panelToday.getChildren().addAll(todayTasks);
-        
-        ArrayList<VBox> otherTasks = retrieveOtherTasks(results);
-        panelOthers.getChildren().clear();
-        panelOthers.getChildren().addAll(otherTasks);
-    }
-
-    private ArrayList<VBox> retrieveTodayTasks(ArrayList<Task> results) {
-        ArrayList<VBox> entries = new ArrayList<VBox>();
-        for (Task result : results) {
-            if (isToday(result)) {
-                VBox entry = createTaskEntry(result);
-                entries.add(entry);
-            }
-        }
-        return entries;
-    }
-
-    private ArrayList<VBox> retrieveOtherTasks(ArrayList<Task> results) {
-        ArrayList<VBox> entries = new ArrayList<VBox>();
-        for (Task result : results) {
-            //if (!isToday(result)) {
-                VBox entry = createTaskEntry(result);
-                entries.add(entry);
-            //}
-        }
-        return entries;
+    private void showUpdatedTasks(Result result) {
+        ArrayList<Task> tasks = result.getResults();
+        VBox newPanel = createTaskPanel(tasks);
+        taskPanel.getChildren().clear();
+        taskPanel.getChildren().addAll(newPanel.getChildren());
     }
     
     private boolean isToday(Task task) {
-        // TODO
-        return true;
+        // TODO: update implementation
+        if (task.getID()%2 == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
