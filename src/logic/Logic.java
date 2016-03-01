@@ -18,6 +18,7 @@ public class Logic{
 	// Objects to call into other classes
 	private Storage storage;
 	private Parser parser;
+	private TaskList taskList;
 	
 	public static void main(String[] args){
 	
@@ -28,6 +29,7 @@ public class Logic{
 
 		this.storage = new Storage();
 		this.parser = new Parser();
+		this.taskList = new TaskList();
 	}
 	
 	public Result processCommand(String input)
