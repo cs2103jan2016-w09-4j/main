@@ -23,12 +23,12 @@ public class GRIDTaskLogic {
     private static Logic logic;
 
     public static Result processCommand(String input) {
-	     Result result = logic.processCommand(input);
-	     
-	     // TODO: how to know what command to execute? how to get the command type?
-	     
-	     return result; // wrong one
-    }
+    	if (input.length()%2 == 1) {    
+    		return executeAddCommand(input);		    
+        } else {		 
+             return executeSearchCommand(input);	
+        }	
+    }	
     
     public static Result executeAddCommand(String input) {
         ArrayList<Task> tasks = new ArrayList<Task>();
