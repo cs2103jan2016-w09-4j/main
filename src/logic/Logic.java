@@ -1,9 +1,6 @@
 package logic;
 
-import java.util.ArrayList;
-
 import storage.Storage;
-import logic.TaskList;
 import common.Result;
 import parser.Parser;
 
@@ -12,21 +9,19 @@ import parser.Parser;
 
 // **all the switch cases should be in the parser class, then the the parser class can call the commands from logic class**
 
-
 public class Logic{
 	
 	// Objects to call into other classes
-	private Storage storage;
 	private Parser parser;
 	
 	public static void main(String[] args){
 	
+		@SuppressWarnings("unused")
 		Logic logic = new Logic();
 	}
 
 	public Logic(){
 
-		this.storage = new Storage();
 		this.parser = new Parser();
 	}
 	
@@ -34,7 +29,7 @@ public class Logic{
 	{
 		
 		Command command = parser.parseCommand(input);    // parse the input, and returns the correct command class to go into
-		Result result = command.execute();  // goes into whatever command it is and execute and return a result										// after getting back the command then how? give it to command class to allocate to the 
+		Result result = command.execute(command);  // goes into whatever command it is and execute and return a result										// after getting back the command then how? give it to command class to allocate to the 
 		return result;						// correct class inside the Command Class?
 		
 	}
