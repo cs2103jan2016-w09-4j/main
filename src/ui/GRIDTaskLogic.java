@@ -6,12 +6,12 @@ package ui;
  * ||                                                                     ||
  * |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
  */
-
 import java.util.ArrayList;
 
 import common.Category;
 import common.Result;
 import common.Task;
+import logic.Logic;
 
 public class GRIDTaskLogic {
 
@@ -19,14 +19,17 @@ public class GRIDTaskLogic {
             + "universe, and everything";
     private static String SEARCH_STRING = "Lorem ipsum dolor sit amet "
             + "dolores umbridge eco llama";
+    
+    private static Logic logic;
 
     public static Result processCommand(String input) {
-        if (input.length()%2 == 1) {
-            return executeAddCommand(input);
-        } else {
-            return executeSearchCommand(input);
-        }
+	     Result result = logic.processCommand(input);
+	     
+	     // TODO: how to know what command to execute? how to get the command type?
+	     
+	     return result; // wrong one
     }
+    
     public static Result executeAddCommand(String input) {
         ArrayList<Task> tasks = new ArrayList<Task>();
         for (int i = 0; i < 5; i++) {
