@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 import common.Result;
 import common.Task;
+import logic.AddCommand;
+import logic.DeleteCommand;
+import logic.EditCommand;
+import logic.SearchCommand;
 
 public class Command {
     
@@ -15,45 +19,88 @@ public class Command {
     private int type;
     private int id;
     private String description;
-
+    private String editedDescription;
+    private String searchWord;
+    
+    
     public Command(int type) {
         this.type = type;
     }
 
-    public Command(int type, String description) {
+    public Command(int type, String description) {  // add
         this.type = type;
         this.description = description;
     }
 
-    public Command(int type, int id) {
+    public Command(int type, int id) { // delete 
         this.type = type;
         this.id = id;
     }
 
-    public Command(int type, int id, String description) {
+    public Command(int type, int id, String description) { // edit
         this.type = type;
         this.id = id;
-        this.description = description;
+        this.editedDescription = description;
+    }
+    
+    public Command(String searchWord){
+    	this.searchWord = searchWord;
     }
 
     public int getType() {
-        return type;
+        return this.type;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public int getId() {
-        return id;
+        return this.id;
+    }
+    
+    public String getEditedDescription(){
+    	return this.editedDescription;
     }
 
-    public Result execute() {
+    public Result execute(Command command) {
         // TODO: this is just a stub to return a usable result
-        ArrayList<Task> tasks = new ArrayList<Task>();
-        for (int i = 0; i < 3; i++) {
-            tasks.add(new Task("Lorem ipsum dolor sit amet dolores umbridge eco llama"));
-        }
-        return new Result(true, "Add", tasks);
+    	
+    	int commandType = command.getType();
+    	int commandID = command.getId();
+    	String commandDescription = command.getDescription();
+    	ArrayList<Task> list = new ArrayList<Task>();
+    	
+    	// how do i extract out specific info from the Command object?
+    	
+    	switch(commandType){
+    		
+    		case '1':
+    			AddCommand add = new AddCommand();
+    			list = add.execute(commandDescription);
+    			break;
+    			
+    		case '2':
+    			DeleteCommand delete = new DeleteCommand();
+    			list = delete.execute(commandID);
+    			break;
+    		
+    		case '3':
+    			EditCommand edit = new EditCommand();
+    			list = edit.execute(commandID, editedDescription);
+    			break;
+    			
+    		case '4':
+    			SearchCommand search = new SearchCommand();
+    			list = search.execute(searchWord);
+    			break;
+    			
+    		default:
+    			list.add(new Task("Invalid input!\n"));
+    			return new Result(); // invalid 
+    		}
+    	
+    		Result result = new Result(true, "Success!", list);  // valid
+    		return result;
     }
 }
