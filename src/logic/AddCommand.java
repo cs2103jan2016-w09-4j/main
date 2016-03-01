@@ -2,27 +2,30 @@ package logic;
 
 import java.util.ArrayList;
 
-import logic.TaskList;
+
 import common.Task;
 import storage.Storage;
 
-public class AddCommand {
+public class AddCommand
+{;
+	private Storage storage;
 
-    private TaskList taskList;
-    private Storage storage;
-
-    public AddCommand() {
-
-    }
-
-    public ArrayList<Task> execute(Task task) {
-        taskList.addTaskIntoList(task.getDescription()); // add for myself
-        ArrayList<Task> list = storage.addTask(task.getDescription()); // add
-                                                                       // officially
-                                                                       // into
-                                                                       // storage
-
-        return list;
-    }
-
+	public AddCommand()
+	{
+		
+		
+		
+	}
+	
+	public ArrayList<Task> execute(String description){
+		
+	
+		ArrayList<Task> list = storage.addTask(description);  // add officially into storage
+		
+		return list;
+		
+	}
+	
+	
+}
 }
