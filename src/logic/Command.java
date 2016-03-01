@@ -75,22 +75,22 @@ public class Command {
     	
     	switch(commandType){
     		
-    		case '1':
+    		case ADD_TYPE:
     			AddCommand add = new AddCommand();
     			list = add.execute(commandDescription);
     			break;
     			
-    		case '2':
+    		case DELETE_TYPE:
     			DeleteCommand delete = new DeleteCommand();
     			list = delete.execute(commandID);
     			break;
     		
-    		case '3':
+    		case EDIT_TYPE:
     			EditCommand edit = new EditCommand();
     			list = edit.execute(commandID, editedDescription);
     			break;
     			
-    		case '4':
+    		case SEARCH_TYPE:
     			SearchCommand search = new SearchCommand();
     			list = search.execute(searchWord);
     			break;
