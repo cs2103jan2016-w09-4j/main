@@ -5,7 +5,7 @@ public class DeleteCommand
 {
 	@SuppressWarnings("unused")
 	private Task task;
-	private Storage storage;
+	private Storage storage = new Storage();
 	
 	
 	// constructor

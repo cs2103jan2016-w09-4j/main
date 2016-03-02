@@ -8,7 +8,7 @@ import common.Task;
 public class SearchCommand
 {
 	
-	private Storage storage;
+	private Storage storage = new Storage();
 //	private Task task;
 	
 	public SearchCommand() // constructor
