@@ -8,7 +8,7 @@ import storage.Storage;
 
 public class EditCommand
 {
-	private Storage storage;
+	private Storage storage = new Storage();
 	private ArrayList<Task> oldList;	
 	
 	public EditCommand()
