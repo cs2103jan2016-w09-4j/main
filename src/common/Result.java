@@ -4,36 +4,43 @@ import java.util.ArrayList;
 
 public class Result {
     
-    private boolean _isSuccess;
-    private String _message;
-    private ArrayList<Task> _results;
+    private boolean isSuccess;
+    private String message;
+    private ArrayList<Task> results;
 
     public Result() {
         this(false, "Something went wrong!", new ArrayList<Task>());
     }
     
     public Result(boolean isSuccess, String message, ArrayList<Task> results) {
-        _isSuccess = isSuccess;
-        _message = message;
-        _results = results;
+        this.isSuccess = isSuccess;
+        this.message = message;
+        this.results = results;
     }
 
+    /******************
+     * GETTER METHODS *
+     ******************/
+    
     public String getMessage() {
-        return _message;
+        return message;
     }
     
     public ArrayList<Task> getResults() {
-        return _results;
+        return results;
     }
 
+    /******************
+     * HELPER METHODS *
+     ******************/
+
     public boolean isSuccess() {
-        return _isSuccess;
+        return isSuccess;
     }
     
     public boolean isSearchCommand() {
         // TODO: improve implementation
-        // put somewhere else?
-        if (_message.toLowerCase().contains("search")) {
+        if (message.toLowerCase().contains("search")) {
             return true;
         } else {
             return false;

@@ -1,6 +1,8 @@
 package ui;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import common.Category;
 import common.Result;
@@ -38,6 +40,9 @@ public class GRIDTaskUI extends Application {
     
     private Logic logic;
     
+    private static final String RESOURCES_ICON_SUCCESS = "File:main/resources/icons/success-smaller.png";
+    private static final String RESOURCES_ICONS_FAIL = "File:main/resources/icons/fail-smaller.png";
+
     private static final int WINDOW_HEIGHT = 350;
     private static final int WINDOW_WIDTH = 450;    
     private static final String PROGRAM_NAME = "GRIDTask";
@@ -93,7 +98,7 @@ public class GRIDTaskUI extends Application {
     private void initCategoryPanel() {
         categoryPanel = createCategoryPanel();
         root.add(categoryPanel, 0, 0);
-    }    
+    }
 
     // Initialise the right panel that displays tasks
     private void initTaskPanel() {
@@ -139,7 +144,7 @@ public class GRIDTaskUI extends Application {
     // Create panel containing category label and entries from Logic
     private VBox createCategoryPanel() {
         // TODO: ask Logic to retrieve categories
-        ArrayList<Category> cats = GRIDTaskLogic.getCategories();
+        ArrayList<Category> cats = LogicStub.getCategories();
         return createCategoryPanel(cats);
     }
     
@@ -200,11 +205,11 @@ public class GRIDTaskUI extends Application {
     // Create panel containing task labels and entries from Logic
     private VBox createTaskPanel() {
         // TODO: ask Logic to get tasks
-        ArrayList<Task> tasks = GRIDTaskLogic.getTasks();
+        ArrayList<Task> tasks = LogicStub.getTasks();
         return createTaskPanel(tasks);
     }
     
- // Create panel containing task labels and specified entries
+    // Create panel containing task labels and specified entries
     private VBox createTaskPanel(ArrayList<Task> tasks) {
         VBox panel = new VBox();
         
@@ -219,7 +224,7 @@ public class GRIDTaskUI extends Application {
         Label othersHeader = new Label(HEADER_OTHERS);
         othersHeader.getStyleClass().add(CSS_CLASS_HEADER);
         
-        VBox othersEntries = createOthersEntries();
+        VBox othersEntries = createOthersEntries(tasks);
         ScrollPane scrollOthers = new ScrollPane();
         scrollOthers.setContent(othersEntries);        
         VBox.setVgrow(scrollOthers, Priority.ALWAYS);
@@ -241,7 +246,7 @@ public class GRIDTaskUI extends Application {
     private ArrayList<VBox> getTodayTasks(ArrayList<Task> tasks) {
         ArrayList<VBox> entries = new ArrayList<VBox>();
         for (Task task : tasks) {
-            if (isToday(task)) {
+            if (task.isToday()) {
                 VBox entry = createTodayTaskEntry(task);
                 entries.add(entry);
             }
@@ -258,16 +263,17 @@ public class GRIDTaskUI extends Application {
         desc.getStyleClass().add(CSS_CLASS_ENTRY_TASK_DESCRIPTION);
         
         HBox details = new HBox();
-        // TODO: extract fields
-        // update today entries to only display start and end times
-        String field;
-        if ((field = task.getStartDate()) != null) {
-            Label startDate = new Label("From " + field);
+        Date date;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mma");
+        if ((date = task.getStart()) != null) {
+            String time = dateFormat.format(date);
+            Label startDate = new Label("From " + time);
             details.getChildren().add(startDate);
             startDate.getStyleClass().add("details");
         }
-        if ((field = task.getEndDate()) != null) {
-            Label endDate = new Label("To " + field);
+        if ((date = task.getEnd()) != null) {
+            String time = dateFormat.format(date);
+            Label endDate = new Label("To " + time);
             details.getChildren().add(endDate);
             endDate.getStyleClass().add("details");
         }
@@ -276,13 +282,6 @@ public class GRIDTaskUI extends Application {
         return entry;
     }
 
-    // Create other task entries from Logic
-    private VBox createOthersEntries() {
-        // TODO: ask Logic to get tasks
-        ArrayList<Task> tasks = GRIDTaskLogic.getTasks();
-        return createOthersEntries(tasks);
-    }
-    
     // Create other task entries
     private VBox createOthersEntries(ArrayList<Task> tasks) {
         ArrayList<VBox> entries = getOthersTasks(tasks);
@@ -296,7 +295,7 @@ public class GRIDTaskUI extends Application {
     private ArrayList<VBox> getOthersTasks(ArrayList<Task> tasks) {
         ArrayList<VBox> entries = new ArrayList<VBox>();
         for (Task task : tasks) {
-            if (!isToday(task)) {
+            if (!task.isToday()) {
                 VBox entry = createOthersTaskEntry(task);
                 entries.add(entry);
             }
@@ -313,15 +312,17 @@ public class GRIDTaskUI extends Application {
         desc.getStyleClass().add(CSS_CLASS_ENTRY_TASK_DESCRIPTION);
         
         HBox details = new HBox();
-        // TODO: extract fields
-        String field;
-        if ((field = task.getStartDate()) != null) {
-            Label startDate = new Label("From " + field);
+        Date date;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy h:mma");
+        if ((date = task.getStart()) != null) {
+            String time = dateFormat.format(date); 
+            Label startDate = new Label("From " + time);
             details.getChildren().add(startDate);
             startDate.getStyleClass().add("details");
         }
-        if ((field = task.getEndDate()) != null) {
-            Label endDate = new Label("To " + field);
+        if ((date = task.getEnd()) != null) {
+            String time = dateFormat.format(date); 
+            Label endDate = new Label("To " + time);
             details.getChildren().add(endDate);
             endDate.getStyleClass().add("details");
         }
@@ -380,7 +381,7 @@ public class GRIDTaskUI extends Application {
                 System.out.println(input);
                 userInput.setText("");
                 // TODO: get result from Logic
-                Result result = GRIDTaskLogic.processCommand(input);
+                Result result = logic.processCommand(input);
                 if (result.isSearchCommand()) {
                     System.out.println("SEARCH"); //debug
                     showSearchResults(result);
@@ -414,12 +415,12 @@ public class GRIDTaskUI extends Application {
         if (result.isSuccess()) {
             box.setId("popup-success");
             message.setId("popup-success-text");
-            icon = new ImageView(new Image("File:main/resources/icons/success-smaller.png"));
+            icon = new ImageView(new Image(RESOURCES_ICON_SUCCESS));
             icon.setId("popup-success-icon");
         } else {
             box.setId("popup-fail");
             message.setId("popup-fail-text");
-            icon = new ImageView(new Image("File:main/resources/icons/fail-smaller.png"));
+            icon = new ImageView(new Image(RESOURCES_ICONS_FAIL));
             icon.setId("popup-fail-icon");
         }
         box.getChildren().addAll(icon, message);
@@ -438,13 +439,4 @@ public class GRIDTaskUI extends Application {
         taskPanel.getChildren().addAll(newPanel.getChildren());
     }
     
-    private boolean isToday(Task task) {
-        // TODO: update implementation
-        if (task.getID()%2 == 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 }

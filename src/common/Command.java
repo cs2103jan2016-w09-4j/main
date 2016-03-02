@@ -1,13 +1,9 @@
-package logic;
+package common;
 
 import java.util.ArrayList;
 
 import common.Result;
 import common.Task;
-import logic.AddCommand;
-import logic.DeleteCommand;
-import logic.EditCommand;
-import logic.SearchCommand;
 
 public class Command {
     

@@ -7,9 +7,9 @@ import java.util.Date;
 public class Task {
     
     private String description;
+    private int id;
     private Date start;
     private Date end;
-    private int id;
     
     // TODO: replace placeholder id
     private static int num = 0;
@@ -22,11 +22,11 @@ public class Task {
 		id = ++num;
 		try {
             if (id%2 == 1) {
-                start = dateFormat.parse("29-02-2016");
-                end = dateFormat.parse("29-02-2016");
+                start = new Date();
+                end = new Date();
             } else {
-                start = dateFormat.parse("01-04-2016");
-                end = dateFormat.parse("01-04-2016");
+                start = dateFormat.parse("31-12-2016");
+                end = dateFormat.parse("31-12-2016");
             }
         } catch (ParseException e) {
             start = new Date();
@@ -34,14 +34,38 @@ public class Task {
         }
 	}
 	
+	/******************
+	 * SETTER METHODS *
+	 ******************/
+	
 	public void setDescription(String line) {
 		description = line;
 	}
 	
+    public void setID(int id) {
+        this.id = id;
+    }
+        
+    public void setStart(Date date) {
+        start = date;
+    }
+
+    public void setEnd(Date date) {
+        end = date;
+    }
+    
+    /******************
+     * GETTER METHODS *
+     ******************/
+    
 	public String getDescription() {
 		return description;
 	}
-	
+
+    public int getID() {
+        return id;
+    }
+    	
     public Date getStart() {
         return start;
     }
@@ -50,16 +74,13 @@ public class Task {
         return end;
     }
 
-    public int getID() {
-        return id;
-    }
+    /******************
+     * HELPER METHODS *
+     ******************/
 
-    public String getStartDate() {
-        return start.toString();
-    }
-
-    public String getEndDate() {
-        return end.toString();
+    public boolean isToday() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        return dateFormat.format(start).equals(dateFormat.format(new Date()));
     }
 
 }	
