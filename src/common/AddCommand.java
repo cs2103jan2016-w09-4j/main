@@ -7,13 +7,12 @@ import storage.Storage;
 
 public class AddCommand {
     
-	private Storage storage = new Storage();
 
 	public AddCommand() {
 	    // TODO
 	}
 	
-	public ArrayList<Task> execute(String description) {
+	public ArrayList<Task> execute(String description, Storage storage) {
 		ArrayList<Task> list = storage.addTask(description);  // add officially into storage
 		return list;
 	}
