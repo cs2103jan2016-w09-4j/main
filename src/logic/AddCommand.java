@@ -8,7 +8,7 @@ import storage.Storage;
 
 public class AddCommand
 {;
-	private Storage storage;
+	private Storage storage = new Storage();
 
 	public AddCommand()
 	{
