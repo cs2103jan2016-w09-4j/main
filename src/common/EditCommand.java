@@ -1,21 +1,20 @@
 package common;
 
-import java.util.ArrayList;
+public class EditCommand extends Command{
+    private int id;
+    private String description;
 
-import storage.Storage;
-
-
-public class EditCommand {
-    
-	private ArrayList<Task> oldList;	
-	
-	public EditCommand() {
-		
+	public EditCommand(int id, String description) {
+	    this.id = id;
+	    this.description = description;
 	}
-	
-	public ArrayList<Task> execute(int id, String newDescription, Storage storage) {
-		oldList = storage.editTask(id, newDescription);
-		return oldList;
+
+	public int getId(){
+	    return id;
 	}
-	
+
+	public String getDescription(){
+	    return description;
+	}
+
 }
