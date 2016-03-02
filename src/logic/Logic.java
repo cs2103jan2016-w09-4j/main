@@ -1,8 +1,10 @@
 package logic;
 
-import storage.Storage;
 import common.Result;
+import common.Command;
+
 import parser.Parser;
+import storage.Storage;
 
 // need to import other classes *****
 // command, result, parser, storage, etc.
