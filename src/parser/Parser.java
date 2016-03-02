@@ -1,9 +1,9 @@
 package parser;
 
-import logic.Command;
+import common.Command;
 
 public class Parser {
-    
+
     public Parser(){
 
     }
@@ -29,5 +29,5 @@ public class Parser {
             return new Command(Command.INVALID_TYPE);
         }
     }
-    
+
 }
