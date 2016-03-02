@@ -7,9 +7,6 @@ import storage.Storage;
 public class SearchCommand
 {
 	
-	private Storage storage = new Storage();
-//	private Task task;
-	
 	public SearchCommand() // constructor
 	{
 		
@@ -17,7 +14,7 @@ public class SearchCommand
 	}
 	
 	
-	public ArrayList<Task> execute(String keyword)
+	public ArrayList<Task> execute(String keyword, Storage storage)
 	{
 		ArrayList<Task> searchResult = storage.searchTask(keyword);
 		
