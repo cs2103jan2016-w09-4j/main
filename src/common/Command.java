@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import common.Result;
 import common.Task;
+import storage.Storage;
 
 public class Command {
     
@@ -59,7 +60,7 @@ public class Command {
     	return this.editedDescription;
     }
 
-    public Result execute(Command command) {
+    public Result execute(Command command, Storage storage) {
         // TODO: this is just a stub to return a usable result
     	
     	int commandType = command.getType();
@@ -73,22 +74,22 @@ public class Command {
     		
     		case ADD_TYPE:
     			AddCommand add = new AddCommand();
-    			list = add.execute(commandDescription);
+    			list = add.execute(commandDescription, storage);
     			break;
     			
     		case DELETE_TYPE:
     			DeleteCommand delete = new DeleteCommand();
-    			list = delete.execute(commandID);
+    			list = delete.execute(commandID, storage);
     			break;
     		
     		case EDIT_TYPE:
     			EditCommand edit = new EditCommand();
-    			list = edit.execute(commandID, editedDescription);
+    			list = edit.execute(commandID, editedDescription, storage);
     			break;
     			
     		case SEARCH_TYPE:
     			SearchCommand search = new SearchCommand();
-    			list = search.execute(searchWord);
+    			list = search.execute(searchWord, storage);
     			break;
     			
     		default:
