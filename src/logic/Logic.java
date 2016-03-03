@@ -44,6 +44,10 @@ public class Logic {
 			case SEARCH:
 				list = storage.searchTask(description);
 				break;
+			
+			case HOME:
+				list = storage.getMainList();
+				break;
 				
 			case INVALID:
 				list = null;
