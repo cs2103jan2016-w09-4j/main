@@ -1,25 +1,21 @@
 package common;
 
 import java.util.ArrayList;
-
 import storage.Storage;
 
-public class SearchCommand
-{
-	
-	public SearchCommand() // constructor
-	{
-		
-		
+public class SearchCommand extends Command{
+	private String keyword;
+
+	public SearchCommand(String keyword) {
+	    this.keyword = keyword;
+
 	}
-	
-	
-	public ArrayList<Task> execute(String keyword, Storage storage)
-	{
-		ArrayList<Task> searchResult = storage.searchTask(keyword);
-		
-		return searchResult;
-		
+
+	public String getKeyword(){
+	    return keyword;
 	}
-	
+
+    public ArrayList<Task> execute(Storage storage){
+        return storage.searchTask(getKeyword());
+    }
 }

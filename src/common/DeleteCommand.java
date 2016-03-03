@@ -1,21 +1,21 @@
 package common;
 
 import java.util.ArrayList;
-
 import storage.Storage;
 
-public class DeleteCommand {
+public class DeleteCommand extends Command{
 
-    private Task task;
-	
-	// constructor
-	public DeleteCommand() {
-		
+    private int id;
+
+	public DeleteCommand(int id) {
+	    this.id = id;
 	}
-	
-	public ArrayList<Task> execute(int id, Storage storage) {
-		ArrayList<Task> list = storage.deleteTask(id);
-		return list;
+
+	public int getId(){
+	    return id;
 	}
-	
+
+    public ArrayList<Task> execute(Storage storage){
+        return storage.deleteTask(getId());
+    }
 }
