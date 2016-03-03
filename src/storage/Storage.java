@@ -74,13 +74,17 @@ public class Storage {
 	 * else, it returns the mainList arraylist
 	 */
 	public ArrayList<Task> deleteTask(int taskID) {
-		int taskIndex = taskID - 1;
-		if (taskIndex >= mainList.size()) {
-			return new ArrayList<Task>();
-		} else if (taskIndex < 0) {
+	    boolean foundTask = false;
+
+	    for (int i=0; i<mainList.size(); i++) {
+	        if (!foundTask && mainList.get(i).getID()==taskID) {
+	            mainList.remove(i);
+	            foundTask = true;
+	        }
+	    }
+		if (!foundTask) {
 			return new ArrayList<Task>();
 		} else {
-			mainList.remove(taskIndex);
 			writeToFile();
 		}
 		return mainList;
@@ -91,16 +95,20 @@ public class Storage {
 	 * else, it returns the mainList arraylist
 	 */
 	public ArrayList<Task> editTask(int taskID, String newDescription) {
-		int taskIndex = taskID - 1;
-		if (taskIndex >= mainList.size()) {
-			return new ArrayList<Task>();
-		} else if (taskIndex < 0) {
-			return new ArrayList<Task>();
-		} else {
-			Task getTask = mainList.get(taskIndex);
-			getTask.setDescription(newDescription);
-			writeToFile();
-		}
+        boolean foundTask = false;
+
+        for (int i=0; i<mainList.size(); i++) {
+            if (!foundTask && mainList.get(i).getID()==taskID) {
+                mainList.get(i).setDescription(newDescription);
+                foundTask = true;
+            }
+        }
+        if (!foundTask) {
+            return new ArrayList<Task>();
+        } else {
+            writeToFile();
+        }
+
 		return mainList;
 	}
 
