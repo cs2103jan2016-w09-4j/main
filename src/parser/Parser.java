@@ -1,6 +1,7 @@
 package parser;
 
 import common.*;
+import common.Command.CommandType;
 
 public class Parser {
 
@@ -15,18 +16,18 @@ public class Parser {
 
     public Command parseCommand(String commandStr){
         if (commandStr.startsWith("add")){
-            return new AddCommand(commandStr.substring(4).trim());
+            return new Command(CommandType.ADD, commandStr.substring(4).trim());
         } else if (commandStr.startsWith("delete")){
-            return new DeleteCommand(Integer.parseInt(commandStr.substring(7)));
+            return new Command(CommandType.DELETE, Integer.parseInt(commandStr.substring(7)));
         } else if (commandStr.startsWith("edit")){
             String content = commandStr.substring(5);
             String firstWord = getFirstWord(content);
             String description = content.substring(firstWord.length()).trim();
-            return new EditCommand(Integer.parseInt(firstWord), description);
+            return new Command(CommandType.EDIT, Integer.parseInt(firstWord), description);
         } else if (commandStr.startsWith("search")){
-            return new SearchCommand(commandStr.substring(6).trim());
+            return new Command(CommandType.SEARCH, commandStr.substring(6).trim());
         } else {
-            return new Command();
+            return new Command(CommandType.INVALID);
         }
     }
 

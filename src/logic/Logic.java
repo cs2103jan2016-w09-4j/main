@@ -17,10 +17,15 @@ public class Logic {
 		this.storage = new Storage();
 	}
 
+	private ArrayList<Task> execute(Command command){
+	    //Hey Gilbert, do this!!
+	    return null;
+	}
+
 	public Result processCommand(String input) {
 	    System.out.println(input);
 		Command command = parser.parseCommand(input);
-		Result result = new Result(true, "SUCCESS!", command.execute(storage));
+		Result result = new Result(true, "SUCCESS!", execute(command));
 
 		ArrayList<Task> tasks = result.getResults();
 
