@@ -26,6 +26,8 @@ public class Parser {
             return new Command(CommandType.EDIT, Integer.parseInt(firstWord), description);
         } else if (commandStr.startsWith("search")){
             return new Command(CommandType.SEARCH, commandStr.substring(6).trim());
+        } else if (commandStr.startsWith("home")){
+        	return new Command(CommandType.HOME);
         } else {
             return new Command(CommandType.INVALID);
         }
