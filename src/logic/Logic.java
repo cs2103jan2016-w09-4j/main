@@ -1,7 +1,7 @@
 package logic;
 
 import common.*;
-
+import common.Command.CommandType;
 import parser.Parser;
 import storage.Storage;
 import java.util.ArrayList;
@@ -18,8 +18,42 @@ public class Logic {
 	}
 
 	private ArrayList<Task> execute(Command command){
-	    //Hey Gilbert, do this!!
-	    return null;
+	    
+		ArrayList<Task> list = new ArrayList<Task>();
+		
+		CommandType commandType = command.getType();
+		String description = command.getDescription();
+		int taskID = command.getId();
+		
+		
+		
+		switch(commandType){
+		
+			case ADD:
+				list = storage.addTask(description); 
+				break;
+			
+			case DELETE:
+				list = storage.deleteTask(taskID);
+				break;
+			
+			case EDIT:
+				list = storage.editTask(taskID, description);
+				break;
+				
+			case SEARCH:
+				list = storage.searchTask(description);
+				break;
+				
+			case INVALID:
+				list = null;
+				break;
+				
+			default:
+				list = null;
+				
+		}
+	    return list;
 	}
 
 	public Result processCommand(String input) {
