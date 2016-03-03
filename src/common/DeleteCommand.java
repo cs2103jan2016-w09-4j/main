@@ -1,5 +1,8 @@
 package common;
 
+import java.util.ArrayList;
+import storage.Storage;
+
 public class DeleteCommand extends Command{
 
     private int id;
@@ -11,4 +14,8 @@ public class DeleteCommand extends Command{
 	public int getId(){
 	    return id;
 	}
+
+    public ArrayList<Task> execute(Storage storage){
+        return storage.deleteTask(getId());
+    }
 }

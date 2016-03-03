@@ -1,5 +1,8 @@
 package common;
 
+import java.util.ArrayList;
+import storage.Storage;
+
 public class EditCommand extends Command{
     private int id;
     private String description;
@@ -17,4 +20,7 @@ public class EditCommand extends Command{
 	    return description;
 	}
 
+    public ArrayList<Task> execute(Storage storage){
+        return storage.editTask(getId(), getDescription());
+    }
 }
