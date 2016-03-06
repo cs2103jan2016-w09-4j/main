@@ -2,9 +2,11 @@ package storage;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import common.Task;
 
@@ -136,7 +138,6 @@ public class Storage {
 	public void saveToFile(String userFileName) {
 		fileName = userFileName;
 		writeToFile();
-
 	}
 	
 	/*
@@ -174,6 +175,23 @@ public class Storage {
 			writer.close();
 		} catch (IOException ioe) {
 			showUserIOException();
+		}
+	}
+	
+	public void loadFileWithFileName(String userFileName) {
+		File file = new File(userFileName);
+		ArrayList<String> newMainList = new ArrayList<String>();
+		boolean isValid = file.exists();
+		if (isValid) {
+			Scanner sc;
+			try {
+				sc = new Scanner(file);
+				while (sc.hasNext()) {
+					newMainList.add(sc.next());
+				}
+			} catch (FileNotFoundException e) {
+				System.out.println("File Not Found");
+			}
 		}
 	}
 
