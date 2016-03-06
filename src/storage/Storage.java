@@ -178,7 +178,7 @@ public class Storage {
 		}
 	}
 	
-	public void loadFileWithFileName(String userFileName) {
+	public ArrayList<String> loadFileWithFileName(String userFileName) {
 		File file = new File(userFileName);
 		ArrayList<String> newMainList = new ArrayList<String>();
 		boolean isValid = file.exists();
@@ -186,13 +186,15 @@ public class Storage {
 			Scanner sc;
 			try {
 				sc = new Scanner(file);
-				while (sc.hasNext()) {
-					newMainList.add(sc.next());
+				while (sc.hasNextLine()) {
+					newMainList.add(sc.nextLine());
 				}
 			} catch (FileNotFoundException e) {
 				System.out.println("File Not Found");
 			}
 		}
+		
+		return newMainList;
 	}
 
 	public ArrayList<Task> getMainList() {
