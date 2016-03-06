@@ -178,7 +178,14 @@ public class Storage {
 		}
 	}
 	
-	public ArrayList<String> loadFileWithFileName(String userFileName) {
+	/*
+	 * This method is executed when the user wants to load date 
+	 * from a specific file, the user will provide the new fileName
+	 * This method returns the new Arraylist<String> to replace the main list
+	 * This method will also include ways to convert string to task to
+	 * execute other commands
+	 */
+	public ArrayList<Task> loadFileWithFileName(String userFileName) {
 		File file = new File(userFileName);
 		ArrayList<String> newMainList = new ArrayList<String>();
 		boolean isValid = file.exists();
@@ -194,7 +201,23 @@ public class Storage {
 			}
 		}
 		
-		return newMainList;
+		ArrayList<Task> updatedMainList = convertStringToTask(newMainList);
+		
+		return updatedMainList;
+	}
+	
+	/*
+	 * This method converts ArrayList<String> read from file 
+	 * to ArrayList<Task> to allow execution of other commands
+	 */
+	private ArrayList<Task> convertStringToTask(ArrayList<String> newMainList) {
+		ArrayList<Task> updatedMainList = new ArrayList<Task>();
+		for (int i=0; i<newMainList.size(); i++) {
+			Task newTask = new Task(newMainList.get(i));
+			updatedMainList.add(newTask);
+		}
+		
+		return updatedMainList;
 	}
 
 	public ArrayList<Task> getMainList() {
