@@ -152,11 +152,15 @@ public class Storage {
 		File userDirectory = new File(directory);
 		boolean isValid = userDirectory.isDirectory();
 		if (!isValid) {
-			System.out.println(MESSAGE_INVALID_DIRECTORY);
+			showUserInvalidDirectory();
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			writeToFileForSaveCommand(userDirectoryAndName);
 		}
+	}
+
+	private void showUserInvalidDirectory() {
+		System.out.println(MESSAGE_INVALID_DIRECTORY);
 	}
 
 	private void writeToFileForSaveCommand(File userDirectoryAndName) {
