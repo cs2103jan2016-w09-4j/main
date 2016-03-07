@@ -74,8 +74,8 @@ public class Storage {
 	}
 
 	/*
-	 * This method returns a empty arraylist if the taskID is invalid
-	 * else, it returns the mainList arraylist
+	 * This method returns a empty Arraylist if the taskID is invalid
+	 * else, it returns the mainList Arraylist
 	 */
 	public ArrayList<Task> deleteTask(int taskID) {
 	    boolean foundTask = false;
@@ -95,8 +95,8 @@ public class Storage {
 	}
 
 	/*
-	 * This method returns a empty arraylist if the taskID is invalid
-	 * else, it returns the mainList arraylist
+	 * This method returns a empty Arraylist if the taskID is invalid
+	 * else, it returns the mainList Arraylist
 	 */
 	public ArrayList<Task> editTask(int taskID, String newDescription) {
         boolean foundTask = false;
@@ -117,8 +117,8 @@ public class Storage {
 	}
 
 	/*
-	 * This method returns a empty arraylist if there is no such keyword
-	 * else, it returns the searchResults arraylist
+	 * This method returns a empty Arraylist if there is no such keyword
+	 * else, it returns the searchResults Arraylist
 	 */
 	public ArrayList<Task> searchTask(String keyword) {
 	    searchResults.clear();
@@ -179,11 +179,12 @@ public class Storage {
 	}
 	
 	/*
-	 * This method is executed when the user wants to load date 
+	 * This method is executed when the user wants to load data 
 	 * from a specific file, the user will provide the new fileName
 	 * This method returns the new Arraylist<String> to replace the main list
-	 * This method will also include ways to convert string to task to
+	 * This method also includes ways to convert string to task to
 	 * execute other commands
+	 * A empty arraylist is returned if the file does no exist
 	 */
 	public ArrayList<Task> loadFileWithFileName(String userFileName) {
 		File file = new File(userFileName);
@@ -202,6 +203,10 @@ public class Storage {
 		}
 		
 		ArrayList<Task> updatedMainList = convertStringToTask(newMainList);
+		mainList.clear();
+		for (int j=0; j<updatedMainList.size(); j++) {
+			mainList.add(updatedMainList.get(j));
+		}
 		
 		return updatedMainList;
 	}
