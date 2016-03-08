@@ -58,6 +58,7 @@ public class Logic {
 				} catch (Exception e){
 					System.out.println(MESSAGE_NOT_SAVED);
 				}
+				list = storage.getMainList();
 				break;
 				
 			case LOAD:
