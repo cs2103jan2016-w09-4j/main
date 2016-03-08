@@ -121,6 +121,10 @@ public class Storage {
 	public ArrayList<Task> undoCommand() {
 		return previousCopyOfMainList;
 	}
+	
+	public ArrayList<Task> redoCommand() {
+		return mainList;
+	}
 
 	public ArrayList<Task> getMainList() {
 		return mainList;
