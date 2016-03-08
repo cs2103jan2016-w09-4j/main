@@ -49,7 +49,7 @@ public class Logic {
 				break;
 			
 			case HOME:
-				list = storage.getPreviousList();
+				list = storage.getMainList();
 				break;
 				
 			case SAVE:
