@@ -129,6 +129,11 @@ public class Storage {
 	public ArrayList<Task> getMainList() {
 		return mainList;
 	}
+		
+	// edition
+	public ArrayList<Task> getPreviousList(){
+		return previousCopyOfMainList;
+	}
 
 	// ================================================================================
 	// Writing of Files
