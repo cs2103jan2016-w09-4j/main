@@ -4,6 +4,8 @@ import common.*;
 import common.Command.CommandType;
 import parser.Parser;
 import storage.Storage;
+
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Logic {
@@ -13,6 +15,7 @@ public class Logic {
 	private Storage storage;
 	
 	private static final String MESSAGE_NOT_SAVED = "Error: File not saved!\n";
+	private static final String MESSAGE_INVALID_FILE = "Error: File not found!\n";
 	
 	public Logic() {
 		this.parser = new Parser();
@@ -25,9 +28,7 @@ public class Logic {
 		
 		CommandType commandType = command.getType();
 		String description = command.getDescription();
-		int taskID = command.getId();
-		
-		
+		int taskID = command.getId();		
 		
 		switch(commandType){
 		
@@ -48,7 +49,7 @@ public class Logic {
 				break;
 			
 			case HOME:
-				list = storage.getMainList();
+				list = storage.getPreviousList();
 				break;
 				
 			case SAVE:
@@ -60,15 +61,22 @@ public class Logic {
 				break;
 				
 			case LOAD:
-				list = storage.loadFileWithFileName(description);
+				
+				try {
+					storage.loadFileWithFileName(description);
+				} catch (FileNotFoundException e) {
+					System.out.println(MESSAGE_INVALID_FILE);
+				}
+				
+				list = storage.getMainList();
 				break;
 				
 			case UNDO:
-				
+				list = storage.undoCommand();
 				break;
 				
 			case REDO: 
-			
+				list = storage.redoCommand();
 				break;
 				
 			case INVALID:
