@@ -14,7 +14,7 @@ public class Storage {
 
 	private static ArrayList<Task> mainList;
 	private static ArrayList<Task> searchResults;
-	private static ArrayList<Task> copyOfMainList;
+	private static ArrayList<Task> previousCopyOfMainList;
 	private static String fileName;
 
 	private static final String MESSAGE_IOEXCEPTION_ERROR = "IO Exception error";
@@ -24,6 +24,7 @@ public class Storage {
 	public Storage() {
 		mainList = new ArrayList<Task>();
 		searchResults = new ArrayList<Task>();
+		previousCopyOfMainList = new ArrayList<Task>();
 		fileName = "mytextfile.txt";
 	}
 
@@ -32,10 +33,28 @@ public class Storage {
 	// ================================================================================
 	public ArrayList<Task> addTask(String description) {
 		Task newTask = new Task(description);
+		
+		if (!mainList.isEmpty()) {
+			saveMainListForUndo();
+		}
+		
 		mainList.add(newTask);
-		appendToFile(newTask);
-
+		appendToFile(newTask); 
+		
 		return mainList;
+	}
+	
+	/*
+	 * This method saves the main list to save a previous copy
+	 * of the list for undo command
+	 */
+	private void saveMainListForUndo() {
+		/*previousCopyOfMainList.clear();
+		for (int i=0; i< mainList.size(); i++) {
+			previousCopyOfMainList.add(mainList.get(i));
+		}*/
+		previousCopyOfMainList.clear();
+		previousCopyOfMainList.addAll(mainList);
 	}
 
 	/*
@@ -47,10 +66,12 @@ public class Storage {
 
 		for (int i = 0; i < mainList.size(); i++) {
 			if (!foundTask && mainList.get(i).getID() == taskID) {
+				saveMainListForUndo();
 				mainList.remove(i);
 				foundTask = true;
 			}
 		}
+		
 		if (!foundTask) {
 			return new ArrayList<Task>();
 		} else {
@@ -68,6 +89,7 @@ public class Storage {
 
 		for (int i = 0; i < mainList.size(); i++) {
 			if (!foundTask && mainList.get(i).getID() == taskID) {
+				//saveMainListForUndo();
 				mainList.get(i).setDescription(newDescription);
 				foundTask = true;
 			}
@@ -96,9 +118,9 @@ public class Storage {
 		return searchResults;
 	}
 	
-	/*public ArrayList<Task> undoCommand() {
-		
-	}*/
+	public ArrayList<Task> undoCommand() {
+		return previousCopyOfMainList;
+	}
 
 	public ArrayList<Task> getMainList() {
 		return mainList;
@@ -182,20 +204,20 @@ public class Storage {
 	 */
 	public void loadFileWithFileName(String userFileName) throws FileNotFoundException {
 		File file = new File(userFileName);
-		ArrayList<String> newMainList = new ArrayList<String>();
+		ArrayList<String> listFromFile = new ArrayList<String>();
 		boolean isValid = file.exists();
 
 		if (isValid) {
 			Scanner sc;
 			sc = new Scanner(file);
 			while (sc.hasNextLine()) {
-				newMainList.add(sc.nextLine());
+				listFromFile.add(sc.nextLine());
 			}
 
 			sc.close();
 		}
 
-		ArrayList<Task> updatedMainList = convertStringToTask(newMainList);
+		ArrayList<Task> updatedMainList = convertStringToTask(listFromFile);
 		mainList.clear();
 		updateMainList(updatedMainList);
 
@@ -207,7 +229,7 @@ public class Storage {
 	 * If the directory or file does not exist, it will throw an exception 
 	 */
 	public void loadFileWithDirectory(String directory, String userFileName) throws FileNotFoundException {
-		ArrayList<String> newMainListFromLoad = new ArrayList<String>();
+		ArrayList<String> listFromLoadFile = new ArrayList<String>();
 
 		// check if the directory is valid
 		File userDirectory = new File(directory);
@@ -223,14 +245,14 @@ public class Storage {
 				Scanner sc;
 				sc = new Scanner(userDirectoryAndName);
 				while (sc.hasNextLine()) {
-					newMainListFromLoad.add(sc.nextLine());
+					listFromLoadFile.add(sc.nextLine());
 				}
 				
 				sc.close();
 			}
 		}
 
-		ArrayList<Task> updatedMainListFromLoad = convertStringToTask(newMainListFromLoad);
+		ArrayList<Task> updatedMainListFromLoad = convertStringToTask(listFromLoadFile);
 		mainList.clear();
 		updateMainList(updatedMainListFromLoad);
 	}
@@ -239,11 +261,11 @@ public class Storage {
 	 * This method converts ArrayList<String> read from file to ArrayList<Task>
 	 * to allow execution of other commands
 	 */
-	private ArrayList<Task> convertStringToTask(ArrayList<String> newMainList) {
+	private ArrayList<Task> convertStringToTask(ArrayList<String> listFromFile) {
 		ArrayList<Task> updatedMainList = new ArrayList<Task>();
 
-		for (int i = 0; i < newMainList.size(); i++) {
-			Task newTask = new Task(newMainList.get(i));
+		for (int i = 0; i < listFromFile.size(); i++) {
+			Task newTask = new Task(listFromFile.get(i));
 			updatedMainList.add(newTask);
 		}
 
@@ -254,9 +276,9 @@ public class Storage {
 	 * This method adds the data from file to update the main list
 	 * For load commands
 	 */
-	private void updateMainList(ArrayList<Task> updatedMainList) {
-		for (int j = 0; j < updatedMainList.size(); j++) {
-			mainList.add(updatedMainList.get(j));
+	private void updateMainList(ArrayList<Task> dataFromFile) {
+		for (int j = 0; j < dataFromFile.size(); j++) {
+			mainList.add(dataFromFile.get(j));
 		}
 	}
 
