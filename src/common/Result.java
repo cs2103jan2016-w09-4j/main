@@ -2,19 +2,21 @@ package common;
 
 import java.util.ArrayList;
 
+import common.Command.CommandType;
+
 public class Result {
     
+    private CommandType commandType;
     private boolean isSuccess;
-    private String message;
     private ArrayList<Task> results;
 
     public Result() {
-        this(false, "Something went wrong!", new ArrayList<Task>());
+        this(CommandType.INVALID, false, new ArrayList<Task>());
     }
     
-    public Result(boolean isSuccess, String message, ArrayList<Task> results) {
+    public Result(CommandType commandType, boolean isSuccess, ArrayList<Task> results) {
+        this.commandType = commandType;
         this.isSuccess = isSuccess;
-        this.message = message;
         this.results = results;
     }
 
@@ -22,29 +24,16 @@ public class Result {
      * GETTER METHODS *
      ******************/
     
-    public String getMessage() {
-        return message;
+    public CommandType getCommandType() {
+        return commandType;
     }
     
     public ArrayList<Task> getResults() {
         return results;
     }
 
-    /******************
-     * HELPER METHODS *
-     ******************/
-
     public boolean isSuccess() {
         return isSuccess;
-    }
-    
-    public boolean isSearchCommand() {
-        // TODO: improve implementation
-        if (message.toLowerCase().contains("search")) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
 }

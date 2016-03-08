@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import common.Category;
+import common.Command.CommandType;
 import common.Result;
 import common.Task;
 import javafx.application.Application;
@@ -386,7 +387,7 @@ public class GRIDTaskUI extends Application {
                 userInput.setText("");
                 // TODO: get result from Logic
                 Result result = logic.processCommand(input);
-                if (result.isSearchCommand()) {
+                if (result.getCommandType() == CommandType.SEARCH) {
                     System.out.println("SEARCH"); //debug
                     showSearchResults(result);
                 } else {
@@ -413,10 +414,40 @@ public class GRIDTaskUI extends Application {
                 window.hide();
             }
         });
+        
+        CommandType commandType = result.getCommandType();
+        HBox box = createFeedback(commandType, result.isSuccess());
+        window.getContent().add(box);
+        double x = primaryStage.getX() + 10;
+        double y = primaryStage.getY() + primaryStage.getHeight();
+        window.setX(x);
+        window.setY(y);
+        window.show(primaryStage);
+    }
+    
+    private HBox createFeedback(CommandType commandType, boolean  isSuccess) {
         HBox box = new HBox();
-        Text message = new Text(result.getMessage());
+        Text message;
         ImageView icon;
-        if (result.isSuccess()) {
+        
+        switch (commandType) {
+            case ADD :
+                message = new Text("Added task!");
+                break;
+                
+            case EDIT :
+                message = new Text("Edited task!");
+                break;
+                
+            case DELETE :
+                message = new Text("Deleted task!");
+                break;
+                
+            default :
+                message = new Text("Invalid!");
+        }
+        
+        if (isSuccess) {
             box.setId("popup-success");
             message.setId("popup-success-text");
             icon = new ImageView(new Image(RESOURCES_ICON_SUCCESS));
@@ -428,12 +459,7 @@ public class GRIDTaskUI extends Application {
             icon.setId("popup-fail-icon");
         }
         box.getChildren().addAll(icon, message);
-        window.getContent().add(box);
-        double x = primaryStage.getX() + 10;
-        double y = primaryStage.getY() + primaryStage.getHeight();
-        window.setX(x);
-        window.setY(y);
-        window.show(primaryStage);
+        return box;
     }
     
     private void showUpdatedTasks(Result result) {

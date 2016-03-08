@@ -63,7 +63,7 @@ public class Logic {
 	public Result processCommand(String input) {
 	    System.out.println(input);
 		Command command = parser.parseCommand(input);
-		Result result = new Result(true, "SUCCESS!", execute(command));
+		Result result = new Result(command.getType(), true, execute(command));
 
 		ArrayList<Task> tasks = result.getResults();
 		System.out.println("-----");

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import common.Category;
 import common.Result;
 import common.Task;
+import common.Command.CommandType;
 import logic.Logic;
 
 public class LogicStub {
@@ -35,7 +36,7 @@ public class LogicStub {
         for (int i = 0; i < 5; i++) {
             tasks.add(new Task(ADD_STRING));
         }
-        return new Result(true, "Added task!", tasks);
+        return new Result(CommandType.ADD, true, tasks);
     }
     
     public static Result executeSearchCommand(String input) {
@@ -43,7 +44,7 @@ public class LogicStub {
         for (int i = 0; i < 5; i++) {
             tasks.add(new Task(SEARCH_STRING));
         }
-        return new Result(true, "Searched task!", tasks);
+        return new Result(CommandType.SEARCH, true, tasks);
     }
 
     public static ArrayList<Category> getCategories() {
