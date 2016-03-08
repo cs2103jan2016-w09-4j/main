@@ -2,7 +2,7 @@ package common;
 
 public class Command {
     public enum CommandType {
-        ADD, DELETE, EDIT, SEARCH, HOME, INVALID;
+        ADD, DELETE, EDIT, SEARCH, SAVE, LOAD, UNDO, REDO, HOME, INVALID;
     };
 
     CommandType type;

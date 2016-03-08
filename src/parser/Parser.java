@@ -26,6 +26,14 @@ public class Parser {
             return new Command(CommandType.EDIT, Integer.parseInt(firstWord), description);
         } else if (commandStr.startsWith("search")){
             return new Command(CommandType.SEARCH, commandStr.substring(6).trim());
+        } else if (commandStr.startsWith("save")){
+            return new Command(CommandType.SAVE, commandStr.substring(4).trim());
+        } else if (commandStr.startsWith("load")){
+            return new Command(CommandType.LOAD, commandStr.substring(4).trim());
+        } else if (commandStr.startsWith("undo")){
+            return new Command(CommandType.UNDO);
+        } else if (commandStr.startsWith("redo")){
+            return new Command(CommandType.REDO);
         } else if (commandStr.startsWith("home")){
         	return new Command(CommandType.HOME);
         } else {
