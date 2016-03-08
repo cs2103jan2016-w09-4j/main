@@ -66,7 +66,6 @@ public class Logic {
 		Result result = new Result(true, "SUCCESS!", execute(command));
 
 		ArrayList<Task> tasks = result.getResults();
-
 		System.out.println("-----");
 		for (Task t:tasks){
 		    System.out.println(t.getID() + " " + t.getDescription());

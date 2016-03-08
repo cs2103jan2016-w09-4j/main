@@ -3,6 +3,9 @@ package ui;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import common.Category;
 import common.Result;
@@ -39,6 +42,9 @@ public class GRIDTaskUI extends Application {
     private TextField userInput;
     
     private Logic logic;
+    private ArrayList<Task> todayTasks;
+    private ArrayList<Task> othersTasks;
+    private HashMap<String, Integer> categories;
     
     private static final String RESOURCES_ICON_SUCCESS = "File:main/resources/icons/success-smaller.png";
     private static final String RESOURCES_ICONS_FAIL = "File:main/resources/icons/fail-smaller.png";
@@ -68,8 +74,8 @@ public class GRIDTaskUI extends Application {
     
     public void start(Stage primaryStage) {
         initStage(primaryStage);
-        initMainView();
         initLogic();
+        initMainView();
         initUserInput();
         handleUserInteractions();
     }
@@ -108,8 +114,34 @@ public class GRIDTaskUI extends Application {
     
     private void initLogic() {
         logic = new Logic();
+        Result result = logic.processCommand("home");
+        processTasks(result.getResults());
     }
     
+    private void processTasks(ArrayList<Task> tasks) {
+        todayTasks = new ArrayList<Task>();
+        othersTasks = new ArrayList<Task>();
+        categories = new HashMap<String, Integer>();
+        
+        for (Task task : tasks) {
+            if (task.isToday()) {
+                todayTasks.add(task);
+            } else {
+                othersTasks.add(task);
+            }
+            ArrayList<String> cats = task.getCategories();
+            for (String cat : cats) {
+                Integer i = categories.get(cat);
+                if (i != null) {
+                    categories.remove(cat);
+                    categories.put(cat, ++i);
+                } else {
+                    categories.put(cat, 1);
+                }
+            }
+        }
+    }
+
     // Initialise text field for user input
     private void initUserInput() {
         userInput = new TextField();
@@ -140,54 +172,43 @@ public class GRIDTaskUI extends Application {
      * ||                                            ||
      * ||||||||||||||||||||||||||||||||||||||||||||||||
      */
-    
-    // Create panel containing category label and entries from Logic
-    private VBox createCategoryPanel() {
-        // TODO: ask Logic to retrieve categories
-        ArrayList<Category> cats = LogicStub.getCategories();
-        return createCategoryPanel(cats);
-    }
-    
+       
     // Create panel containing category label and specified entries
-    private VBox createCategoryPanel(ArrayList<Category> cats) {
+    private VBox createCategoryPanel() {
         VBox panel = new VBox();
         
         Label header = new Label(HEADER_CATEGORY);
         header.getStyleClass().add(CSS_CLASS_HEADER);
         
-        VBox entries = createCategoryEntries(cats);
+        VBox entries = createCategoryEntries();
         ScrollPane scrollCat = new ScrollPane();
         scrollCat.setContent(entries);
         
         VBox.setVgrow(scrollCat, Priority.ALWAYS);
+        VBox.setVgrow(panel, Priority.ALWAYS);
         
         panel.getChildren().addAll(header, scrollCat);
         return panel;
     }
     
     // Create category entries
-    private VBox createCategoryEntries(ArrayList<Category> cats) {
-        ArrayList<HBox> entries = getCategories(cats);
+    private VBox createCategoryEntries() {
+        ArrayList<HBox> entries = new ArrayList<HBox>();
+        Set<Map.Entry<String, Integer>> set = categories.entrySet();
+        for (Map.Entry<String, Integer> cat : set) {
+            HBox entry = createCategoryEntry(cat.getKey(), cat.getValue());
+            entries.add(entry);
+        }
         VBox panel = new VBox();
         panel.getChildren().addAll(entries);
         panel.getStyleClass().add(CSS_CLASS_PANEL_CAT);
         return panel;
     }
     
-    // Retrieve categories from specified array
-    private ArrayList<HBox> getCategories(ArrayList<Category> cats) {
-        ArrayList<HBox> entries = new ArrayList<HBox>();
-        for (Category cat : cats) {
-            HBox entry = createCategoryEntry(cat);
-            entries.add(entry);
-        }
-        return entries;
-    }
-
     // Create usable UI element from category entry 
-    private HBox createCategoryEntry(Category cat) {
+    private HBox createCategoryEntry(String cat, int num) {
         HBox entry = new HBox();
-        Label name = new Label(cat.getName() + " [" + cat.getNum() + "]");
+        Label name = new Label(cat + " [" + num + "]");
         name.setAlignment(Pos.CENTER_LEFT);
         name.setMaxWidth(Double.MAX_VALUE);
         entry.getChildren().add(name);
@@ -202,21 +223,14 @@ public class GRIDTaskUI extends Application {
      * ||||||||||||||||||||||||||||||||||||||||||||||||
      */
     
-    // Create panel containing task labels and entries from Logic
+    // Create panel containing task labels and entries
     private VBox createTaskPanel() {
-        // TODO: ask Logic to get tasks
-        ArrayList<Task> tasks = LogicStub.getTasks();
-        return createTaskPanel(tasks);
-    }
-    
-    // Create panel containing task labels and specified entries
-    private VBox createTaskPanel(ArrayList<Task> tasks) {
         VBox panel = new VBox();
         
         Label todayHeader = new Label(HEADER_TODAY);
         todayHeader.getStyleClass().add(CSS_CLASS_HEADER);
         
-        VBox todayEntries = createTodayEntries(tasks);
+        VBox todayEntries = createTodayEntries();
         ScrollPane scrollToday = new ScrollPane();
         scrollToday.setContent(todayEntries);
         VBox.setVgrow(scrollToday, Priority.ALWAYS);
@@ -224,7 +238,7 @@ public class GRIDTaskUI extends Application {
         Label othersHeader = new Label(HEADER_OTHERS);
         othersHeader.getStyleClass().add(CSS_CLASS_HEADER);
         
-        VBox othersEntries = createOthersEntries(tasks);
+        VBox othersEntries = createOthersEntries();
         ScrollPane scrollOthers = new ScrollPane();
         scrollOthers.setContent(othersEntries);        
         VBox.setVgrow(scrollOthers, Priority.ALWAYS);
@@ -234,24 +248,19 @@ public class GRIDTaskUI extends Application {
     }
 
     // Create today task entries
-    private VBox createTodayEntries(ArrayList<Task> tasks) {
-        ArrayList<VBox> entries = getTodayTasks(tasks);
-        VBox panel = new VBox();
-        panel.getChildren().addAll(entries);
-        panel.getStyleClass().add(CSS_CLASS_PANEL_TASK);
-        return panel;
-    }
-    
-    // Retrieve today tasks from specified array
-    private ArrayList<VBox> getTodayTasks(ArrayList<Task> tasks) {
+    private VBox createTodayEntries() {
         ArrayList<VBox> entries = new ArrayList<VBox>();
-        for (Task task : tasks) {
+        for (Task task : todayTasks) {
             if (task.isToday()) {
                 VBox entry = createTodayTaskEntry(task);
                 entries.add(entry);
             }
         }
-        return entries;
+        
+        VBox panel = new VBox();
+        panel.getChildren().addAll(entries);
+        panel.getStyleClass().add(CSS_CLASS_PANEL_TASK);
+        return panel;
     }
     
     // Create usable UI element from Task
@@ -283,26 +292,21 @@ public class GRIDTaskUI extends Application {
     }
 
     // Create other task entries
-    private VBox createOthersEntries(ArrayList<Task> tasks) {
-        ArrayList<VBox> entries = getOthersTasks(tasks);
+    private VBox createOthersEntries() {
+        ArrayList<VBox> entries = new ArrayList<VBox>();
+        for (Task task : othersTasks) {
+            if (!task.isToday()) {
+                VBox entry = createOthersTaskEntry(task);
+                entries.add(entry);
+            }
+        }
+        
         VBox panel = new VBox();
         panel.getChildren().addAll(entries);
         panel.getStyleClass().add(CSS_CLASS_PANEL_TASK);
         return panel;
     }
 
-    // Retrieve other tasks from specified array
-    private ArrayList<VBox> getOthersTasks(ArrayList<Task> tasks) {
-        ArrayList<VBox> entries = new ArrayList<VBox>();
-        for (Task task : tasks) {
-            if (!task.isToday()) {
-                VBox entry = createOthersTaskEntry(task);
-                entries.add(entry);
-            }
-        }
-        return entries;
-    }
-    
     // Create usable UI element from Task
     private VBox createOthersTaskEntry(Task task) {
         VBox entry = new VBox();
@@ -433,10 +437,13 @@ public class GRIDTaskUI extends Application {
     }
     
     private void showUpdatedTasks(Result result) {
-        ArrayList<Task> tasks = result.getResults();
-        VBox newPanel = createTaskPanel(tasks);
+        processTasks(result.getResults());
+        VBox newPanel = createTaskPanel();
         taskPanel.getChildren().clear();
         taskPanel.getChildren().addAll(newPanel.getChildren());
+        VBox newCat = createCategoryPanel();
+        categoryPanel.getChildren().clear();
+        categoryPanel.getChildren().add(newCat);
     }
     
 }
