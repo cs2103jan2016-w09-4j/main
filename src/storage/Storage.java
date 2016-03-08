@@ -15,6 +15,7 @@ public class Storage {
 	private static ArrayList<Task> mainList;
 	private static ArrayList<Task> searchResults;
 	private static ArrayList<Task> previousCopyOfMainList;
+	private static ArrayList<Task> copyOfMainListForRedo;
 	private static String fileName;
 
 	private static final String MESSAGE_IOEXCEPTION_ERROR = "IO Exception error";
@@ -25,6 +26,7 @@ public class Storage {
 		mainList = new ArrayList<Task>();
 		searchResults = new ArrayList<Task>();
 		previousCopyOfMainList = new ArrayList<Task>();
+		copyOfMainListForRedo = new ArrayList<Task>();
 		fileName = "mytextfile.txt";
 	}
 
@@ -89,7 +91,6 @@ public class Storage {
 
 		for (int i = 0; i < mainList.size(); i++) {
 			if (!foundTask && mainList.get(i).getID() == taskID) {
-				//saveMainListForUndo();
 				mainList.get(i).setDescription(newDescription);
 				foundTask = true;
 			}
@@ -120,12 +121,16 @@ public class Storage {
 	
 	public ArrayList<Task> undoCommand() {
 		// transfer content from previousCopyOfMainList to mainList
+		copyOfMainListForRedo.clear();
+		copyOfMainListForRedo.addAll(mainList);
 		mainList.clear();
 		mainList.addAll(previousCopyOfMainList);
 		return previousCopyOfMainList;
 	}
 	
 	public ArrayList<Task> redoCommand() {
+		mainList.clear();
+		mainList.addAll(copyOfMainListForRedo);
 		return mainList;
 	}
 
