@@ -119,6 +119,9 @@ public class Storage {
 	}
 	
 	public ArrayList<Task> undoCommand() {
+		// transfer content from previousCopyOfMainList to mainList
+		mainList.clear();
+		mainList.addAll(previousCopyOfMainList);
 		return previousCopyOfMainList;
 	}
 	
