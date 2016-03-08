@@ -11,7 +11,9 @@ public class Logic {
 	// Objects to call into other classes
 	private Parser parser;
 	private Storage storage;
-
+	
+	private static final String MESSAGE_NOT_SAVED = "Error: File not saved!\n";
+	
 	public Logic() {
 		this.parser = new Parser();
 		this.storage = new Storage();
@@ -47,6 +49,26 @@ public class Logic {
 			
 			case HOME:
 				list = storage.getMainList();
+				break;
+				
+			case SAVE:
+				try{
+					storage.saveToFile(description);
+				} catch (Exception e){
+					System.out.println(MESSAGE_NOT_SAVED);
+				}
+				break;
+				
+			case LOAD:
+				list = storage.loadFileWithFileName(description);
+				break;
+				
+			case UNDO:
+				
+				break;
+				
+			case REDO: 
+			
 				break;
 				
 			case INVALID:
