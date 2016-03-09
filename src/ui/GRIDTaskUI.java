@@ -442,6 +442,22 @@ public class GRIDTaskUI extends Application {
             case DELETE :
                 message = new Text("Deleted task!");
                 break;
+            
+            case UNDO :
+                message = new Text("Last command undone");
+                break;
+            
+            case REDO :
+                message = new Text("Undo undone command");
+                break;
+            
+            case SAVE :
+                message = new Text("Saved");
+                break;
+            
+            case LOAD :
+                message = new Text("Loaded");
+                break;
                 
             default :
                 message = new Text("Invalid!");
