@@ -53,8 +53,15 @@ public class Logic {
 				break;
 				
 			case SAVE:
-				try{
-					storage.saveToFile(description);
+				try{	
+					if(description.contains(" ")){
+						String[] split = description.split(" ");
+						String directory = split[0].toLowerCase();
+						String userFileName = split[1];
+						storage.saveToFileWithDirectory(directory, userFileName);
+					} else{
+						storage.saveToFile(description);
+					}	
 				} catch (Exception e){
 					System.out.println(MESSAGE_NOT_SAVED);
 				}
@@ -64,7 +71,14 @@ public class Logic {
 			case LOAD:
 				
 				try {
-					storage.loadFileWithFileName(description);
+					if(description.contains(" ")){
+						String[] split = description.split(" ");
+						String directory = split[0].toLowerCase();
+						String userFileName = split[1];
+						storage.loadFileWithDirectory(directory, userFileName);
+					} else{					
+						storage.loadFileWithFileName(description);
+					}	
 				} catch (FileNotFoundException e) {
 					System.out.println(MESSAGE_INVALID_FILE);
 				}
@@ -104,5 +118,4 @@ public class Logic {
 
 		return result;
 	}
-
-}
+}	
