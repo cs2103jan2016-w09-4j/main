@@ -54,6 +54,10 @@ public class Task {
     public void setEnd(Date date) {
         end = date;
     }
+   
+    public void setCategory(String categoryName) {
+    	categories.add(categoryName);
+    }
     
     
     /******************

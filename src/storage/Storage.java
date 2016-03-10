@@ -127,7 +127,8 @@ public class Storage {
 		// check if the directory is valid
 		File userDirectory = new File(directory);
 		boolean isDirectoryValid = userDirectory.isDirectory();
-
+		
+		// If directory is not valid, throw exception
 		if (!isDirectoryValid) {
 			throw new NotDirectoryException(userDirectory.getName());
 
@@ -147,6 +148,7 @@ public class Storage {
 
 		ArrayList<Task> updatedMainListFromLoad = convertStringToTask(listFromLoadFile);
 		mainList.clear();
+		// transfer contents from file to main list
 		updateMainList(updatedMainListFromLoad);
 		setMainList(mainList);
 		
