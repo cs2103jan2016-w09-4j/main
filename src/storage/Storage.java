@@ -13,28 +13,15 @@ import common.Task;
 
 public class Storage {
 
-<<<<<<< Updated upstream
 	private ArrayList<Task> mainList;
 
-//	private static ArrayList<Task> previousCopyOfMainList;
-	//private static ArrayList<Task> copyOfMainListForRedo; 
-=======
 	private static ArrayList<Task> mainList;
-	private static ArrayList<Task> previousCopyOfMainList;
-	private static ArrayList<Task> copyOfMainListForRedo;
->>>>>>> Stashed changes
 	private static String fileName;
 
 	private static final String MESSAGE_IOEXCEPTION_ERROR = "IO Exception error";
 
 	// default file name is "mytextfile.txt"
 	public Storage() {
-<<<<<<< Updated upstream
-=======
-		mainList = new ArrayList<Task>();
-		previousCopyOfMainList = new ArrayList<Task>();
-		copyOfMainListForRedo = new ArrayList<Task>();
->>>>>>> Stashed changes
 		fileName = "mytextfile.txt";
 		mainList = new ArrayList<Task>();
 	}
@@ -49,15 +36,7 @@ public class Storage {
 	 * This method saves the main list to save a previous copy
 	 * of the list for undo command
 	 */
-<<<<<<< Updated upstream
 	
-=======
-	private void saveMainListForUndo() {
-		previousCopyOfMainList.clear();
-		previousCopyOfMainList.addAll(mainList);
-	}
-
->>>>>>> Stashed changes
 	/*
 	 * This method returns a empty Arraylist if the taskID is invalid else, it
 	 * returns the mainList Arraylist
@@ -67,69 +46,18 @@ public class Storage {
 	 * This method returns a empty Arraylist if the taskID is invalid else, it
 	 * returns the mainList Arraylist
 	 */
-<<<<<<< Updated upstream
-	
-
+	 
 	/*
 	 * This method returns a empty Arraylist if there is no such keyword else,
 	 * it returns the searchResults Arraylist
 	 */
-=======
-	public ArrayList<Task> editTask(int taskID, String newDescription) {
-		boolean foundTask = false;
-
-		for (int i = 0; i < mainList.size(); i++) {
-			if (!foundTask && mainList.get(i).getID() == taskID) {
-				mainList.get(i).setDescription(newDescription);
-				foundTask = true;
-			}
-		}
-		if (!foundTask) {
-			return new ArrayList<Task>();
-		} else {
-			writeToFile();
-		}
-
-		return mainList;
-	}
-	
-	public ArrayList<Task> undoCommand() {
-		// transfer content from previousCopyOfMainList to mainList
-		copyOfMainListForRedo.clear();
-		copyOfMainListForRedo.addAll(mainList);
-		mainList.clear();
-		mainList.addAll(previousCopyOfMainList);
-		return previousCopyOfMainList;
-	}
-	
-	public ArrayList<Task> redoCommand() {
-		mainList.clear();
-		mainList.addAll(copyOfMainListForRedo);
-		return mainList;
-	}
-
-	public ArrayList<Task> getMainList() {
-		return mainList;
-	}
 		
-	// edition
-	public ArrayList<Task> getPreviousList(){
-		return previousCopyOfMainList;
-	}
->>>>>>> Stashed changes
-
 	// ================================================================================
 	// Writing of Files
 	// ================================================================================
 
 	// rewrite whole file
-<<<<<<< Updated upstream
-	public void writeToFile() {
-		
-		try {
-=======
 	private void writeToFile(ArrayList<Task> mainList) throws IOException {
->>>>>>> Stashed changes
 			FileWriter writer = new FileWriter(fileName);
 			for (int i = 0; i < mainList.size(); i++) {
 				String toWrite = mainList.get(i).getDescription();
