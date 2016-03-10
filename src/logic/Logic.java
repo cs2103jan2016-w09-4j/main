@@ -4,22 +4,23 @@ import common.*;
 import common.Command.CommandType;
 import parser.Parser;
 import storage.Storage;
+import logic.Execution;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Logic {
 
 	// Objects to call into other classes
 	private Parser parser;
+	@SuppressWarnings("unused")
 	private Storage storage;
-	
-	private static final String MESSAGE_NOT_SAVED = "Error: File not saved!\n";
-	private static final String MESSAGE_INVALID_FILE = "Error: File not found!\n";
+	private Execution execution;
 	
 	public Logic() {
 		this.parser = new Parser();
 		this.storage = new Storage();
+		this.execution = new Execution();
+		
 	}
 
 	private ArrayList<Task> execute(Command command){
@@ -33,65 +34,40 @@ public class Logic {
 		switch(commandType){
 		
 			case ADD:
-				list = storage.addTask(description); 
+				list = execution.addTask(description); 
 				break;
 			
 			case DELETE:
-				list = storage.deleteTask(taskID);
+				list = execution.deleteTask(taskID);
 				break;
 			
 			case EDIT:
-				list = storage.editTask(taskID, description);
+				list = execution.editTask(taskID, description);
 				break;
 				
 			case SEARCH:
-				list = storage.searchTask(description);
+				list = execution.searchTask(description);
 				break;
 			
 			case HOME:
-				list = storage.getMainList();
+				list = execution.getMainList();
 				break;
 				
 			case SAVE:
-				try{	
-					if(description.contains(" ")){
-						String[] split = description.split(" ");
-						String directory = split[0].toLowerCase();
-						String userFileName = split[1];
-						storage.saveToFileWithDirectory(directory, userFileName);
-					} else{
-						storage.saveToFile(description);
-					}	
-				} catch (Exception e){
-					System.out.println(MESSAGE_NOT_SAVED);
-				}
-				list = storage.getMainList();
+				execution.savingTasks(description);
+				list = execution.getMainList();
 				break;
 				
 			case LOAD:
-				
-				try {
-					if(description.contains(" ")){
-						String[] split = description.split(" ");
-						String directory = split[0].toLowerCase();
-						String userFileName = split[1];
-						storage.loadFileWithDirectory(directory, userFileName);
-					} else{					
-						storage.loadFileWithFileName(description);
-					}	
-				} catch (FileNotFoundException e) {
-					System.out.println(MESSAGE_INVALID_FILE);
-				}
-				
-				list = storage.getMainList();
+				list = execution.loadingTasks(description);
 				break;
 				
 			case UNDO:
-				list = storage.undoCommand();
+				list = execution.undoCommand();
 				break;
 				
 			case REDO: 
-				list = storage.redoCommand();
+				list = execution.redoCommand();
 				break;
 				
 			case INVALID:

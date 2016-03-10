@@ -3,6 +3,7 @@ package storage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.NotDirectoryException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,143 +13,53 @@ import common.Task;
 
 public class Storage {
 
-	private static ArrayList<Task> mainList;
-	private static ArrayList<Task> searchResults;
-	private static ArrayList<Task> previousCopyOfMainList;
-	private static ArrayList<Task> copyOfMainListForRedo;
+	private ArrayList<Task> mainList;
+
+//	private static ArrayList<Task> previousCopyOfMainList;
+	//private static ArrayList<Task> copyOfMainListForRedo; 
 	private static String fileName;
 
 	private static final String MESSAGE_IOEXCEPTION_ERROR = "IO Exception error";
-	private static final String MESSAGE_INVALID_DIRECTORY = "Invalid directory";
 
 	// default file name is "mytextfile.txt"
 	public Storage() {
-		mainList = new ArrayList<Task>();
-		searchResults = new ArrayList<Task>();
-		previousCopyOfMainList = new ArrayList<Task>();
-		copyOfMainListForRedo = new ArrayList<Task>();
 		fileName = "mytextfile.txt";
+		mainList = new ArrayList<Task>();
 	}
 
 	// ================================================================================
 	// Methods for commands
 	// ================================================================================
-	public ArrayList<Task> addTask(String description) {
-		Task newTask = new Task(description);
-		
-		if (!mainList.isEmpty()) {
-			saveMainListForUndo();
-		}
-		
-		mainList.add(newTask);
-		appendToFile(newTask); 
-		
-		return mainList;
-	}
+	
 	
 	/*
 	 * This method saves the main list to save a previous copy
 	 * of the list for undo command
 	 */
-	private void saveMainListForUndo() {
-		/*previousCopyOfMainList.clear();
-		for (int i=0; i< mainList.size(); i++) {
-			previousCopyOfMainList.add(mainList.get(i));
-		}*/
-		previousCopyOfMainList.clear();
-		previousCopyOfMainList.addAll(mainList);
-	}
+	
+	/*
+	 * This method returns a empty Arraylist if the taskID is invalid else, it
+	 * returns the mainList Arraylist
+	 */
 
 	/*
 	 * This method returns a empty Arraylist if the taskID is invalid else, it
 	 * returns the mainList Arraylist
 	 */
-	public ArrayList<Task> deleteTask(int taskID) {
-		boolean foundTask = false;
-
-		for (int i = 0; i < mainList.size(); i++) {
-			if (!foundTask && mainList.get(i).getID() == taskID) {
-				saveMainListForUndo();
-				mainList.remove(i);
-				foundTask = true;
-			}
-		}
-		
-		if (!foundTask) {
-			return new ArrayList<Task>();
-		} else {
-			writeToFile();
-		}
-		return mainList;
-	}
-
-	/*
-	 * This method returns a empty Arraylist if the taskID is invalid else, it
-	 * returns the mainList Arraylist
-	 */
-	public ArrayList<Task> editTask(int taskID, String newDescription) {
-		boolean foundTask = false;
-
-		for (int i = 0; i < mainList.size(); i++) {
-			if (!foundTask && mainList.get(i).getID() == taskID) {
-				mainList.get(i).setDescription(newDescription);
-				foundTask = true;
-			}
-		}
-		if (!foundTask) {
-			return new ArrayList<Task>();
-		} else {
-			writeToFile();
-		}
-
-		return mainList;
-	}
+	
 
 	/*
 	 * This method returns a empty Arraylist if there is no such keyword else,
 	 * it returns the searchResults Arraylist
 	 */
-	public ArrayList<Task> searchTask(String keyword) {
-		searchResults.clear();
-		for (int i = 0; i < mainList.size(); i++) {
-			if (mainList.get(i).getDescription().contains(keyword)) {
-				searchResults.add(mainList.get(i));
-			}
-		}
-
-		return searchResults;
-	}
-	
-	public ArrayList<Task> undoCommand() {
-		// transfer content from previousCopyOfMainList to mainList
-		copyOfMainListForRedo.clear();
-		copyOfMainListForRedo.addAll(mainList);
-		mainList.clear();
-		mainList.addAll(previousCopyOfMainList);
-		return previousCopyOfMainList;
-	}
-	
-	public ArrayList<Task> redoCommand() {
-		mainList.clear();
-		mainList.addAll(copyOfMainListForRedo);
-		return mainList;
-	}
-
-	public ArrayList<Task> getMainList() {
-		return mainList;
-	}
-		
-	// edition
-	public ArrayList<Task> getPreviousList(){
-		return previousCopyOfMainList;
-	}
 
 	// ================================================================================
 	// Writing of Files
 	// ================================================================================
 
 	// rewrite whole file
-	private void writeToFile() {
+	public void writeToFile() {
+		
 		try {
 			FileWriter writer = new FileWriter(fileName);
 			for (int i = 0; i < mainList.size(); i++) {
@@ -162,7 +73,7 @@ public class Storage {
 		}
 	}
 
-	private void appendToFile(Task taskToAdd) {
+	public void appendToFile(Task taskToAdd) {
 		try {
 			FileWriter writer = new FileWriter(fileName, true);
 			BufferedWriter bufferedWriter = new BufferedWriter(writer);
@@ -195,14 +106,14 @@ public class Storage {
 	 * valid. If the directory is invalid, it will return an error message else,
 	 * the new file will be created in the directory
 	 */
-	public void saveToFileWithDirectory(String directory, String userFileName) throws IOException {
+	public void saveToFileWithDirectory(String directory, String userFileName) throws IOException, NotDirectoryException {
 
 		// check if the directory is valid
 		File userDirectory = new File(directory);
 		boolean isValid = userDirectory.isDirectory();
 
 		if (!isValid) {
-			showUserInvalidDirectory();
+			throw new NotDirectoryException(userDirectory.getName());
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			FileWriter writer = new FileWriter(userDirectoryAndName.getAbsoluteFile());
@@ -219,7 +130,8 @@ public class Storage {
 	 * This method loads data from a specific file.
 	 * This method will throw an exception if the file does not exist
 	 */
-	public void loadFileWithFileName(String userFileName) throws FileNotFoundException {
+	public ArrayList<Task> loadFileWithFileName(String userFileName) throws FileNotFoundException, NotDirectoryException {
+		
 		File file = new File(userFileName);
 		ArrayList<String> listFromFile = new ArrayList<String>();
 		boolean isValid = file.exists();
@@ -237,7 +149,8 @@ public class Storage {
 		ArrayList<Task> updatedMainList = convertStringToTask(listFromFile);
 		mainList.clear();
 		updateMainList(updatedMainList);
-
+		
+		return mainList;
 	}
 
 	/*
@@ -245,7 +158,7 @@ public class Storage {
 	 * This method will check if the directory and file exists.
 	 * If the directory or file does not exist, it will throw an exception 
 	 */
-	public void loadFileWithDirectory(String directory, String userFileName) throws FileNotFoundException {
+	public ArrayList<Task> loadFileWithDirectory(String directory, String userFileName) throws FileNotFoundException, NotDirectoryException {
 		ArrayList<String> listFromLoadFile = new ArrayList<String>();
 
 		// check if the directory is valid
@@ -253,7 +166,7 @@ public class Storage {
 		boolean isDirectoryValid = userDirectory.isDirectory();
 
 		if (!isDirectoryValid) {
-			showUserInvalidDirectory();
+			throw new NotDirectoryException(userDirectory.getName());
 
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
@@ -272,6 +185,9 @@ public class Storage {
 		ArrayList<Task> updatedMainListFromLoad = convertStringToTask(listFromLoadFile);
 		mainList.clear();
 		updateMainList(updatedMainListFromLoad);
+		setMainList(mainList);
+		
+		return mainList;
 	}
 
 	/*
@@ -289,6 +205,14 @@ public class Storage {
 		return updatedMainList;
 	}
 	
+	public ArrayList<Task> getMainList(){
+		return mainList;
+	}
+	
+	public void setMainList(ArrayList<Task> mainList){
+		this.mainList = mainList;
+	}
+	
 	/*
 	 * This method adds the data from file to update the main list
 	 * For load commands
@@ -298,12 +222,8 @@ public class Storage {
 			mainList.add(dataFromFile.get(j));
 		}
 	}
-
+	
 	private static void showUserIOException() {
 		System.out.println(MESSAGE_IOEXCEPTION_ERROR);
-	}
-
-	private void showUserInvalidDirectory() {
-		System.out.println(MESSAGE_INVALID_DIRECTORY);
 	}
 }
