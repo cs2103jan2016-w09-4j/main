@@ -30,8 +30,7 @@ public class Storage {
 	// ================================================================================
 	// Methods for commands
 	// ================================================================================
-	
-	
+
 	/*
 	 * This method saves the main list to save a previous copy
 	 * of the list for undo command
@@ -158,7 +157,9 @@ public class Storage {
 	 * This method will check if the directory and file exists.
 	 * If the directory or file does not exist, it will throw an exception 
 	 */
+
 	public ArrayList<Task> loadFileWithDirectory(String directory, String userFileName) throws FileNotFoundException, NotDirectoryException {
+
 		ArrayList<String> listFromLoadFile = new ArrayList<String>();
 
 		// check if the directory is valid
