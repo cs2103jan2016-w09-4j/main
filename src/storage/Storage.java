@@ -13,51 +13,21 @@ import common.Task;
 
 public class Storage {
 
-	private ArrayList<Task> mainList;
-
 	private static ArrayList<Task> mainList;
 	private static String fileName;
-
-	private static final String MESSAGE_IOEXCEPTION_ERROR = "IO Exception error";
 
 	// default file name is "mytextfile.txt"
 	public Storage() {
 		fileName = "mytextfile.txt";
 		mainList = new ArrayList<Task>();
 	}
-	
-	
-
-	// ================================================================================
-	// Methods for commands
-	// ================================================================================
-
-	/*
-	 * This method saves the main list to save a previous copy
-	 * of the list for undo command
-	 */
-	
-	/*
-	 * This method returns a empty Arraylist if the taskID is invalid else, it
-	 * returns the mainList Arraylist
-	 */
-
-	/*
-	 * This method returns a empty Arraylist if the taskID is invalid else, it
-	 * returns the mainList Arraylist
-	 */
-	 
-	/*
-	 * This method returns a empty Arraylist if there is no such keyword else,
-	 * it returns the searchResults Arraylist
-	 */
 		
 	// ================================================================================
 	// Writing of Files
 	// ================================================================================
 
 	// rewrite whole file
-	private void writeToFile(ArrayList<Task> mainList) throws IOException {
+	public void writeToFile() throws IOException {
 			FileWriter writer = new FileWriter(fileName);
 			for (int i = 0; i < mainList.size(); i++) {
 				String toWrite = mainList.get(i).getDescription();
@@ -67,8 +37,7 @@ public class Storage {
 			writer.close();
 	}
 
-	public void appendToFile(Task taskToAdd) {
-		try {
+	public void appendToFile(Task taskToAdd) throws IOException {
 			FileWriter writer = new FileWriter(fileName, true);
 			BufferedWriter bufferedWriter = new BufferedWriter(writer);
 			bufferedWriter.write(taskToAdd.getDescription() + "\r\n");
@@ -76,9 +45,6 @@ public class Storage {
 			bufferedWriter.close();
 			writer.close();
 
-		} catch (IOException ioe) {
-			showUserIOException();
-		}
 	}
 
 	// ================================================================================
@@ -91,7 +57,7 @@ public class Storage {
 	 */
 	public void saveToFile(String userFileName) throws IOException {
 		fileName = userFileName;
-		writeToFile(mainList);
+		writeToFile();
 	}
 
 	/*
@@ -206,8 +172,9 @@ public class Storage {
 		return mainList;
 	}
 	
+	// for load commands
 	public void setMainList(ArrayList<Task> mainList){
-		this.mainList = mainList;
+		Storage.mainList = mainList;
 	}
 	
 	/*
@@ -218,9 +185,5 @@ public class Storage {
 		for (int j = 0; j < dataFromFile.size(); j++) {
 			mainList.add(dataFromFile.get(j));
 		}
-	}
-	
-	private static void showUserIOException() {
-		System.out.println(MESSAGE_IOEXCEPTION_ERROR);
 	}
 }

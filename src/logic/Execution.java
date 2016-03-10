@@ -4,6 +4,7 @@ import common.*;
 import storage.Storage;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
 
@@ -35,7 +36,12 @@ public class Execution{
 		
 		mainList.add(newTask);
 		storage.setMainList(mainList);
-		storage.appendToFile(newTask);
+		try {
+			storage.appendToFile(newTask);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return mainList;
 	}
