@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -38,7 +39,7 @@ public class Storage {
 		
 		if (!mainList.isEmpty()) {
 			saveMainListForUndo();
-		}
+		} 
 		
 		mainList.add(newTask);
 		appendToFile(newTask); 
@@ -195,14 +196,14 @@ public class Storage {
 	 * valid. If the directory is invalid, it will return an error message else,
 	 * the new file will be created in the directory
 	 */
-	public void saveToFileWithDirectory(String directory, String userFileName) throws IOException {
+	public void saveToFileWithDirectory(String directory, String userFileName) throws IOException, NotDirectoryException {
 
 		// check if the directory is valid
 		File userDirectory = new File(directory);
 		boolean isValid = userDirectory.isDirectory();
 
 		if (!isValid) {
-			showUserInvalidDirectory();
+			throw new NotDirectoryException(userDirectory.getName());
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			FileWriter writer = new FileWriter(userDirectoryAndName.getAbsoluteFile());
@@ -245,7 +246,7 @@ public class Storage {
 	 * This method will check if the directory and file exists.
 	 * If the directory or file does not exist, it will throw an exception 
 	 */
-	public void loadFileWithDirectory(String directory, String userFileName) throws FileNotFoundException {
+	public void loadFileWithDirectory(String directory, String userFileName) throws FileNotFoundException, NotDirectoryException {
 		ArrayList<String> listFromLoadFile = new ArrayList<String>();
 
 		// check if the directory is valid
@@ -253,7 +254,7 @@ public class Storage {
 		boolean isDirectoryValid = userDirectory.isDirectory();
 
 		if (!isDirectoryValid) {
-			showUserInvalidDirectory();
+			throw new NotDirectoryException(userDirectory.getName());
 
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
