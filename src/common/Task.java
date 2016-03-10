@@ -46,9 +46,6 @@ public class Task {
 		description = line;
 	}
 	
-    public void setID(int id) {
-        this.id = id;
-    }
         
     public void setStart(Date date) {
         start = date;
@@ -58,6 +55,7 @@ public class Task {
         end = date;
     }
     
+    
     /******************
      * GETTER METHODS *
      ******************/
@@ -65,10 +63,6 @@ public class Task {
 	public String getDescription() {
 		return description;
 	}
-
-    public int getID() {
-        return id;
-    }
     	
     public Date getStart() {
         return start;
