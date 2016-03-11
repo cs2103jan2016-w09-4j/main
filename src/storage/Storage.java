@@ -29,12 +29,16 @@ public class Storage {
 	// rewrite whole file
 	public void writeToFile() throws IOException {
 			FileWriter writer = new FileWriter(fileName);
-			for (int i = 0; i < mainList.size(); i++) {
-				String toWrite = mainList.get(i).getDescription();
-				writer.write(toWrite + "\r\n");
-			}
-			
-			writer.close();
+			writeTasksFromMainList(writer);
+	}
+
+	private void writeTasksFromMainList(FileWriter writer) throws IOException {
+		for (int i = 0; i < mainList.size(); i++) {
+			String toWrite = mainList.get(i).getDescription();
+			writer.write(toWrite + "\r\n");
+		}
+		
+		writer.close();
 	}
 
 	public void appendToFile(Task taskToAdd) throws IOException {
@@ -77,12 +81,7 @@ public class Storage {
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			FileWriter writer = new FileWriter(userDirectoryAndName.getAbsoluteFile());
-			for (int i = 0; i < mainList.size(); i++) {
-				String toWrite = mainList.get(i).getDescription();
-				writer.write(toWrite + "\r\n");
-			}
-
-			writer.close();
+			writeTasksFromMainList(writer);
 		}
 	}
 
@@ -97,13 +96,10 @@ public class Storage {
 		boolean isValid = file.exists();
 
 		if (isValid) {
-			Scanner sc;
-			sc = new Scanner(file);
-			while (sc.hasNextLine()) {
-				listFromFile.add(sc.nextLine());
-			}
-
-			sc.close();
+			readFileWhenFileExists(file, listFromFile);
+			
+		} else if (!isValid) {
+			throw new FileNotFoundException();
 		}
 
 		ArrayList<Task> updatedMainList = convertStringToTask(listFromFile);
@@ -111,6 +107,16 @@ public class Storage {
 		updateMainList(updatedMainList);
 		
 		return mainList;
+	}
+
+	private void readFileWhenFileExists(File file, ArrayList<String> listFromFile) throws FileNotFoundException {
+		Scanner sc;
+		sc = new Scanner(file);
+		while (sc.hasNextLine()) {
+			listFromFile.add(sc.nextLine());
+		}
+
+		sc.close();
 	}
 
 	/*
@@ -135,14 +141,11 @@ public class Storage {
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			boolean isFileValid = userDirectoryAndName.exists();
+			
 			if (isFileValid) {
-				Scanner sc;
-				sc = new Scanner(userDirectoryAndName);
-				while (sc.hasNextLine()) {
-					listFromLoadFile.add(sc.nextLine());
-				}
-				
-				sc.close();
+				readFileWhenFileExists(userDirectoryAndName, listFromLoadFile);
+			} else if (!isFileValid) {
+				throw new FileNotFoundException();
 			}
 		}
 
