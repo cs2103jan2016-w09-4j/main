@@ -69,8 +69,12 @@ public class Logic {
 				list = execution.redoCommand();
 				break;
 				
+			case COMPLETE:
+				list = execution.completeCommand(taskID);
+				break;
+				
 			case DONE:
-				list = execution.doneCommand(taskID);
+				list = execution.getDoneList();
 				break;
 				
 			case INVALID:

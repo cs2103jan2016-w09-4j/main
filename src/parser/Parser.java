@@ -24,8 +24,10 @@ public class Parser {
             String firstWord = getFirstWord(content);
             String description = content.substring(firstWord.length()).trim();
             return new Command(CommandType.EDIT, Integer.parseInt(firstWord), description);
+        } else if (commandStr.startsWith("complete")){
+        	return new Command(CommandType.COMPLETE, Integer.parseInt(commandStr.substring(5)));
         } else if (commandStr.startsWith("done")){
-        	return new Command(CommandType.DONE, Integer.parseInt(commandStr.substring(5)));
+        	return new Command (CommandType.DONE);
         } else if (commandStr.startsWith("search")){
             return new Command(CommandType.SEARCH, commandStr.substring(6).trim());
         } else if (commandStr.startsWith("save")){

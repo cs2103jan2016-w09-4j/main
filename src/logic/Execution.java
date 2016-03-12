@@ -54,7 +54,7 @@ public class Execution{
 		return mainList;
 	}
 	
-	public ArrayList<Task> doneCommand(int taskID){
+	public ArrayList<Task> completeCommand(int taskID){
 		Task doneTask = mainList.get(taskID);
 		doneList.add(doneTask);
 		
@@ -199,6 +199,10 @@ public class Execution{
 	public ArrayList<String> getDictionary(){
 		Collections.sort(dictionary);
 		return dictionary;	
+	}
+	
+	public ArrayList<Task> getDoneList(){
+		return doneList;
 	}
 	
 }
