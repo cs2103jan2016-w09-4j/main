@@ -15,7 +15,7 @@ public class Task {
     
     // TODO: replace placeholder id and categories
     private static int num = 0;
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private ArrayList<String> categories;
 	
 	public Task(String description) {
@@ -51,19 +51,19 @@ public class Task {
         start = date;
     }
     
-    public void setStartDateAndTime(String date) throws ParseException {
+    /*public void setStartDateAndTime(String date) throws ParseException {
     	Date startDate = dateFormat.parse(date);
     	this.start = startDate;
-    }
+    }*/
 
     public void setEnd(Date date) {
         end = date;
     }
     
-    public void setEndDateAndTime(String date) throws ParseException {
+   /* public void setEndDateAndTime(String date) throws ParseException {
     	Date endDate = dateFormat.parse(date);
     	this.end = endDate;
-    }
+    }*/
 
    
     public void setCategory(String categoryName) {
@@ -83,17 +83,17 @@ public class Task {
         return start;
     }
     
-    public String getStartDateString() {
+   /*public String getStartDateString() {
     	return dateFormat.format(start);
-    }
+    }*/
 
     public Date getEndDate() {
         return end;
     }
     
-    public String getEndDateString() {
+    /*public String getEndDateString() {
     	return dateFormat.format(end);
-    }
+    }*/
 
     
     public ArrayList<String> getCategories() {
