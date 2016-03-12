@@ -20,7 +20,6 @@ public class Logic {
 		this.parser = new Parser();
 		this.storage = new Storage();
 		this.execution = new Execution();
-		
 	}
 
 	private ArrayList<Task> execute(Command command){
@@ -70,6 +69,10 @@ public class Logic {
 				list = execution.redoCommand();
 				break;
 				
+			case DONE:
+				list = execution.doneCommand(taskID);
+				break;
+				
 			case INVALID:
 				list = null;
 				break;
@@ -78,6 +81,7 @@ public class Logic {
 				list = null;
 				
 		}
+		
 	    return list;
 	}
 
@@ -86,12 +90,10 @@ public class Logic {
 		Command command = parser.parseCommand(input);
 		Result result = new Result(command.getType(), true, execute(command));
 
-		ArrayList<Task> tasks = result.getResults();
-		System.out.println("-----");
-		for (Task t:tasks){
-		    System.out.println(t.getID() + " " + t.getDescription());
-		}
-
 		return result;
+	}
+	
+	public ArrayList<String> getPredictions(){
+		return execution.getDictionary();
 	}
 }	

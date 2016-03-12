@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Execution{
 	
@@ -14,21 +15,28 @@ public class Execution{
 	
 	private static ArrayList<Task> mainList;
 	private static ArrayList<Task> searchResults;
+	private static ArrayList<Task> doneList;
 	private static ArrayList<Task> previousCopyOfMainList;
 	private static ArrayList<Task> copyOfMainListForRedo;
+	private ArrayList<String> dictionary;
+	
 	
 	public Execution(){
 		
 		storage = new Storage();
 		mainList = new ArrayList<Task>();
+		doneList = new ArrayList<Task>();
 		searchResults = new ArrayList<Task>();
 		previousCopyOfMainList = new ArrayList<Task>();
 		copyOfMainListForRedo = new ArrayList<Task>();
+		dictionary = new ArrayList<String>();
 	
 	}
 	
 	public ArrayList<Task> addTask(String description) {
 		Task newTask = new Task(description);
+		
+		dictionary.add(description);
 		
 		if (!mainList.isEmpty()) {
 			saveMainListForUndo();
@@ -46,21 +54,31 @@ public class Execution{
 		return mainList;
 	}
 	
+	public ArrayList<Task> doneCommand(int taskID){
+		Task doneTask = mainList.get(taskID);
+		doneList.add(doneTask);
+		
+		deleteTask(taskID);
+		return doneList;
+	}
+	
 	public ArrayList<Task> deleteTask(int taskID) {
 		boolean foundTask = false;
 
-		for (int i = 0; i < mainList.size(); i++) {
-			if (!foundTask && mainList.get(i).getID() == taskID) {
-				saveMainListForUndo();
-				mainList.remove(i);
-				foundTask = true;
-			}
+		if(mainList.get(taskID) != null){
+			mainList.remove(taskID);
+			foundTask = true;
 		}
 		
 		if (!foundTask) {
 			return new ArrayList<Task>();
 		} else {
-			storage.writeToFile();
+			try {
+				storage.writeToFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		storage.setMainList(mainList);
 		return mainList;	
@@ -68,17 +86,21 @@ public class Execution{
 	
 	public ArrayList<Task> editTask(int taskID, String newDescription) {
 		boolean foundTask = false;
-
-		for (int i = 0; i < mainList.size(); i++) {
-			if (!foundTask && mainList.get(i).getID() == taskID) {
-				mainList.get(i).setDescription(newDescription);
-				foundTask = true;
-			}
+		dictionary.add(newDescription);
+		
+		if(mainList.get(taskID) != null){
+			mainList.get(taskID).setDescription(newDescription);
+			foundTask = true;
 		}
 		if (!foundTask) {
 			return new ArrayList<Task>();
 		} else {
-			storage.writeToFile();
+			try {
+				storage.writeToFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		storage.setMainList(mainList);
 		return mainList;
@@ -86,6 +108,7 @@ public class Execution{
 	
 	public ArrayList<Task> searchTask(String keyword) {
 		searchResults.clear();
+		dictionary.add(keyword);
 		for (int i = 0; i < mainList.size(); i++) {
 			if (mainList.get(i).getDescription().contains(keyword)) {
 				searchResults.add(mainList.get(i));
@@ -101,8 +124,11 @@ public class Execution{
 				String directory = split[0].toLowerCase();
 				String userFileName = split[1];
 				storage.saveToFileWithDirectory(directory, userFileName);
+				dictionary.add(directory);
+				dictionary.add(userFileName);
 			} else{
 				storage.saveToFile(description);
+				dictionary.add(description);
 			}	
 		} catch (Exception e){
 			e.printStackTrace();
@@ -118,10 +144,13 @@ public class Execution{
 				String userFileName = split[1];
 				loadBack = storage.loadFileWithDirectory(directory, userFileName);
 				setMainList(loadBack);
+				dictionary.add(directory);
+				dictionary.add(userFileName);
 				return loadBack;
 			} else{					
 				loadBack = storage.loadFileWithFileName(description);
 				setMainList(loadBack);
+				dictionary.add(description);
 				return loadBack;
 			}	
 		} catch (NotDirectoryException | FileNotFoundException e) {
@@ -165,6 +194,11 @@ public class Execution{
 	// edition
 	public ArrayList<Task> getPreviousList(){
 		return previousCopyOfMainList;
+	}
+	
+	public ArrayList<String> getDictionary(){
+		Collections.sort(dictionary);
+		return dictionary;	
 	}
 	
 }
