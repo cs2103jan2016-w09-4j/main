@@ -15,6 +15,7 @@ public class Logic {
 	@SuppressWarnings("unused")
 	private Storage storage;
 	private Execution execution;
+	private static Logic logic = new Logic();
 	
 	public Logic() {
 		this.parser = new Parser();
@@ -99,5 +100,18 @@ public class Logic {
 	
 	public ArrayList<String> getPredictions(){
 		return execution.getDictionary();
+	}
+	
+	public ArrayList<Task> getMainList(){
+		return execution.getMainList();
+	}
+	
+	public static Logic getInstance(){
+		
+		if (logic == null){
+			return logic = new Logic();
+		}
+		
+		return logic;
 	}
 }	
