@@ -1,0 +1,93 @@
+.root {
+    -fx-hgap: 5;
+    -fx-vgap: 5;
+    -fx-alignment: top-center;
+    -fx-padding: 0;
+    -fx-grid-lines-visible: false;
+    -fx-background-color: #FFFFFF;
+}
+
+.label {
+    -fx-font-size: 15;
+    -fx-font-family: sans-serif;
+    -fx-alignment: center-left;
+    -fx-label-padding: 5;
+}
+
+.header {
+    -fx-font-size: 20;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-alignment: center-left;
+    -fx-label-padding: 5;
+}
+
+.panel-task {
+    -fx-spacing: 10;
+    -fx-padding: 10;
+    -fx-background-color: #F6F6F6;
+}
+
+.panel-search {
+    -fx-spacing: 5;
+    -fx-padding: 10;
+    -fx-background-color: #F6F6F6;
+}
+
+.entry-task {
+    -fx-padding: 2;
+    -fx-background-color: derive( #A1E7C6 , 20% ) ;
+    -fx-background-radius: 2;
+}
+
+.desc {
+    -fx-font-size: 15;
+    -fx-wrap-text: true;
+    -fx-text-alignment: justify;
+}
+
+.details {
+    -fx-font-size: 12;
+    -fx-fill: #888888;
+}
+
+.scroll-pane {
+    -fx-hbar-policy: never;
+    -fx-vbar-policy: as-needed;
+    -fx-padding: 3, 0;
+    -fx-background-color: #F6F6F6;
+    -fx-border: none;
+    -fx-fit-to-width: true;
+}
+
+.scroll-pane .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-bar {
+    -fx-opacity: 1;
+}
+
+.scroll-bar:vertical .track {
+    -fx-background-color: #F6F6F6;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #A5A5A5;
+    -fx-background-radius: 0;
+    -fx-background-insets: 1;
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 10 0 0;
+}
+
+.scroll-bar .increment-arrow ,
+.scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0;
+}

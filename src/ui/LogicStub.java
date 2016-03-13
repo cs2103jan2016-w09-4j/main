@@ -1,18 +1,19 @@
 package ui;
 
+
 /* |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
  * ||                                                                     ||
  * ||  Dummy class for UI testing until methods are implemented in Logic  ||
  * ||                                                                     ||
  * |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
  */
-import java.util.ArrayList;
 
-import common.Category;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import common.Command.CommandType;
 import common.Result;
 import common.Task;
-import common.Command.CommandType;
-import logic.Logic;
 
 public class LogicStub {
 
@@ -20,16 +21,19 @@ public class LogicStub {
             + "universe, and everything";
     private static String SEARCH_STRING = "Lorem ipsum dolor sit amet "
             + "dolores umbridge eco llama";
-    
-    private static Logic logic;
 
-    public static Result processCommand(String input) {
-    	if (input.length()%2 == 1) {    
-    		return executeAddCommand(input);		    
-        } else {		 
-             return executeSearchCommand(input);	
-        }	
-    }	
+    public static ArrayList<String> autoComplete(String input) {
+        input = input.toLowerCase();
+        if (input.startsWith("a") || input.startsWith("ad") || input.startsWith("add")) {
+            return new ArrayList<String>(Arrays.asList("add ..."));
+        } else if (input.startsWith("d") || input.startsWith("delete")) {
+            return new ArrayList<String>(Arrays.asList("delete ..."));
+        } else if (input.startsWith("e")) {
+            return new ArrayList<String>(Arrays.asList("edit ...", "exit"));
+        } else {
+            return new ArrayList<String>();
+        }
+    }
     
     public static Result executeAddCommand(String input) {
         ArrayList<Task> tasks = new ArrayList<Task>();
@@ -47,18 +51,10 @@ public class LogicStub {
         return new Result(CommandType.SEARCH, true, tasks);
     }
 
-    public static ArrayList<Category> getCategories() {
-        ArrayList<Category> cats = new ArrayList<Category>();
-        for (int i = 0; i < 3; i++) {
-            cats.add(new Category());
-        }
-        return cats;
-    }
-    
     public static ArrayList<Task> getTasks() {
         ArrayList<Task> tasks = new ArrayList<Task>();
         for (int i = 0; i < 5; i++) {
-            tasks.add(new Task("Vote for next Android version to be Nutella"));
+            tasks.add(new Task("Fite me irl"));
         }
         return tasks;
     }

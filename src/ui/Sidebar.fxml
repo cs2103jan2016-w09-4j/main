@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import java.net.URL?>
+<?import javafx.scene.control.ScrollPane?>
+
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="VBox" styleClass="root">
+    <Label text="Categories" styleClass="header" />
+    <VBox fx:id="categoryContent" >
+    </VBox>
+
+    <stylesheets>
+        <URL value="@sidebar.css" />
+    </stylesheets>
+</fx:root>

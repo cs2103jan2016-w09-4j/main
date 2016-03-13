@@ -7,6 +7,7 @@ import storage.Storage;
 import logic.Execution;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Logic {
 
@@ -114,4 +115,12 @@ public class Logic {
 		
 		return logic;
 	}
+
+    public HashMap<String, Integer> getCategories() {
+        // TODO : placeholder for categories
+        HashMap<String, Integer> cat = new HashMap<String, Integer>();
+        cat.put("Priority", 1);
+        cat.put("Today", 2);
+        return cat;
+    }
 }	
