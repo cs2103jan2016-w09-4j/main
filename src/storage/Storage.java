@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.NotDirectoryException;
+import java.text.ParseException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,8 +35,14 @@ public class Storage {
 
 	private void writeTasksFromMainList(FileWriter writer) throws IOException {
 		for (int i = 0; i < mainList.size(); i++) {
-			String toWrite = mainList.get(i).getDescription();
-			writer.write(toWrite + "\r\n");
+			Task taskToAdd = mainList.get(i);
+			
+			String taskDescription = taskToAdd.getDescription();
+			/*String startDate = taskToAdd.getStartDateString();
+			String endDate = taskToAdd.getEndDateString();
+			String toWrite = taskDescription + " Start: " + startDate +
+								" End: " + endDate;*/
+			writer.write(taskDescription + "\r\n");
 		}
 		
 		writer.close();
@@ -89,7 +96,7 @@ public class Storage {
 	 * This method loads data from a specific file.
 	 * This method will throw an exception if the file does not exist
 	 */
-	public ArrayList<Task> loadFileWithFileName(String userFileName) throws FileNotFoundException, NotDirectoryException {
+	public ArrayList<Task> loadFileWithFileName(String userFileName) throws FileNotFoundException, NotDirectoryException, ParseException {
 		
 		File file = new File(userFileName);
 		ArrayList<String> listFromFile = new ArrayList<String>();
@@ -125,7 +132,7 @@ public class Storage {
 	 * If the directory or file does not exist, it will throw an exception 
 	 */
 
-	public ArrayList<Task> loadFileWithDirectory(String directory, String userFileName) throws FileNotFoundException, NotDirectoryException {
+	public ArrayList<Task> loadFileWithDirectory(String directory, String userFileName) throws FileNotFoundException, NotDirectoryException, ParseException {
 
 
 		ArrayList<String> listFromLoadFile = new ArrayList<String>();
@@ -162,11 +169,26 @@ public class Storage {
 	 * This method converts ArrayList<String> read from file to ArrayList<Task>
 	 * to allow execution of other commands
 	 */
-	private ArrayList<Task> convertStringToTask(ArrayList<String> listFromFile) {
+	private ArrayList<Task> convertStringToTask(ArrayList<String> listFromFile) throws ParseException {
 		ArrayList<Task> updatedMainList = new ArrayList<Task>();
-
+		
 		for (int i = 0; i < listFromFile.size(); i++) {
-			Task newTask = new Task(listFromFile.get(i));
+			String getLineFromFile = listFromFile.get(i);
+			Task newTask = new Task(getLineFromFile);
+			
+			/*int getIndexOfStart = getLineFromFile.indexOf("Start");
+			String description = getLineFromFile.substring(0, getIndexOfStart);
+			Task newTask = new Task(description);
+			
+			String lineWithoutDescription = getLineFromFile.replace(description,"").trim();
+			String[] splitLine = lineWithoutDescription.split(" ");
+			
+			String start = splitLine[1] + splitLine[2];
+			newTask.setStartDateAndTime(start);
+			
+			String end = splitLine[4] + splitLine[5];
+			newTask.setEndDateAndTime(end);*/
+			
 			updatedMainList.add(newTask);
 		}
 
@@ -183,7 +205,7 @@ public class Storage {
 	}
 	
 	/*
-	 * This method adds the data from file to update the main list
+	 * This method adds the data from file to main list to update
 	 * For load commands
 	 */
 	private void updateMainList(ArrayList<Task> dataFromFile) {
