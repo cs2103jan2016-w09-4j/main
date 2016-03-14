@@ -36,6 +36,7 @@ public class Logic {
 		
 			case ADD:
 				list = execution.addTask(description); 
+				System.out.println(getPredictions());
 				break;
 			
 			case DELETE:
@@ -44,10 +45,12 @@ public class Logic {
 			
 			case EDIT:
 				list = execution.editTask(taskID, description);
+				System.out.println(getPredictions());
 				break;
 				
 			case SEARCH:
 				list = execution.searchTask(description);
+				System.out.println(getPredictions());
 				break;
 			
 			case HOME:
@@ -79,6 +82,9 @@ public class Logic {
 				list = execution.getDoneList();
 				break;
 				
+			case EXIT:
+				System.exit(0);
+			
 			case INVALID:
 				list = null;
 				break;

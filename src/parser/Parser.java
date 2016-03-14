@@ -40,6 +40,8 @@ public class Parser {
             return new Command(CommandType.REDO);
         } else if (commandStr.startsWith("home")){
         	return new Command(CommandType.HOME);
+        } else if (commandStr.startsWith("exit")){
+        	return new Command(CommandType.EXIT);
         } else {
             return new Command(CommandType.INVALID);
         }

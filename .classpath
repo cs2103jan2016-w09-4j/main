@@ -4,5 +4,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="C:/Users/chuak/Desktop/jars/controlsfx-8.40.10.jar"/>
+	<classpathentry kind="lib" path="C:/Users/chuak/Desktop/jars/controlsfx-samples-8.40.10.jar"/>
+	<classpathentry kind="lib" path="C:/Users/chuak/Desktop/jars/fxsampler-1.0.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/chuak/Desktop/jars/junit-addons-1.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
