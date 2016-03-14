@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 
 public class InputController extends VBox {
 
+    @SuppressWarnings("unused")
     private MainApp main;
     @FXML TextField commandBar;
     
@@ -32,8 +33,6 @@ public class InputController extends VBox {
         commandBar.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent event) {
                 KeyCode key = event.getCode();
-                System.out.println(key + " pressed in cmd bar");
-
                 if (key == KeyCode.PAGE_DOWN) {
                     System.out.println("User tried to scroll down");
                 } else if (key == KeyCode.PAGE_UP) {

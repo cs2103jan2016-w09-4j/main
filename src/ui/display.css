@@ -35,7 +35,7 @@
 
 .entry-task {
     -fx-padding: 2;
-    -fx-background-color: derive( #A1E7C6 , 20% ) ;
+    -fx-background-color: #A1E7C6;
     -fx-background-radius: 2;
 }
 

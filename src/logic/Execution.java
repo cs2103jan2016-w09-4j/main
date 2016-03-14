@@ -64,9 +64,10 @@ public class Execution{
 	
 	public ArrayList<Task> deleteTask(int taskID) {
 		boolean foundTask = false;
-
-		if(mainList.get(taskID) != null){
-			mainList.remove(taskID);
+		int index = taskID - 1;
+		
+		if(mainList.get(index) != null){
+			mainList.remove(index);
 			foundTask = true;
 		}
 		

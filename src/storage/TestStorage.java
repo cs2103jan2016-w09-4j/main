@@ -51,6 +51,7 @@ public class TestStorage {
 			lineFromFile.add(taskFromFile);
 		}
 		assertEquals(testList.size(),lineFromFile.size());
+		readFile.close();
 	}
 	
 	@Test 
@@ -70,6 +71,7 @@ public class TestStorage {
 		}
 		assertEquals(testList.size(),lineFromFile.size());
 		testList.remove(5);
+		readFile.close();
 	}
 	
 	@Test

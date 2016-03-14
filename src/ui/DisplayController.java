@@ -38,8 +38,8 @@ public class DisplayController extends GridPane {
     private VBox taskPanel, searchPanel, sidebar;
     
     private static final String DISPLAY_FXML = "Display.fxml";
-    private static final String RESOURCES_ICON_SUCCESS = "File:src/resources/icons/success-smaller.png";
-    private static final String RESOURCES_ICONS_FAIL = "File:src/resources/icons/fail-smaller.png";
+    private static final String RESOURCES_ICON_SUCCESS = "file:main/src/resources/icons/success-smaller.png";
+    private static final String RESOURCES_ICONS_FAIL = "file:main/src/resources/icons/fail-smaller.png";
 
     public DisplayController(MainApp main, Stage primaryStage) {
         this.main = main;
