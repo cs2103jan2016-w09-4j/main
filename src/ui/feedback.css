@@ -1,0 +1,32 @@
+.label {
+    -fx-font-size: 15;
+    -fx-font-family: sans-serif;
+    -fx-alignment: center-left;
+    -fx-label-padding: 5;
+}
+
+#popup-success {
+    -fx-background-color: #F4F4F4;
+    -fx-padding: 5;
+    -fx-spacing: 5;
+}
+
+#popup-success-text {
+    -fx-font-size: 18;
+    -fx-fill: #000000;
+}
+
+#popup-success-icon {
+    -fx-alignment: center;
+}
+
+#popup-fail {
+    -fx-background-color: #F4F4F4;
+    -fx-padding: 5;
+    -fx-spacing: 5;
+}
+
+#popup-fail-text {
+    -fx-font-size: 18;
+    -fx-fill: #000000;
+}

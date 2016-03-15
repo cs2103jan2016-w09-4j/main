@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
+<?import java.net.URL?>
+
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="VBox">
+	<TextField fx:id="commandBar" promptText="Enter command here!" >
+    </TextField>
+    
+    <stylesheets>
+        <URL value="@input.css" />
+    </stylesheets>
+</fx:root>

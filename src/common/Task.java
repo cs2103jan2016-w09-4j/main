@@ -2,6 +2,8 @@ package common;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class Task {
@@ -11,14 +13,15 @@ public class Task {
     private Date start;
     private Date end;
     
-    // TODO: replace placeholder id
+    // TODO: replace placeholder id and categories
     private static int num = 0;
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private ArrayList<String> categories;
 	
 	public Task(String description) {
 		this.description = description;
 		
-		// TODO: replace placeholder dates and id
+		// TODO: replace placeholder dates and id and categories
 		id = ++num;
 		try {
             if (id%2 == 1) {
@@ -32,6 +35,7 @@ public class Task {
             start = new Date();
             end = new Date();
         }
+		categories = new ArrayList<String>(Arrays.asList("Priority", "Today", "School"));
 	}
 	
 	/******************
@@ -42,17 +46,30 @@ public class Task {
 		description = line;
 	}
 	
-    public void setID(int id) {
-        this.id = id;
-    }
         
     public void setStart(Date date) {
         start = date;
     }
+    
+    /*public void setStartDateAndTime(String date) throws ParseException {
+    	Date startDate = dateFormat.parse(date);
+    	this.start = startDate;
+    }*/
 
     public void setEnd(Date date) {
         end = date;
     }
+    
+   /* public void setEndDateAndTime(String date) throws ParseException {
+    	Date endDate = dateFormat.parse(date);
+    	this.end = endDate;
+    }*/
+
+   
+    public void setCategory(String categoryName) {
+    	categories.add(categoryName);
+    }
+    
     
     /******************
      * GETTER METHODS *
@@ -61,17 +78,26 @@ public class Task {
 	public String getDescription() {
 		return description;
 	}
-
-    public int getID() {
-        return id;
-    }
     	
-    public Date getStart() {
+    public Date getStartDate() {
         return start;
     }
+    
+   /*public String getStartDateString() {
+    	return dateFormat.format(start);
+    }*/
 
-    public Date getEnd() {
+    public Date getEndDate() {
         return end;
+    }
+    
+    /*public String getEndDateString() {
+    	return dateFormat.format(end);
+    }*/
+
+    
+    public ArrayList<String> getCategories() {
+        return categories;
     }
 
     /******************
