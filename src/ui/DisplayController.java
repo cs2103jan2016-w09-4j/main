@@ -213,19 +213,19 @@ public class DisplayController extends GridPane {
             }
             updateTaskPanel(todayTasks, otherTasks);
             sidebar.update();
-            showFeedback(cmd, result.isSuccess());
+            showFeedback(cmd, result.getMessage(), result.isSuccess());
             mainPanel.setContent(taskPanel);
         }
     }
     
-    private void showFeedback(CommandType cmd, boolean isSuccess) {
+    private void showFeedback(CommandType cmd, String msg, boolean isSuccess) {
         // TODO: refactor this mess!!!!
         logger.log(Level.INFO, String.format("showing feedback for %1s, %2s", cmd, isSuccess));
 
         final Popup window = new Popup();
         window.setAutoHide(true);
 
-        HBox box = createFeedback(cmd, isSuccess);
+        HBox box = createFeedback(cmd, msg, isSuccess);
         window.getContent().add(box);
         double x = primaryStage.getX() + 10;
         double y = primaryStage.getY() + primaryStage.getHeight();
@@ -234,44 +234,11 @@ public class DisplayController extends GridPane {
         window.show(primaryStage);
     }
     
-    private HBox createFeedback(CommandType commandType, boolean isSuccess) {
+    private HBox createFeedback(CommandType commandType, String msg, boolean isSuccess) {
         HBox box = new HBox();
         box.getStylesheets().add(getClass().getResource("feedback.css").toExternalForm()); 
-        Text message;
+        Text message = new Text(msg);
         ImageView icon;
-        
-        switch (commandType) {
-            case ADD :
-                message = new Text("Added task!");
-                break;
-                
-            case EDIT :
-                message = new Text("Edited task!");
-                break;
-                
-            case DELETE :
-                message = new Text("Deleted task!");
-                break;
-            
-            case UNDO :
-                message = new Text("Last command undone");
-                break;
-            
-            case REDO :
-                message = new Text("Undo undone command");
-                break;
-            
-            case SAVE :
-                message = new Text("Saved");
-                break;
-            
-            case LOAD :
-                message = new Text("Loaded");
-                break;
-                
-            default :
-                message = new Text("Invalid!");
-        }
         
         if (isSuccess) {
             box.setId("popup-success");
