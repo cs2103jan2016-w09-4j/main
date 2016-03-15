@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="src/|resources/|src/" kind="src" path=""/>
+	<classpathentry excluding="src/" kind="src" path=""/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-<<<<<<< HEAD
-	<classpathentry kind="lib" path="C:/Users/chuak/Desktop/jars/controlsfx-8.40.10.jar"/>
-	<classpathentry kind="lib" path="C:/Users/chuak/Desktop/jars/controlsfx-samples-8.40.10.jar"/>
-	<classpathentry kind="lib" path="C:/Users/chuak/Desktop/jars/fxsampler-1.0.9.jar"/>
-	<classpathentry kind="lib" path="C:/Users/chuak/Desktop/jars/junit-addons-1.5.jar"/>
-=======
-	<classpathentry kind="lib" path="/Users/tanching/Downloads/junit-addons-1.4/junit-addons-1.4.jar"/>
->>>>>>> branch 'master' of https://github.com/cs2103jan2016-w09-4j/main
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry exported="true" kind="lib" path="/Users/tanching/Downloads/junit-addons-1.4/junit-addons-1.4.jar"/>
+	<classpathentry kind="lib" path="/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/jre/lib/jfxrt.jar"/>
+	<classpathentry kind="lib" path="/Users/tanching/Downloads/controlsfx-8.40.10/controlsfx-8.40.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
