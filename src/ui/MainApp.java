@@ -2,6 +2,8 @@ package ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import common.Result;
 import common.Task;
@@ -15,6 +17,7 @@ import logic.Logic;
 
 public class MainApp extends Application {
     
+    private static Logger logger = Logger.getLogger("MainApp");
     private Logic logic;
     private DisplayController display;
     private InputController input;
@@ -31,6 +34,7 @@ public class MainApp extends Application {
     }
     
     public void start(Stage primaryStage) {
+        logger.log(Level.INFO, "initalizing components");
         initializeLogic();
         initializeUI(primaryStage);
         initializeWindow(primaryStage);
@@ -38,6 +42,7 @@ public class MainApp extends Application {
     
     private void initializeLogic() {
         logic = new Logic();
+        assert (logic != null);
     }
 
     private void initializeUI(Stage primaryStage) {
@@ -63,15 +68,20 @@ public class MainApp extends Application {
      */
 
     public ArrayList<Task> getTasks() {
-        return logic.processCommand("home").getResults();
+        ArrayList<Task> tasks = logic.processCommand("home").getResults();
+        assert (tasks != null);
+        return tasks;
     }
 
     public HashMap<String, Integer> getCategories() {
-        return logic.getCategories();
+        HashMap<String, Integer> categories = logic.getCategories();
+        assert (categories != null);
+        return categories;
     }
     
     public void handleCommand(String input) {
         Result result = logic.processCommand(input);
+        assert (result != null);
         display.displayResult(result);
     }
 

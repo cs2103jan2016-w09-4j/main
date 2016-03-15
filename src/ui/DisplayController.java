@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import org.controlsfx.control.HiddenSidesPane;
 
@@ -31,11 +36,13 @@ import javafx.stage.Stage;
 
 public class DisplayController extends GridPane {
 
+    private static Logger logger = Logger.getLogger("MainApp.DisplayController");
     private MainApp main;
     private Stage primaryStage;
     
     @FXML private HiddenSidesPane mainPanel;
-    private VBox taskPanel, searchPanel, sidebar;
+    private VBox taskPanel, searchPanel;
+    private SidebarController sidebar;
     
     private static final String DISPLAY_FXML = "Display.fxml";
     private static final String RESOURCES_ICON_SUCCESS = "file:main/src/resources/icons/success-smaller.png";
@@ -44,6 +51,16 @@ public class DisplayController extends GridPane {
     public DisplayController(MainApp main, Stage primaryStage) {
         this.main = main;
         this.primaryStage = primaryStage;
+        try {
+            Handler fh = new FileHandler("log_ui_display");
+            logger.addHandler(fh);
+            SimpleFormatter formatter = new SimpleFormatter();  
+            fh.setFormatter(formatter);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         loadFXML();
         initializeTaskPanel();
         initializeSidebarContent();
@@ -58,8 +75,7 @@ public class DisplayController extends GridPane {
         try {
             loader.load();
         } catch (IOException e) {
-            System.out.println("Failed to load Display");
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "failed to load Display", e);
         }
     }
     
@@ -96,7 +112,6 @@ public class DisplayController extends GridPane {
         this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             
             public void handle(KeyEvent event) {
-                System.out.println("Display detected key press");
                 if (event.getCode()==KeyCode.M && event.isControlDown()) {
                     if (mainPanel.getPinnedSide()==Side.LEFT) {
                         mainPanel.setPinnedSide(null);
@@ -104,11 +119,12 @@ public class DisplayController extends GridPane {
                         mainPanel.setPinnedSide(Side.LEFT);
                     }
                 } else if (event.getCode()==KeyCode.PAGE_DOWN) {
-                    System.out.println("page down");
+                    logger.log(Level.INFO, "user pressed page down");
                 } else if (event.getCode()==KeyCode.PAGE_UP) {
-                    System.out.println("page up");
+                    logger.log(Level.INFO, "user pressed page up");
                 } else if (event.getCode()==KeyCode.HOME) {
-                    System.out.println("home");
+                    logger.log(Level.INFO, "user pressed home");
+                    mainPanel.setContent(taskPanel);
                 }
             }
             
@@ -196,6 +212,7 @@ public class DisplayController extends GridPane {
                 }
             }
             updateTaskPanel(todayTasks, otherTasks);
+            sidebar.update();
             showFeedback(cmd, result.isSuccess());
             mainPanel.setContent(taskPanel);
         }
@@ -203,6 +220,8 @@ public class DisplayController extends GridPane {
     
     private void showFeedback(CommandType cmd, boolean isSuccess) {
         // TODO: refactor this mess!!!!
+        logger.log(Level.INFO, String.format("showing feedback for %1s, %2s", cmd, isSuccess));
+
         final Popup window = new Popup();
         window.setAutoHide(true);
 
@@ -213,7 +232,6 @@ public class DisplayController extends GridPane {
         window.setX(x);
         window.setY(y);
         window.show(primaryStage);
-        System.out.println("feedback");
     }
     
     private HBox createFeedback(CommandType commandType, boolean isSuccess) {
