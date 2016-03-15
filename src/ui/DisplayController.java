@@ -292,7 +292,6 @@ public class DisplayController extends GridPane {
         }
         if ((date = task.getEndDate()) != null) {
             endDate = "until " + dateFormat.format(date);
-           
         }
         
         if (startDate!=null && endDate!=null) {
@@ -346,7 +345,7 @@ public class DisplayController extends GridPane {
             String dates = startDate;
             dates = dates.substring(0, 1).toLowerCase() + dates.substring(1);
             startEndDate = new Label(dates);
-        } else {
+        } else if (endDate!=null){
             String dates = endDate;
             dates = dates.substring(0, 1).toLowerCase() + dates.substring(1);
             startEndDate = new Label(dates);
