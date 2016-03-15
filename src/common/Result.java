@@ -8,15 +8,17 @@ public class Result {
     
     private CommandType commandType;
     private boolean isSuccess;
+    private String message;
     private ArrayList<Task> results;
 
     public Result() {
-        this(CommandType.INVALID, false, new ArrayList<Task>());
+        this(CommandType.INVALID, false, "Invalid command!", new ArrayList<Task>());
     }
     
-    public Result(CommandType commandType, boolean isSuccess, ArrayList<Task> results) {
+    public Result(CommandType commandType, boolean isSuccess, String message, ArrayList<Task> results) {
         this.commandType = commandType;
         this.isSuccess = isSuccess;
+        this.message = message;
         this.results = results;
     }
 
@@ -27,13 +29,17 @@ public class Result {
     public CommandType getCommandType() {
         return commandType;
     }
-    
-    public ArrayList<Task> getResults() {
-        return results;
-    }
 
     public boolean isSuccess() {
         return isSuccess;
+    }
+    
+    public String getMessage() {
+        return message;
+    }
+    
+    public ArrayList<Task> getResults() {
+        return results;
     }
 
 }

@@ -24,7 +24,7 @@ public class Logic {
 		this.execution = new Execution();
 	}
 
-	private ArrayList<Task> execute(Command command){
+	private Result execute(Command command){
 	    
 		ArrayList<Task> list = new ArrayList<Task>();
 		
@@ -37,72 +37,69 @@ public class Logic {
 			case ADD:
 				list = execution.addTask(description); 
 				System.out.println(getPredictions());
-				break;
+                return new Result(commandType, true, "Added task", list);
 			
 			case DELETE:
 				list = execution.deleteTask(taskID);
-				break;
+                return new Result(commandType, true, "Deleted task", list);
 			
 			case EDIT:
 				list = execution.editTask(taskID, description);
 				System.out.println(getPredictions());
-				break;
+                return new Result(commandType, true, "Edited task", list);
 				
 			case SEARCH:
 				list = execution.searchTask(description);
 				System.out.println(getPredictions());
-				break;
+                return new Result(commandType, true, "Searched tasks", list);
 			
 			case HOME:
 				list = execution.getMainList();
-				break;
+                return new Result(commandType, true, "Return home", list);
 				
 			case SAVE:
 				execution.savingTasks(description);
 				list = execution.getMainList();
-				break;
+                return new Result(commandType, true, "Saved at " + description, list);
 				
 			case LOAD:
 				list = execution.loadingTasks(description);
-				break;
-				
+                return new Result(commandType, true, "Loaded from " + description, list);
+
 			case UNDO:
 				list = execution.undoCommand();
-				break;
+                return new Result(commandType, true, "Last command undone", list);
 				
 			case REDO: 
 				list = execution.redoCommand();
-				break;
+                return new Result(commandType, true, "Last command redone", list);
 				
 			case COMPLETE:
 				list = execution.completeCommand(taskID);
-				break;
+                return new Result(commandType, true, "Marked as complete", list);
 				
 			case DONE:
 				list = execution.getDoneList();
-				break;
+                return new Result(commandType, true, "Showing completed tasks", list);
 				
 			case EXIT:
 				System.exit(0);
 			
 			case INVALID:
 				list = null;
-				break;
+                return new Result();
 				
 			default:
 				list = null;
+				return new Result();
 				
 		}
-		
-	    return list;
 	}
 
 	public Result processCommand(String input) {
 	    System.out.println(input);
 		Command command = parser.parseCommand(input);
-		Result result = new Result(command.getType(), true, execute(command));
-
-		return result;
+		return execute(command);
 	}
 	
 	public ArrayList<String> getPredictions(){
