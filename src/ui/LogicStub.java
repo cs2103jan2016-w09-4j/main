@@ -40,7 +40,7 @@ public class LogicStub {
         for (int i = 0; i < 5; i++) {
             tasks.add(new Task(ADD_STRING));
         }
-        return new Result(CommandType.ADD, true, tasks);
+        return new Result(CommandType.ADD, true, "Added task", tasks);
     }
     
     public static Result executeSearchCommand(String input) {
@@ -48,7 +48,7 @@ public class LogicStub {
         for (int i = 0; i < 5; i++) {
             tasks.add(new Task(SEARCH_STRING));
         }
-        return new Result(CommandType.SEARCH, true, tasks);
+        return new Result(CommandType.SEARCH, true, "Search for task", tasks);
     }
 
     public static ArrayList<Task> getTasks() {
