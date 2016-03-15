@@ -16,7 +16,6 @@ import javafx.scene.layout.VBox;
 
 public class InputController extends VBox {
 
-    @SuppressWarnings("unused")
     private MainApp main;
     @FXML TextField commandBar;
     
@@ -48,7 +47,7 @@ public class InputController extends VBox {
             }
         });
         TextFields.bindAutoCompletion(commandBar, sr -> {
-            return LogicStub.autoComplete(commandBar.getText());
+            return main.getPredictions(commandBar.getText());
         });
     }
 

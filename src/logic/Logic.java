@@ -109,6 +109,14 @@ public class Logic {
 		return execution.getDictionary();
 	}
 	
+	public ArrayList<String> getPredictions(String input) {
+	    if (input.isEmpty()) {
+	        return null;
+	    } else {
+	        return getPredictions();
+	    }
+	}
+	
 	public ArrayList<Task> getMainList(){
 		return execution.getMainList();
 	}

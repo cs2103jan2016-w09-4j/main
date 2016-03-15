@@ -205,13 +205,7 @@ public class DisplayController extends GridPane {
         // TODO: refactor this mess!!!!
         final Popup window = new Popup();
         window.setAutoHide(true);
-        window.addEventHandler(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent event) {
-                if (event.getCode().isLetterKey())
-                    window.hide();
-            }
-        });
-        
+
         HBox box = createFeedback(cmd, isSuccess);
         window.getContent().add(box);
         double x = primaryStage.getX() + 10;

@@ -75,4 +75,8 @@ public class MainApp extends Application {
         display.displayResult(result);
     }
 
+    public ArrayList<String> getPredictions(String input) {
+        return logic.getPredictions(input);
+    }
+
 }
