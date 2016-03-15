@@ -68,7 +68,9 @@ public class MainApp extends Application {
      */
 
     public ArrayList<Task> getTasks() {
-        ArrayList<Task> tasks = logic.processCommand("home").getResults();
+        Result result = logic.processCommand("home");
+        assert (result != null);
+        ArrayList<Task> tasks = result.getResults();
         assert (tasks != null);
         return tasks;
     }
