@@ -10,7 +10,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Execution{
+public class Execution {
 	
 	private Storage storage;
 	
@@ -19,19 +19,21 @@ public class Execution{
 	private static ArrayList<Task> doneList;
 	private static ArrayList<Task> previousCopyOfMainList;
 	private static ArrayList<Task> copyOfMainListForRedo;
+	private static ArrayList<Category> categories;
 	private ArrayList<String> dictionary;
 	
 	
-	public Execution(){
-		
+	public Execution() {
 		storage = new Storage();
 		mainList = new ArrayList<Task>();
 		doneList = new ArrayList<Task>();
 		searchResults = new ArrayList<Task>();
 		previousCopyOfMainList = new ArrayList<Task>();
 		copyOfMainListForRedo = new ArrayList<Task>();
+		categories = new ArrayList<Category>();
+		categories.add(new Category("Priority"));
+		categories.add(new Category("Today"));
 		dictionary = new ArrayList<String>();
-	
 	}
 	
 	public ArrayList<Task> addTask(String description) {
@@ -48,7 +50,6 @@ public class Execution{
 		try {
 			storage.appendToFile(newTask);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -206,5 +207,9 @@ public class Execution{
 	public ArrayList<Task> getDoneList(){
 		return doneList;
 	}
+
+    public ArrayList<Category> getCategories() {
+        return categories;
+    }
 	
 }

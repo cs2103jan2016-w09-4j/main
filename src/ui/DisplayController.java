@@ -26,7 +26,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -34,13 +33,13 @@ import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
-public class DisplayController extends GridPane {
+public class DisplayController extends HiddenSidesPane {
 
     private static Logger logger = Logger.getLogger("MainApp.DisplayController");
     private MainApp main;
     private Stage primaryStage;
     
-    @FXML private HiddenSidesPane mainPanel;
+    @FXML private VBox mainPanel;
     private VBox taskPanel, searchPanel;
     private SidebarController sidebar;
     
@@ -94,13 +93,13 @@ public class DisplayController extends GridPane {
         taskPanel = new VBox();
         taskPanel.getStyleClass().add("panel-task");
         updateTaskPanel(todayTasks, otherTasks);
-        mainPanel.setContent(taskPanel);
+        this.setContent(taskPanel);
     }
 
     private void initializeSidebarContent() {
         sidebar = new SidebarController(main);
-        mainPanel.setLeft(sidebar);
-        mainPanel.setTriggerDistance(30);
+        this.setLeft(sidebar);
+        this.setTriggerDistance(30);
     }
     
     private void initializeSearchPanel() {
@@ -109,14 +108,15 @@ public class DisplayController extends GridPane {
     }
 
     private void handleUserInteractions() {
+        DisplayController instance = this;
         this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             
             public void handle(KeyEvent event) {
                 if (event.getCode()==KeyCode.M && event.isControlDown()) {
-                    if (mainPanel.getPinnedSide()==Side.LEFT) {
-                        mainPanel.setPinnedSide(null);
+                    if (instance.getPinnedSide()==Side.LEFT) {
+                        instance.setPinnedSide(null);
                     } else {
-                        mainPanel.setPinnedSide(Side.LEFT);
+                        instance.setPinnedSide(Side.LEFT);
                     }
                 } else if (event.getCode()==KeyCode.PAGE_DOWN) {
                     logger.log(Level.INFO, "user pressed page down");
@@ -124,7 +124,7 @@ public class DisplayController extends GridPane {
                     logger.log(Level.INFO, "user pressed page up");
                 } else if (event.getCode()==KeyCode.HOME) {
                     logger.log(Level.INFO, "user pressed home");
-                    mainPanel.setContent(taskPanel);
+                    instance.setContent(taskPanel);
                 }
             }
             
@@ -198,7 +198,7 @@ public class DisplayController extends GridPane {
         
         if (cmd == CommandType.SEARCH) {
             updateSearchPanel(result.getResults());
-            mainPanel.setContent(searchPanel);
+            this.setContent(searchPanel);
         } else {
             ArrayList<Task> allTasks = result.getResults();
             ArrayList<VBox> todayTasks = new ArrayList<VBox>();
@@ -214,7 +214,7 @@ public class DisplayController extends GridPane {
             updateTaskPanel(todayTasks, otherTasks);
             sidebar.update();
             showFeedback(cmd, result.getMessage(), result.isSuccess());
-            mainPanel.setContent(taskPanel);
+            this.setContent(taskPanel);
         }
     }
     

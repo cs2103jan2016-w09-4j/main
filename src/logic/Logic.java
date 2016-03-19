@@ -7,13 +7,11 @@ import storage.Storage;
 import logic.Execution;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Logic {
 
 	// Objects to call into other classes
 	private Parser parser;
-	@SuppressWarnings("unused")
 	private Storage storage;
 	private Execution execution;
 	private static Logic logic = new Logic();
@@ -25,71 +23,70 @@ public class Logic {
 	}
 
 	private Result execute(Command command){
-	    
 		ArrayList<Task> list = new ArrayList<Task>();
 		
 		CommandType commandType = command.getType();
 		String description = command.getDescription();
 		int taskID = command.getId();		
 		
-		switch(commandType){
+		switch(commandType) {
 		
-			case ADD:
+			case ADD :
 				list = execution.addTask(description); 
 				System.out.println(getPredictions());
                 return new Result(commandType, true, "Added task", list);
 			
-			case DELETE:
+			case DELETE :
 				list = execution.deleteTask(taskID);
                 return new Result(commandType, true, "Deleted task", list);
 			
-			case EDIT:
+			case EDIT :
 				list = execution.editTask(taskID, description);
 				System.out.println(getPredictions());
                 return new Result(commandType, true, "Edited task", list);
 				
-			case SEARCH:
+			case SEARCH :
 				list = execution.searchTask(description);
 				System.out.println(getPredictions());
                 return new Result(commandType, true, "Searched tasks", list);
 			
-			case HOME:
+			case HOME :
 				list = execution.getMainList();
                 return new Result(commandType, true, "Return home", list);
 				
-			case SAVE:
+			case SAVE :
 				execution.savingTasks(description);
 				list = execution.getMainList();
                 return new Result(commandType, true, "Saved at " + description, list);
 				
-			case LOAD:
+			case LOAD :
 				list = execution.loadingTasks(description);
                 return new Result(commandType, true, "Loaded from " + description, list);
 
-			case UNDO:
+			case UNDO :
 				list = execution.undoCommand();
                 return new Result(commandType, true, "Last command undone", list);
 				
-			case REDO: 
+			case REDO : 
 				list = execution.redoCommand();
                 return new Result(commandType, true, "Last command redone", list);
 				
-			case COMPLETE:
+			case COMPLETE :
 				list = execution.completeCommand(taskID);
                 return new Result(commandType, true, "Marked as complete", list);
 				
-			case DONE:
+			case DONE :
 				list = execution.getDoneList();
                 return new Result(commandType, true, "Showing completed tasks", list);
 				
-			case EXIT:
+			case EXIT :
 				System.exit(0);
 			
-			case INVALID:
+			case INVALID :
 				list = null;
                 return new Result();
 				
-			default:
+			default :
 				list = null;
 				return new Result();
 				
@@ -119,19 +116,13 @@ public class Logic {
 	}
 	
 	public static Logic getInstance(){
-		
 		if (logic == null){
 			return logic = new Logic();
 		}
-		
 		return logic;
 	}
 
-    public HashMap<String, Integer> getCategories() {
-        // TODO : placeholder for categories
-        HashMap<String, Integer> cat = new HashMap<String, Integer>();
-        cat.put("Priority", 1);
-        cat.put("Today", 2);
-        return cat;
+    public ArrayList<Category> getCategories() {
+        return execution.getCategories();
     }
 }	
