@@ -5,7 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Task {
+public class Task implements Comparable<Task> {
+    
+    private static final int LESS_THAN = -1;
+
+    private static final int GREATER_THAN = 1;
     
     private String description;
     private int id;
@@ -68,19 +72,19 @@ public class Task {
         start = date;
     }
     
-    /*public void setStartDateAndTime(String date) throws ParseException {
+    public void setStart(String date) throws ParseException {
         Date startDate = dateFormat.parse(date);
         this.start = startDate;
-    }*/
+    }
 
     public void setEnd(Date date) {
         end = date;
     }
     
-   /* public void setEndDateAndTime(String date) throws ParseException {
+    public void setEnd(String date) throws ParseException {
         Date endDate = dateFormat.parse(date);
         this.end = endDate;
-    }*/
+    }
 
     public void setCategory(String categoryName) {
         categories.add(categoryName);
@@ -93,6 +97,58 @@ public class Task {
     public boolean isToday() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         return dateFormat.format(start).equals(dateFormat.format(new Date()));
+    }
+
+    @Override
+    public int compareTo(Task t2) {
+        // TODO: refactor
+        if (t2 == null) {
+            throw new NullPointerException();
+        }
+        Task t1 = this;
+        if (t1.isFloating()) {
+            if (t2.isFloating()) {
+                // order lexicographically
+                return t1.description.compareTo(t2.description);
+            } else {
+                return GREATER_THAN;
+            }
+        } else if (t2.isFloating()) {
+            return LESS_THAN;
+        } else if (t1.isEvent()) {
+            if (t2.isEvent()) {
+                // order by start date
+                return t1.start.compareTo(t2.start);
+            } else if (t2.isTask()) {
+                // order by end date
+                return t1.end.compareTo(t2.end);
+            }
+        } else if (t1.isTask()) {
+            return t1.end.compareTo(t2.end);
+        }
+        
+        return t1.description.compareTo(t2.description);
+    }
+    
+    // Returns true if task is floating
+    private boolean isFloating() {
+        boolean hasStart = this.start != null;
+        boolean hasEnd = this.end != null;
+        return !(hasStart && hasEnd);
+    }
+    
+    // Returns true if task is an event with a start and end
+    private boolean isEvent() {
+        boolean hasStart = this.start != null;
+        boolean hasEnd = this.end != null;
+        return hasStart && hasEnd;
+    }
+    
+    // Returns true if task only has a deadline
+    private boolean isTask() {
+        boolean hasStart = this.start != null;
+        boolean hasEnd = this.end != null;
+        return !hasStart && hasEnd;
     }
 
 }	

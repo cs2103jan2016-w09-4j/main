@@ -195,12 +195,12 @@ public class Storage {
 		return updatedMainList;
 	}
 	
-	public ArrayList<Task> getMainList(){
+	public ArrayList<Task> getMainList() {
 		return mainList;
 	}
 	
 	// for load commands
-	public void setMainList(ArrayList<Task> mainList){
+	public void setMainList(ArrayList<Task> mainList) {
 		Storage.mainList = mainList;
 	}
 	
