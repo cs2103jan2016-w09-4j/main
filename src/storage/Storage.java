@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.NotDirectoryException;
-import java.text.ParseException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,44 +16,151 @@ public class Storage {
 	private static ArrayList<Task> mainList;
 	private static String fileName;
 
+	// for default file to store saved file names
+	private static String defaultFile;
+
+	// To store all file names
+	private static ArrayList<String> storeFileNames;
+
 	// default file name is "mytextfile.txt"
 	public Storage() {
 		fileName = "mytextfile.txt";
 		mainList = new ArrayList<Task>();
+		defaultFile = "defaultfile.txt";
+		storeFileNames = new ArrayList<String>();
 	}
-		
+
+	/*
+	 * This method returns the main list to Logic The most recent main list from
+	 * the last saved file will be returned If this is the first time the user
+	 * is using, it will return an empty ArrayList If the user did not save to
+	 * any file, it will return the list from the default file
+	 */
+	public ArrayList<Task> getMainList() {
+		ArrayList<String> fileNameList;
+		ArrayList<Task> recentTaskList = new ArrayList<Task>();
+
+		try {
+			fileNameList = getFileNameList();
+			recentTaskList = getMostRecentList(fileNameList);
+
+		} catch (IOException e) {
+
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (!recentTaskList.isEmpty()) {
+			setMainList(recentTaskList);
+		}
+
+		return mainList;
+	}
+
+	// get file names from default file
+	public ArrayList<String> getFileNameList() throws IOException {
+
+		File file = new File(defaultFile);
+		boolean isCreated = file.createNewFile();
+
+		// created file, for first time use
+		if (isCreated) {
+			FileWriter out = new FileWriter(file);
+			out.write(fileName + "\r\n");
+			storeFileNames.add(fileName);
+
+			out.close();
+
+		// file already exist, read from file
+		} else {
+			// storeFileNames.add(fileName);
+			Scanner scanner;
+			scanner = new Scanner(file);
+			while (scanner.hasNextLine()) {
+				storeFileNames.add(scanner.nextLine());
+			}
+
+			scanner.close();
+		}
+
+		return storeFileNames;
+	}
+
+	// update most recent list
+	public ArrayList<Task> getMostRecentList(ArrayList<String> listOfFileNames) {
+		String recentFileName;
+		String recentDirectory;
+		ArrayList<Task> recentList = new ArrayList<Task>();
+
+		if (!listOfFileNames.isEmpty()) {
+			int lastIndex = listOfFileNames.size() - 1;
+			String mostRecentFile = listOfFileNames.get(lastIndex);
+
+			// check if there is directory
+			String[] splitLine = mostRecentFile.split(" , ");
+
+			// consist only the filename
+			if (splitLine.length == 1) {
+				recentFileName = splitLine[0];
+				fileName = recentFileName;
+
+				try {
+					recentList = loadFileWithFileName(recentFileName);
+				} catch (FileNotFoundException e) {
+					return recentList;
+				}
+
+			} else {
+				recentDirectory = splitLine[0];
+				recentFileName = getFileName(mostRecentFile, recentDirectory);
+				fileName = recentFileName;
+
+				try {
+					recentList = loadFileWithDirectory(recentDirectory, recentFileName);
+				} catch (NotDirectoryException | FileNotFoundException e) {
+					return recentList;
+				}
+			}
+		}
+
+		return recentList;
+	}
+
+	// Obtain filename without directory
+	public static String getFileName(String line, String toReplace) {
+		String lineWithoutDirectory = line.replace(toReplace, "").trim();
+
+		return lineWithoutDirectory;
+	}
+
 	// ================================================================================
 	// Writing of Files
 	// ================================================================================
 
 	// rewrite whole file
 	public void writeToFile() throws IOException {
-			FileWriter writer = new FileWriter(fileName);
-			writeTasksFromMainList(writer);
+		FileWriter writer = new FileWriter(fileName);
+		writeTasksFromMainList(writer);
 	}
 
 	private void writeTasksFromMainList(FileWriter writer) throws IOException {
 		for (int i = 0; i < mainList.size(); i++) {
 			Task taskToAdd = mainList.get(i);
-			
+
 			String taskDescription = taskToAdd.getDescription();
-			/*String startDate = taskToAdd.getStartDateString();
-			String endDate = taskToAdd.getEndDateString();
-			String toWrite = taskDescription + " Start: " + startDate +
-								" End: " + endDate;*/
 			writer.write(taskDescription + "\r\n");
 		}
-		
+
 		writer.close();
 	}
 
 	public void appendToFile(Task taskToAdd) throws IOException {
-			FileWriter writer = new FileWriter(fileName, true);
-			BufferedWriter bufferedWriter = new BufferedWriter(writer);
-			bufferedWriter.write(taskToAdd.getDescription() + "\r\n");
+		FileWriter writer = new FileWriter(fileName, true);
+		BufferedWriter bufferedWriter = new BufferedWriter(writer);
+		bufferedWriter.write(taskToAdd.getDescription() + "\r\n");
 
-			bufferedWriter.close();
-			writer.close();
+		bufferedWriter.close();
+		writer.close();
 
 	}
 
@@ -69,6 +175,7 @@ public class Storage {
 	public void saveToFile(String userFileName) throws IOException {
 		fileName = userFileName;
 		writeToFile();
+		writeToDefaultFile(userFileName);
 	}
 
 	/*
@@ -77,7 +184,8 @@ public class Storage {
 	 * valid. If the directory is invalid, it will return an error message else,
 	 * the new file will be created in the directory
 	 */
-	public void saveToFileWithDirectory(String directory, String userFileName) throws IOException, NotDirectoryException {
+	public void saveToFileWithDirectory(String directory, String userFileName)
+			throws IOException, NotDirectoryException {
 
 		// check if the directory is valid
 		File userDirectory = new File(directory);
@@ -89,22 +197,32 @@ public class Storage {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			FileWriter writer = new FileWriter(userDirectoryAndName.getAbsoluteFile());
 			writeTasksFromMainList(writer);
+
+			String toWrite = directory + " , " + userFileName;
+			writeToDefaultFile(toWrite);
 		}
 	}
 
+	// write directory and filename to default file to keep track
+	public void writeToDefaultFile(String toWrite) throws IOException {
+		FileWriter writer = new FileWriter(defaultFile, true);
+		writer.write(toWrite + "\r\n");
+		writer.close();
+	}
+
 	/*
-	 * This method loads data from a specific file.
-	 * This method will throw an exception if the file does not exist
+	 * This method loads data from a specific file. This method will throw an
+	 * exception if the file does not exist
 	 */
-	public ArrayList<Task> loadFileWithFileName(String userFileName) throws FileNotFoundException, NotDirectoryException, ParseException {
-		
+	public ArrayList<Task> loadFileWithFileName(String userFileName) throws FileNotFoundException {
+
 		File file = new File(userFileName);
 		ArrayList<String> listFromFile = new ArrayList<String>();
 		boolean isValid = file.exists();
 
 		if (isValid) {
 			readFileWhenFileExists(file, listFromFile);
-			
+
 		} else if (!isValid) {
 			throw new FileNotFoundException();
 		}
@@ -112,7 +230,7 @@ public class Storage {
 		ArrayList<Task> updatedMainList = convertStringToTask(listFromFile);
 		mainList.clear();
 		updateMainList(updatedMainList);
-		
+
 		return mainList;
 	}
 
@@ -127,20 +245,20 @@ public class Storage {
 	}
 
 	/*
-	 * This method loads data from a specific directory and file. 
-	 * This method will check if the directory and file exists.
-	 * If the directory or file does not exist, it will throw an exception 
+	 * This method loads data from a specific directory and file. This method
+	 * will check if the directory and file exists. If the directory or file
+	 * does not exist, it will throw an exception
 	 */
 
-	public ArrayList<Task> loadFileWithDirectory(String directory, String userFileName) throws FileNotFoundException, NotDirectoryException, ParseException {
-
+	public ArrayList<Task> loadFileWithDirectory(String directory, String userFileName)
+			throws FileNotFoundException, NotDirectoryException {
 
 		ArrayList<String> listFromLoadFile = new ArrayList<String>();
 
 		// check if the directory is valid
 		File userDirectory = new File(directory);
 		boolean isDirectoryValid = userDirectory.isDirectory();
-		
+
 		// If directory is not valid, throw exception
 		if (!isDirectoryValid) {
 			throw new NotDirectoryException(userDirectory.getName());
@@ -148,7 +266,7 @@ public class Storage {
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			boolean isFileValid = userDirectoryAndName.exists();
-			
+
 			if (isFileValid) {
 				readFileWhenFileExists(userDirectoryAndName, listFromLoadFile);
 			} else if (!isFileValid) {
@@ -161,7 +279,7 @@ public class Storage {
 		// transfer contents from file to main list
 		updateMainList(updatedMainListFromLoad);
 		setMainList(mainList);
-		
+
 		return mainList;
 	}
 
@@ -169,44 +287,27 @@ public class Storage {
 	 * This method converts ArrayList<String> read from file to ArrayList<Task>
 	 * to allow execution of other commands
 	 */
-	private ArrayList<Task> convertStringToTask(ArrayList<String> listFromFile) throws ParseException {
+	private ArrayList<Task> convertStringToTask(ArrayList<String> listFromFile) {
 		ArrayList<Task> updatedMainList = new ArrayList<Task>();
-		
+
 		for (int i = 0; i < listFromFile.size(); i++) {
 			String getLineFromFile = listFromFile.get(i);
 			Task newTask = new Task(getLineFromFile);
-			
-			/*int getIndexOfStart = getLineFromFile.indexOf("Start");
-			String description = getLineFromFile.substring(0, getIndexOfStart);
-			Task newTask = new Task(description);
-			
-			String lineWithoutDescription = getLineFromFile.replace(description,"").trim();
-			String[] splitLine = lineWithoutDescription.split(" ");
-			
-			String start = splitLine[1] + splitLine[2];
-			newTask.setStartDateAndTime(start);
-			
-			String end = splitLine[4] + splitLine[5];
-			newTask.setEndDateAndTime(end);*/
-			
+
 			updatedMainList.add(newTask);
 		}
 
 		return updatedMainList;
 	}
-	
-	public ArrayList<Task> getMainList(){
-		return mainList;
-	}
-	
+
 	// for load commands
-	public void setMainList(ArrayList<Task> mainList){
+	public void setMainList(ArrayList<Task> mainList) {
 		Storage.mainList = mainList;
 	}
-	
+
 	/*
-	 * This method adds the data from file to main list to update
-	 * For load commands
+	 * This method adds the data from file to main list to update For load
+	 * commands
 	 */
 	private void updateMainList(ArrayList<Task> dataFromFile) {
 		for (int j = 0; j < dataFromFile.size(); j++) {
