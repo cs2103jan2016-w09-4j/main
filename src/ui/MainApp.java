@@ -1,10 +1,10 @@
 package ui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import common.Category;
 import common.Result;
 import common.Task;
 import ui.DisplayController;
@@ -12,6 +12,7 @@ import ui.InputController;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import logic.Logic;
 
@@ -19,6 +20,7 @@ public class MainApp extends Application {
     
     private static Logger logger = Logger.getLogger("MainApp");
     private Logic logic;
+    private BorderPane root;
     private DisplayController display;
     private InputController input;
     
@@ -42,19 +44,20 @@ public class MainApp extends Application {
     
     private void initializeLogic() {
         logic = new Logic();
-        assert (logic != null);
     }
 
     private void initializeUI(Stage primaryStage) {
+        root = new BorderPane();
         display = new DisplayController(this, primaryStage);
         input = new InputController(this);
-        display.add(input, 0, 1);
+        root.setCenter(display);
+        root.setBottom(input);
     }
 
     private void initializeWindow(Stage primaryStage) {
         primaryStage.setMinHeight(WINDOW_HEIGHT_MIN);
         primaryStage.setMinWidth(WINDOW_WIDTH_MIN);
-        Scene scene = new Scene(display, WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT);
+        Scene scene = new Scene(root, WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT);
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.getIcons().add(new Image(RESOURCES_ICON_PROGRAM));
@@ -68,26 +71,27 @@ public class MainApp extends Application {
      */
 
     public ArrayList<Task> getTasks() {
+        assert (logic != null);
         Result result = logic.processCommand("home");
         assert (result != null);
         ArrayList<Task> tasks = result.getResults();
-        assert (tasks != null);
         return tasks;
     }
 
-    public HashMap<String, Integer> getCategories() {
-        HashMap<String, Integer> categories = logic.getCategories();
-        assert (categories != null);
+    public ArrayList<Category> getCategories() {
+        assert (logic != null);
+        ArrayList<Category> categories = logic.getCategories();
         return categories;
     }
     
     public void handleCommand(String input) {
+        assert (logic != null);
         Result result = logic.processCommand(input);
-        assert (result != null);
         display.displayResult(result);
     }
 
     public ArrayList<String> getPredictions(String input) {
+        assert (logic != null);
         return logic.getPredictions(input);
     }
 

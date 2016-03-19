@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import org.controlsfx.control.HiddenSidesPane?>
 <?import java.net.URL?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml/1" type="GridPane" >
-	<columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS"></ColumnConstraints>
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints vgrow="ALWAYS"></RowConstraints>
-        <RowConstraints vgrow="NEVER"></RowConstraints>
-    </rowConstraints>
-    <HiddenSidesPane fx:id="mainPanel" GridPane.columnIndex="0" GridPane.rowIndex="0" >
-    </HiddenSidesPane>
-    
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="HiddenSidesPane" >
+    <content>
+        <VBox fx:id="mainPanel" ></VBox>
+    </content>
     <stylesheets>
         <URL value="@display.css" />
     </stylesheets>
