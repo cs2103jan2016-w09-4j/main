@@ -146,22 +146,21 @@ public class Storage {
 
 				} catch (NotDirectoryException | FileNotFoundException e) {
 					
-					//change back default directory
+					//If file or directory does not exist
+					//change back to default directory 
 					savedDirectory = "";
-					
-					// if file not found or cannot find directory
-					try {
 
+					try {
+						
+						//load list from default text file ("mytextfile.txt")
 						recentList = loadDefaultTextFile(defaultFileName);
+						fileName = defaultFileName;				// change back file name to default
 						
 					} catch (FileNotFoundException e1) {
-						// if default file does no exist, return empty array
-						// list
-						// change back file name to default
-						fileName = defaultFileName;
+						// if default file does no exist, return empty array list
+						fileName = defaultFileName;				// change back file name to default
 
-						// write "mytextfile.txt" into default file
-						writeToDefaultFile(defaultFileName);
+						writeToDefaultFile(defaultFileName);	// write "mytextfile.txt" into default file
 
 						return recentList;
 					}
@@ -312,6 +311,8 @@ public class Storage {
 
 		if (isValid) {
 			readFileWhenFileExists(file, listFromFile);
+			
+			fileName = userFileName;		//update filename for future writing of data
 
 		} else if (!isValid) {
 			throw new FileNotFoundException();
@@ -359,6 +360,11 @@ public class Storage {
 
 			if (isFileValid) {
 				readFileWhenFileExists(userDirectoryAndName, listFromLoadFile);
+				
+				//update filename and directory
+				fileName = userFileName;
+				savedDirectory = directory;
+				
 			} else if (!isFileValid) {
 				throw new FileNotFoundException();
 			}
