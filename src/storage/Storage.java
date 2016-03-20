@@ -46,8 +46,8 @@ public class Storage {
 
         } catch (IOException e) {
 
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // do nothing
+			// will end up returning empty arraylist
         }
 
         if (!recentTaskList.isEmpty()) {
@@ -75,16 +75,22 @@ public class Storage {
         } else {
             // storeFileNames.add(fileName);
             Scanner scanner;
-            scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                storeFileNames.add(scanner.nextLine());
-            }
+            scanner = readFileNames(file);
 
             scanner.close();
         }
 
         return storeFileNames;
     }
+    
+    private Scanner readFileNames(File file) throws FileNotFoundException {
+		Scanner scanner;
+		scanner = new Scanner(file);
+		while (scanner.hasNextLine()) {
+			storeFileNames.add(scanner.nextLine());
+		}
+		return scanner;
+	}
 
     // update most recent list
     public ArrayList<Task> getMostRecentList(ArrayList<String> listOfFileNames) {
