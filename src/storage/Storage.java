@@ -58,7 +58,7 @@ public class Storage {
     }
 
     // get file names from default file
-    public ArrayList<String> getFileNameList() throws IOException {
+    private ArrayList<String> getFileNameList() throws IOException {
 
         File file = new File(defaultFile);
         boolean isCreated = file.createNewFile();
@@ -92,7 +92,7 @@ public class Storage {
 	}
 
 // update most recent list
-   public ArrayList<Task> getMostRecentList(ArrayList<String> listOfFileNames) throws IOException {
+   private ArrayList<Task> getMostRecentList(ArrayList<String> listOfFileNames) throws IOException {
 	String recentFileName;
 	String recentDirectory;
 	String defaultFileName = "mytextfile.txt";
