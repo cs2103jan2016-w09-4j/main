@@ -6,7 +6,6 @@ import storage.Storage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.NotDirectoryException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -156,7 +155,7 @@ public class Execution {
 				dictionary.add(description);
 				return loadBack;
 			}	
-		} catch (NotDirectoryException | FileNotFoundException | ParseException e) {
+		} catch (NotDirectoryException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return new ArrayList<Task>();

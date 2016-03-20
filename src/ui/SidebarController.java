@@ -26,6 +26,12 @@ public class SidebarController extends VBox {
     
     public SidebarController(MainApp main) {
         this.main = main;
+        initializeLogger();
+        loadFXML();
+        initializeSidebar();
+    }
+
+    private void initializeLogger() {
         try {
             Handler fh = new FileHandler("log_ui_sidebar");
             logger.addHandler(fh);
@@ -36,8 +42,6 @@ public class SidebarController extends VBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        loadFXML();
-        initializeSidebar();
     }
 
     private void loadFXML() {

@@ -47,6 +47,8 @@ public class DisplayController extends HiddenSidesPane {
     private SidebarController sidebar;
     
     private static final String DISPLAY_FXML = "Display.fxml";
+    private static final String SEARCH_HEADER_SINGLE = " search result found";
+    private static final String SEARCH_HEADER_PLURAL = " search results found";
     private static final String RESOURCES_ICON_SUCCESS = "file:main/src/resources/icons/success-smaller.png";
     private static final String RESOURCES_ICONS_FAIL = "file:main/src/resources/icons/fail-smaller.png";
 
@@ -193,15 +195,15 @@ public class DisplayController extends HiddenSidesPane {
     
     private void updateSearchPanel(ArrayList<Task> results) {
         searchPanel.getChildren().clear();
-        Label searchHeader = createHeader(results.size() + " search results found");
-        VBox searchContent = new VBox();
+        Label searchHeader = createHeader(results.size() + (results.size() == 1 ? SEARCH_HEADER_SINGLE : SEARCH_HEADER_PLURAL));
         ArrayList<VBox> searchTasks = new ArrayList<VBox>();
-        int index = 0;
         for (Task result : results) {
-            searchTasks.add(createOther(result, ++index));
+            searchTasks.add(createOther(result, result.getId()));
         }
-        searchContent.getChildren().addAll(searchTasks);
-        searchPanel.getChildren().addAll(searchHeader, searchContent);
+        ObservableList<VBox> searchList = FXCollections.observableArrayList(searchTasks);
+        ListView<VBox> searchListView = new ListView<VBox>(searchList);
+        searchListView.prefHeightProperty().bind(Bindings.size(searchList).multiply(58));
+        searchPanel.getChildren().addAll(searchHeader, searchListView);
     }
 
     private void showFeedback(CommandType cmd, String msg, boolean isSuccess) {

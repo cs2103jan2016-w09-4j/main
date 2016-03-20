@@ -13,6 +13,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import logic.Logic;
 
@@ -47,6 +48,8 @@ public class MainApp extends Application {
     }
 
     private void initializeUI(Stage primaryStage) {
+        Font.loadFont("file:main/src/resources/fonts/Roboto-Regular.ttf", 10);
+        Font.loadFont("file:main/src/resources/fonts/RobotoSlab-Regular.ttf", 10);
         root = new BorderPane();
         display = new DisplayController(this, primaryStage);
         input = new InputController(this);

@@ -2,20 +2,20 @@
     -fx-alignment: top-left;
     -fx-padding: 5;
     -fx-spacing: 5;
-    -fx-background-color: #F2F2F2;
+    -fx-background-color: #F6F6F6;
     -fx-effect: dropshadow( gaussian , #AAAAAA , 10 , 0.1 , 0 , 0 );
 }
 
 .label {
     -fx-font-size: 18;
-    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-family: "Roboto Regular", "Segoe UI", sans-serif;
     -fx-alignment: center-left;
     -fx-label-padding: 5;
 }
 
 .header {
     -fx-font-size: 20;
-    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-family: "Roboto Slab Regular", "Segoe UI", sans-serif;
     -fx-alignment: center-left;
     -fx-label-padding: 5;
 }
