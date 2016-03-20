@@ -1,17 +1,28 @@
-.root {
-    -fx-hgap: 5;
-    -fx-vgap: 5;
-    -fx-alignment: top-center;
-    -fx-padding: 0;
-    -fx-grid-lines-visible: false;
-    -fx-background-color: #FFFFFF;
-}
-
 .label {
     -fx-font-size: 15;
     -fx-font-family: sans-serif;
     -fx-alignment: center-left;
     -fx-label-padding: 5;
+}
+
+.list-view {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-border-color: none;
+}
+
+.list-cell {
+    -fx-padding: 2;
+    -fx-background-color: transparent;
+}
+
+.list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.list-cell:selected .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #000000;
 }
 
 .header {
@@ -24,19 +35,19 @@
 .panel-task {
     -fx-spacing: 10;
     -fx-padding: 10;
-    -fx-background-color: #F6F6F6;
+    -fx-background-color: #FFFFFF;
 }
 
 .panel-search {
     -fx-spacing: 5;
     -fx-padding: 10;
-    -fx-background-color: #F6F6F6;
+    -fx-background-color: #FFFFFF;
 }
 
 .entry-task {
     -fx-padding: 2;
-    -fx-background-color: #A1E7C6;
-    -fx-background-radius: 2;
+    -fx-background-color: #F2F2F2;
+    -fx-background-radius: 0;
 }
 
 .desc {
@@ -50,32 +61,20 @@
     -fx-fill: #888888;
 }
 
-.scroll-pane {
-    -fx-hbar-policy: never;
-    -fx-vbar-policy: as-needed;
-    -fx-padding: 3, 0;
-    -fx-background-color: #F6F6F6;
-    -fx-border: none;
-    -fx-fit-to-width: true;
-}
-
-.scroll-pane .viewport {
-   -fx-background-color: transparent;
-}
-
 .scroll-bar {
     -fx-opacity: 1;
 }
 
 .scroll-bar:vertical .track {
-    -fx-background-color: #F6F6F6;
+    -fx-background-color: #FFFFFF;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
+    -fx-border-width: 5;
     -fx-border-color: transparent;
 }
 
 .scroll-bar:vertical .thumb {
-    -fx-background-color: #A5A5A5;
+    -fx-background-color: #A1E7C6;
     -fx-background-radius: 0;
     -fx-background-insets: 1;
 }
