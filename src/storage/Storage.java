@@ -15,6 +15,7 @@ public class Storage {
 
 	private static ArrayList<Task> mainList;
 	private static String fileName;
+	private static String savedDirectory;
 
 	// for default file to store saved file names
 	private static String defaultFile;
@@ -25,6 +26,7 @@ public class Storage {
 	// default file name is "mytextfile.txt"
 	public Storage() {
 		fileName = "mytextfile.txt";
+		savedDirectory = "";
 		mainList = new ArrayList<Task>();
 		defaultFile = "defaultfile.txt";
 		storeFileNames = new ArrayList<String>();
@@ -137,17 +139,21 @@ public class Storage {
 				recentDirectory = splitLine[0];
 				recentFileName = getFileName(mostRecentFile, recentDirectory);
 				fileName = recentFileName;
+				savedDirectory = recentDirectory;
 
 				try {
 					recentList = loadFileWithDirectory(recentDirectory, recentFileName);
 
 				} catch (NotDirectoryException | FileNotFoundException e) {
-
+					
+					//change back default directory
+					savedDirectory = "";
+					
 					// if file not found or cannot find directory
 					try {
 
 						recentList = loadDefaultTextFile(defaultFileName);
-
+						
 					} catch (FileNotFoundException e1) {
 						// if default file does no exist, return empty array
 						// list
@@ -197,10 +203,23 @@ public class Storage {
 	// Writing of Files
 	// ================================================================================
 
-	// rewrite whole file
+	/* This methods overwrites the data in the file
+	 * This method will check if the directory of the file changed
+	 */
 	public void writeToFile() throws IOException {
-		FileWriter writer = new FileWriter(fileName);
-		writeTasksFromMainList(writer);
+		
+		if (savedDirectory.isEmpty()) {
+			
+			FileWriter writer = new FileWriter(fileName);
+			writeTasksFromMainList(writer);
+		
+		} else {
+			// if the most recent file is from another directory
+			// write to this directory and file
+			File accessFile = new File(savedDirectory + "/" + fileName);
+			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile());
+			writeTasksFromMainList(writer);		
+		}
 	}
 
 	private void writeTasksFromMainList(FileWriter writer) throws IOException {
@@ -215,12 +234,20 @@ public class Storage {
 	}
 
 	public void appendToFile(Task taskToAdd) throws IOException {
-		FileWriter writer = new FileWriter(fileName, true);
-		BufferedWriter bufferedWriter = new BufferedWriter(writer);
-		bufferedWriter.write(taskToAdd.getDescription() + "\r\n");
-
-		bufferedWriter.close();
-		writer.close();
+		
+		if (savedDirectory.isEmpty()) {
+			FileWriter writer = new FileWriter(fileName, true);
+			BufferedWriter bufferedWriter = new BufferedWriter(writer);
+			bufferedWriter.write(taskToAdd.getDescription() + "\r\n");
+			
+			bufferedWriter.close();
+			writer.close();
+			
+		} else {
+			File accessFile = new File(savedDirectory + "/" + fileName);
+			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile(),true);
+			writeTasksFromMainList(writer);	
+		}
 
 	}
 
@@ -235,6 +262,8 @@ public class Storage {
 	public void saveToFile(String userFileName) throws IOException {
 		fileName = userFileName;
 		writeToFile();
+		
+		//write to default file to load recent
 		writeToDefaultFile(userFileName);
 	}
 
@@ -257,7 +286,8 @@ public class Storage {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			FileWriter writer = new FileWriter(userDirectoryAndName.getAbsoluteFile());
 			writeTasksFromMainList(writer);
-
+			
+			//write to default file to load most recent
 			String toWrite = directory + " , " + userFileName;
 			writeToDefaultFile(toWrite);
 		}
@@ -339,7 +369,8 @@ public class Storage {
 		// transfer contents from file to main list
 		updateMainList(updatedMainListFromLoad);
 		setMainList(mainList);
-
+		
+		
 		return mainList;
 	}
 
