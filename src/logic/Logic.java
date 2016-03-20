@@ -7,6 +7,11 @@ import storage.Storage;
 import logic.Execution;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
+
 
 public class Logic {
 
@@ -15,6 +20,8 @@ public class Logic {
 	private Storage storage;
 	private Execution execution;
 	private static Logic logic = new Logic();
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger("logic");
 	
 	public Logic() {
 		this.parser = new Parser();
@@ -22,81 +29,91 @@ public class Logic {
 		this.execution = new Execution();
 	}
 
-	private Result execute(Command command){
+	private ArrayList<Task> execute(Command command){
+	    
 		ArrayList<Task> list = new ArrayList<Task>();
 		
 		CommandType commandType = command.getType();
 		String description = command.getDescription();
 		int taskID = command.getId();		
 		
-		switch(commandType) {
+		switch(commandType){
 		
-			case ADD :
+			case ADD:
 				list = execution.addTask(description); 
 				System.out.println(getPredictions());
-                return new Result(commandType, true, "Added task", list);
+				break;
 			
-			case DELETE :
+			case DELETE:
 				list = execution.deleteTask(taskID);
-                return new Result(commandType, true, "Deleted task", list);
+				break;
 			
-			case EDIT :
+			case EDIT:
 				list = execution.editTask(taskID, description);
 				System.out.println(getPredictions());
-                return new Result(commandType, true, "Edited task", list);
+				break;
 				
-			case SEARCH :
+			case SEARCH:
 				list = execution.searchTask(description);
 				System.out.println(getPredictions());
-                return new Result(commandType, true, "Searched tasks", list);
+				break;
 			
-			case HOME :
+			case HOME:
 				list = execution.getMainList();
-                return new Result(commandType, true, "Return home", list);
+				break;
 				
-			case SAVE :
+			case SAVE:
 				execution.savingTasks(description);
 				list = execution.getMainList();
-                return new Result(commandType, true, "Saved at " + description, list);
+				break;
 				
-			case LOAD :
+			case LOAD:
 				list = execution.loadingTasks(description);
-                return new Result(commandType, true, "Loaded from " + description, list);
-
-			case UNDO :
+				break;
+				
+			case UNDO:
 				list = execution.undoCommand();
-                return new Result(commandType, true, "Last command undone", list);
+				break;
 				
-			case REDO : 
+			case REDO: 
 				list = execution.redoCommand();
-                return new Result(commandType, true, "Last command redone", list);
+				break;
 				
-			case COMPLETE :
-				list = execution.completeCommand(taskID);
-                return new Result(commandType, true, "Marked as complete", list);
+			case COMPLETE:
+				list = execution.completeTask(taskID);
+				break;
 				
-			case DONE :
+			case DONE:
 				list = execution.getDoneList();
-                return new Result(commandType, true, "Showing completed tasks", list);
+				break;
 				
-			case EXIT :
-				System.exit(0);
-			
-			case INVALID :
-				list = null;
-                return new Result();
+			case EXIT:
+				execution.exitCommand();
 				
-			default :
+			case INVALID:
 				list = null;
-				return new Result();
+				break;
+				
+			default:
+				list = null;
 				
 		}
+		
+		assert(list != null);
+		Collections.sort(list);
+	    return list;
 	}
 
 	public Result processCommand(String input) {
 	    System.out.println(input);
+	    
 		Command command = parser.parseCommand(input);
-		return execute(command);
+		assert(command != null);
+		
+		Result result = new Result(command.getType(), true, execute(command));
+		assert(result != null);
+
+		return result;
 	}
 	
 	public ArrayList<String> getPredictions(){
@@ -112,17 +129,25 @@ public class Logic {
 	}
 	
 	public ArrayList<Task> getMainList(){
-		return execution.getMainList();
+		assert(storage.getMainList() != null);
+		return storage.getMainList();
 	}
 	
 	public static Logic getInstance(){
+		
 		if (logic == null){
 			return logic = new Logic();
 		}
+		
 		return logic;
 	}
 
-    public ArrayList<Category> getCategories() {
-        return execution.getCategories();
+    public HashMap<String, Integer> getCategories() {
+        // TODO : placeholder for categories
+        HashMap<String, Integer> cat = new HashMap<String, Integer>();
+        cat.put("Priority", 1);
+        cat.put("Today", 2);
+        return cat;
     }
+
 }	
