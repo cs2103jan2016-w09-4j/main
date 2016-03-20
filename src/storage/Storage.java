@@ -73,7 +73,6 @@ public class Storage {
 
         // file already exist, read from file
         } else {
-            // storeFileNames.add(fileName);
             Scanner scanner;
             scanner = readFileNames(file);
 
@@ -84,53 +83,105 @@ public class Storage {
     }
     
     private Scanner readFileNames(File file) throws FileNotFoundException {
-		Scanner scanner;
-		scanner = new Scanner(file);
-		while (scanner.hasNextLine()) {
-			storeFileNames.add(scanner.nextLine());
-		}
-		return scanner;
+	Scanner scanner;
+	scanner = new Scanner(file);
+	while (scanner.hasNextLine()) {
+	    storeFileNames.add(scanner.nextLine());
+	}
+	    return scanner;
 	}
 
-    // update most recent list
-    public ArrayList<Task> getMostRecentList(ArrayList<String> listOfFileNames) {
-        String recentFileName;
-        String recentDirectory;
-        ArrayList<Task> recentList = new ArrayList<Task>();
+// update most recent list
+   public ArrayList<Task> getMostRecentList(ArrayList<String> listOfFileNames) throws IOException {
+	String recentFileName;
+	String recentDirectory;
+	String defaultFileName = "mytextfile.txt";
+	ArrayList<Task> recentList = new ArrayList<Task>();
 
-        if (!listOfFileNames.isEmpty()) {
-            int lastIndex = listOfFileNames.size() - 1;
-            String mostRecentFile = listOfFileNames.get(lastIndex);
+	if (!listOfFileNames.isEmpty()) {
+		String mostRecentFile = getMostRecentFileName(listOfFileNames);
 
-            // check if there is directory
-            String[] splitLine = mostRecentFile.split(" , ");
+		// check if there is directory
+		String[] splitLine = mostRecentFile.split(" , ");
 
-            // consist only the filename
-            if (splitLine.length == 1) {
-                recentFileName = splitLine[0];
-                fileName = recentFileName;
+		// consist only the filename
+		if (splitLine.length == 1) {
+			recentFileName = splitLine[0];
+			fileName = recentFileName;
 
-                try {
-                    recentList = loadFileWithFileName(recentFileName);
-                } catch (FileNotFoundException e) {
-                    return recentList;
-                }
+			try {
+				recentList = loadFileWithFileName(recentFileName);
+			} catch (FileNotFoundException e) {
+					
+				// if file not found / deleted, load mytextfile.txt
+				try {
 
-            } else {
-                recentDirectory = splitLine[0];
-                recentFileName = getFileName(mostRecentFile, recentDirectory);
-                fileName = recentFileName;
+					recentList = loadDefaultTextFile(defaultFileName);
+						
+				} catch (FileNotFoundException e1) {
+						
+					// if default file does no exist, return empty array list
+					//change back file name to default
+					fileName = defaultFileName;		
+						
+					//write "mytextfile.txt" into default file					
+					writeToDefaultFile(defaultFileName);
+						
+					return recentList;
+						
+				}
+			}
 
-                try {
-                    recentList = loadFileWithDirectory(recentDirectory, recentFileName);
-                } catch (NotDirectoryException | FileNotFoundException e) {
-                    return recentList;
-                }
-            }
-        }
+		} else {
+			recentDirectory = splitLine[0];
+			recentFileName = getFileName(mostRecentFile, recentDirectory);
+			fileName = recentFileName;
 
-        return recentList;
+			try {
+				recentList = loadFileWithDirectory(recentDirectory, recentFileName);
+					
+			} catch (NotDirectoryException | FileNotFoundException e) {
+					
+				//if file not found or cannot find directory
+				try {
+						
+					recentList = loadDefaultTextFile(defaultFileName);
+					
+				} catch (FileNotFoundException e1) {
+					// if default file does no exist, return empty array list
+					//change back file name to default
+					fileName = defaultFileName;
+						
+					//write "mytextfile.txt" into default file
+					writeToDefaultFile(defaultFileName);
+										
+					return recentList;
+				}
+			}
+		}
+	}
+
+	return recentList;
     }
+	
+	/* In cases where the most recent file is not found or does not exist
+	 * It will return the list from the default file - 'mytextfile.txt'
+	 */
+	private ArrayList<Task> loadDefaultTextFile(String defaultFileName) throws FileNotFoundException, IOException {
+		ArrayList<Task> recentList;
+		recentList = loadFileWithFileName(defaultFileName);
+		fileName = defaultFileName; 	//change back file name to default
+		writeToDefaultFile(defaultFileName);
+		return recentList;
+		
+	}
+	
+	// This method obtains the most recent file name
+	private String getMostRecentFileName(ArrayList<String> listOfFileNames) {
+		int lastIndex = listOfFileNames.size() - 1;
+		String mostRecentFile = listOfFileNames.get(lastIndex);
+		return mostRecentFile;
+	}
 
     // Obtain filename without directory
     public static String getFileName(String line, String toReplace) {
