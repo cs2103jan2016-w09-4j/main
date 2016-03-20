@@ -184,7 +184,7 @@ public class Storage {
 	}
 
     // Obtain filename without directory
-    public static String getFileName(String line, String toReplace) {
+    private static String getFileName(String line, String toReplace) {
         String lineWithoutDirectory = line.replace(toReplace, "").trim();
 
         return lineWithoutDirectory;
