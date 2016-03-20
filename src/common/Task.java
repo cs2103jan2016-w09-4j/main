@@ -95,8 +95,14 @@ public class Task implements Comparable<Task> {
      ******************/
 
     public boolean isToday() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        return dateFormat.format(start).equals(dateFormat.format(new Date()));
+        if (isFloating()) {
+            return false;
+        } else if (isEvent()) {
+            return dateFormat.format(start).equals(dateFormat.format(new Date()));
+        } else if (isTask()) {
+            return dateFormat.format(end).equals(dateFormat.format(new Date()));
+        }
+        return false;
     }
 
     @Override

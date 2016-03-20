@@ -2,7 +2,7 @@
     -fx-alignment: top-left;
     -fx-padding: 5;
     -fx-spacing: 5;
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #F2F2F2;
     -fx-effect: dropshadow( gaussian , #AAAAAA , 10 , 0.1 , 0 , 0 );
 }
 
@@ -26,7 +26,7 @@
 }
 
 .sticker {
-    -fx-background-color: derive( #A1E7C6 , 20% );
+    -fx-background-color: #A1E7C6;
     -fx-background-radius: 3;
 }
 
@@ -41,7 +41,6 @@
     -fx-vbar-policy: as-needed;
     -fx-padding: 3, 0;
     -fx-background-color: transparent;
-    -fx-border: none;
     -fx-fit-to-width: true;
 }
 

@@ -16,12 +16,15 @@ import common.Command.CommandType;
 import common.Result;
 import common.Task;
 import ui.MainApp;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -50,6 +53,15 @@ public class DisplayController extends HiddenSidesPane {
     public DisplayController(MainApp main, Stage primaryStage) {
         this.main = main;
         this.primaryStage = primaryStage;
+        initializeLogger();
+        loadFXML();
+        initializeTaskPanel();
+        initializeSearchPanel();
+        initializeSidebarContent();
+        handleUserInteractions();
+    }
+
+    private void initializeLogger() {
         try {
             Handler fh = new FileHandler("log_ui_display");
             logger.addHandler(fh);
@@ -60,11 +72,6 @@ public class DisplayController extends HiddenSidesPane {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        loadFXML();
-        initializeTaskPanel();
-        initializeSidebarContent();
-        initializeSearchPanel();
-        handleUserInteractions();
     }
     
     private void loadFXML() {
@@ -79,7 +86,61 @@ public class DisplayController extends HiddenSidesPane {
     }
     
     private void initializeTaskPanel() {
+        taskPanel = new VBox();
+        taskPanel.getStyleClass().add("panel-task");
+        this.setContent(taskPanel);
+        
         ArrayList<Task> allTasks = main.getTasks();
+        updateTaskPanel(allTasks);
+    }
+
+    private void initializeSearchPanel() {
+        searchPanel = new VBox();
+        searchPanel.getStyleClass().add("panel-search");
+    }
+
+    private void initializeSidebarContent() {
+        sidebar = new SidebarController(main);
+        this.setLeft(sidebar);
+        this.setTriggerDistance(30);
+    }
+    
+    private void handleUserInteractions() {
+        DisplayController instance = this;
+        this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            
+            public void handle(KeyEvent event) {
+                if (event.getCode()==KeyCode.M && event.isControlDown()) {
+                    logger.log(Level.INFO, "user toggled sidebar");
+                    if (instance.getPinnedSide() == Side.LEFT) {
+                        instance.setPinnedSide(null);
+                    } else {
+                        instance.setPinnedSide(Side.LEFT);
+                    }
+                } else if (event.getCode()==KeyCode.HOME) {
+                    logger.log(Level.INFO, "user pressed home");
+                    instance.setContent(taskPanel);
+                }
+            }
+            
+        });
+    }
+    
+    public void displayResult(Result result) {
+        CommandType cmd = result.getCommandType();
+        if (cmd == CommandType.SEARCH) {
+            updateSearchPanel(result.getResults());
+            this.setContent(searchPanel);
+        } else {
+            ArrayList<Task> allTasks = result.getResults();
+            updateTaskPanel(allTasks);
+            sidebar.update();
+            showFeedback(cmd, result.getMessage(), result.isSuccess());
+            this.setContent(taskPanel);
+        }
+    }
+    
+    private void updateTaskPanel(ArrayList<Task> allTasks) {
         ArrayList<VBox> todayTasks = new ArrayList<VBox>();
         ArrayList<VBox> otherTasks = new ArrayList<VBox>();
         int index = 0;
@@ -90,96 +151,46 @@ public class DisplayController extends HiddenSidesPane {
                 otherTasks.add(createOther(task, ++index));
             }
         }
-        taskPanel = new VBox();
-        taskPanel.getStyleClass().add("panel-task");
-        updateTaskPanel(todayTasks, otherTasks);
-        this.setContent(taskPanel);
-    }
-
-    private void initializeSidebarContent() {
-        sidebar = new SidebarController(main);
-        this.setLeft(sidebar);
-        this.setTriggerDistance(30);
-    }
-    
-    private void initializeSearchPanel() {
-        searchPanel = new VBox();
-        searchPanel.getStyleClass().add("panel-search");
-    }
-
-    private void handleUserInteractions() {
-        DisplayController instance = this;
-        this.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            
-            public void handle(KeyEvent event) {
-                if (event.getCode()==KeyCode.M && event.isControlDown()) {
-                    if (instance.getPinnedSide()==Side.LEFT) {
-                        instance.setPinnedSide(null);
-                    } else {
-                        instance.setPinnedSide(Side.LEFT);
-                    }
-                } else if (event.getCode()==KeyCode.PAGE_DOWN) {
-                    logger.log(Level.INFO, "user pressed page down");
-                } else if (event.getCode()==KeyCode.PAGE_UP) {
-                    logger.log(Level.INFO, "user pressed page up");
-                } else if (event.getCode()==KeyCode.HOME) {
-                    logger.log(Level.INFO, "user pressed home");
-                    instance.setContent(taskPanel);
-                }
-            }
-            
-        });
-    }
-    
-    private void updateTaskPanel(ArrayList<VBox> todayTasks, ArrayList<VBox> otherTasks) {
-        // build today panel
-        VBox todayPanel = new VBox();
         
+        // build today panel
         Label todayHeader = createHeader("Today");
         VBox todayContent = new VBox();
         if (todayTasks.isEmpty()) {
             Label empty = new Label("No tasks today");
             todayContent.getChildren().add(empty);
         } else {
-            todayContent.getChildren().addAll(todayTasks);
+            ObservableList<VBox> todayList = FXCollections.observableArrayList(todayTasks);
+            ListView<VBox> todayListView = new ListView<VBox>(todayList);
+            todayListView.prefHeightProperty().bind(Bindings.size(todayList).multiply(58));
+            todayContent.getChildren().add(todayListView);
         }
-        ScrollPane todayScroll = new ScrollPane();
-        VBox.setVgrow(todayScroll, Priority.ALWAYS);
-        todayScroll.setContent(todayContent);
         
-        todayPanel.getChildren().addAll(todayHeader, todayScroll);
-        //VBox.setVgrow(todayPanel, Priority.ALWAYS);
+        VBox todayPanel = new VBox();
+        VBox.setVgrow(todayContent, Priority.ALWAYS);
+        todayPanel.getChildren().addAll(todayHeader, todayContent);
         
         // build other panel
-        VBox otherPanel = new VBox();
-
         Label otherHeader = createHeader("Others");
         VBox otherContent = new VBox();
         if (otherTasks.isEmpty()) {
-            Label empty = new Label("No tasks");
+            Label empty = new Label("No tasks today");
             otherContent.getChildren().add(empty);
         } else {
-            otherContent.getChildren().addAll(otherTasks);
+            ObservableList<VBox> otherList = FXCollections.observableArrayList(otherTasks);
+            ListView<VBox> otherListView = new ListView<VBox>(otherList);
+            otherListView.prefHeightProperty().bind(Bindings.size(otherList).multiply(58));
+            otherContent.getChildren().add(otherListView);
         }
-        ScrollPane otherScroll= new ScrollPane();
-        otherScroll.setContent(otherContent);
-        VBox.setVgrow(otherScroll, Priority.ALWAYS);
-
-        otherPanel.getChildren().addAll(otherHeader, otherScroll);        
-        //VBox.setVgrow(otherPanel, Priority.ALWAYS);
+        
+        VBox otherPanel = new VBox();
+        VBox.setVgrow(otherContent, Priority.ALWAYS);
+        otherPanel.getChildren().addAll(otherHeader, otherContent);
         
         // add to task panel
         taskPanel.getChildren().clear();
         taskPanel.getChildren().addAll(todayPanel, otherPanel);
     }
     
-    private Label createHeader(String heading) {
-        Label header = new Label(heading);
-        header.getStyleClass().add("header");
-        header.setMinHeight(USE_PREF_SIZE);
-        return header;
-    }
-
     private void updateSearchPanel(ArrayList<Task> results) {
         searchPanel.getChildren().clear();
         Label searchHeader = createHeader(results.size() + " search results found");
@@ -192,32 +203,7 @@ public class DisplayController extends HiddenSidesPane {
         searchContent.getChildren().addAll(searchTasks);
         searchPanel.getChildren().addAll(searchHeader, searchContent);
     }
-    
-    public void displayResult(Result result) {
-        CommandType cmd = result.getCommandType();
-        
-        if (cmd == CommandType.SEARCH) {
-            updateSearchPanel(result.getResults());
-            this.setContent(searchPanel);
-        } else {
-            ArrayList<Task> allTasks = result.getResults();
-            ArrayList<VBox> todayTasks = new ArrayList<VBox>();
-            ArrayList<VBox> otherTasks = new ArrayList<VBox>();
-            int index = 0;
-            for (Task task : allTasks) {
-                if (task.isToday()) {
-                    todayTasks.add(createToday(task, ++index));
-                } else {
-                    otherTasks.add(createOther(task, ++index));
-                }
-            }
-            updateTaskPanel(todayTasks, otherTasks);
-            sidebar.update();
-            showFeedback(cmd, result.getMessage(), result.isSuccess());
-            this.setContent(taskPanel);
-        }
-    }
-    
+
     private void showFeedback(CommandType cmd, String msg, boolean isSuccess) {
         // TODO: refactor this mess!!!!
         logger.log(Level.INFO, String.format("showing feedback for %1s, %2s", cmd, isSuccess));
@@ -254,6 +240,13 @@ public class DisplayController extends HiddenSidesPane {
         box.getChildren().addAll(icon, message);
         return box;
         
+    }
+    
+    private Label createHeader(String heading) {
+        Label header = new Label(heading);
+        header.getStyleClass().add("header");
+        header.setMinHeight(USE_PREF_SIZE);
+        return header;
     }
     
     private VBox createToday(Task task, int index) {
@@ -312,7 +305,7 @@ public class DisplayController extends HiddenSidesPane {
             startDate = "from " + dateFormat.format(date);
         }
         if ((date = task.getEndDate()) != null) {
-            endDate = "until " + dateFormat.format(date);
+            endDate = "by " + dateFormat.format(date);
            
         }
         
