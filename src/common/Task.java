@@ -93,32 +93,31 @@ public class Task implements Comparable<Task> {
      * HELPER METHODS *
      ******************/
 
-    public boolean isToday() {
+    public boolean isSameDate(Date date) {
+        String dateStr = dateFormat.format(date);
         if (isFloating()) {
             return false;
         } else if (isEvent()) {
-            return dateFormat.format(start).equals(dateFormat.format(new Date()));
+            return dateFormat.format(start).equals(dateStr) || dateFormat.format(end).equals(dateStr);
         } else if (isDeadline()) {
-            return dateFormat.format(end).equals(dateFormat.format(new Date()));
+            return dateFormat.format(end).equals(dateStr);
         }
         return false;
     }
 
     @Override
     public int compareTo(Task t2) {
-        // TODO: refactor
         if (t2 == null) {
             throw new NullPointerException();
         }
-        Task t1 = this;
-        if (t1.isFloating()) {
+        if (this.isFloating()) {
             return compareFloatingTo(t2);
-        } else if (t1.isDeadline()) {
+        } else if (this.isDeadline()) {
             return compareDeadlineTo(t2);
-        } else if (t1.isEvent()) {
+        } else if (this.isEvent()) {
             return compareEventTo(t2);
         }
-        return t1.description.compareTo(t2.description);
+        return this.description.compareTo(t2.description);
     }
     
     private int compareEventTo(Task t2) {

@@ -143,11 +143,12 @@ public class DisplayController extends HiddenSidesPane {
     }
     
     private void updateTaskPanel(ArrayList<Task> allTasks) {
+        Date today = new Date();
         ArrayList<VBox> todayTasks = new ArrayList<VBox>();
         ArrayList<VBox> otherTasks = new ArrayList<VBox>();
         int index = 0;
         for (Task task : allTasks) {
-            if (task.isToday()) {
+            if (task.isSameDate(today)) {
                 todayTasks.add(createToday(task, ++index));
             } else {
                 otherTasks.add(createOther(task, ++index));
