@@ -8,7 +8,6 @@ import java.util.Date;
 public class Task implements Comparable<Task> {
     
     private static final int LESS_THAN = -1;
-
     private static final int GREATER_THAN = 1;
     
     private String description;
@@ -99,7 +98,7 @@ public class Task implements Comparable<Task> {
             return false;
         } else if (isEvent()) {
             return dateFormat.format(start).equals(dateFormat.format(new Date()));
-        } else if (isTask()) {
+        } else if (isDeadline()) {
             return dateFormat.format(end).equals(dateFormat.format(new Date()));
         }
         return false;
@@ -113,34 +112,53 @@ public class Task implements Comparable<Task> {
         }
         Task t1 = this;
         if (t1.isFloating()) {
-            if (t2.isFloating()) {
-                // order lexicographically
-                return t1.description.compareTo(t2.description);
-            } else {
-                return GREATER_THAN;
-            }
-        } else if (t2.isFloating()) {
-            return LESS_THAN;
+            return compareFloatingTo(t2);
+        } else if (t1.isDeadline()) {
+            return compareDeadlineTo(t2);
         } else if (t1.isEvent()) {
-            if (t2.isEvent()) {
-                // order by start date
-                return t1.start.compareTo(t2.start);
-            } else if (t2.isTask()) {
-                // order by end date
-                return t1.end.compareTo(t2.end);
-            }
-        } else if (t1.isTask()) {
-            return t1.end.compareTo(t2.end);
+            return compareEventTo(t2);
         }
-        
         return t1.description.compareTo(t2.description);
     }
     
+    private int compareEventTo(Task t2) {
+        if (t2.isFloating()) {
+            return LESS_THAN;
+        } else {
+            int compare = this.end.compareTo(t2.end);
+            if (compare == 0) {
+                return this.description.compareTo(t2.description);
+            }
+            return compare; 
+        }
+    }
+
+    private int compareDeadlineTo(Task t2) {
+        if (t2.isFloating()) {
+            return LESS_THAN;
+        } else {
+            int compare = this.end.compareTo(t2.end);
+            if (compare == 0) {
+                return this.description.compareTo(t2.description);
+            }
+            return compare;
+        }
+    }
+
+    private int compareFloatingTo(Task t2) {
+        if (t2.isFloating()) {
+            // order lexicographically
+            return this.description.compareTo(t2.description);
+        } else {
+            return GREATER_THAN;
+        }
+    }
+
     // Returns true if task is floating
     private boolean isFloating() {
         boolean hasStart = this.start != null;
         boolean hasEnd = this.end != null;
-        return !(hasStart && hasEnd);
+        return !hasStart && !hasEnd;
     }
     
     // Returns true if task is an event with a start and end
@@ -151,7 +169,7 @@ public class Task implements Comparable<Task> {
     }
     
     // Returns true if task only has a deadline
-    private boolean isTask() {
+    private boolean isDeadline() {
         boolean hasStart = this.start != null;
         boolean hasEnd = this.end != null;
         return !hasStart && hasEnd;
