@@ -109,23 +109,23 @@ public class Storage {
 			// consist only the filename
 			if (splitLine.length == 1) {
 				recentFileName = splitLine[0];
-				fileName = recentFileName;
 
 				try {
 					recentList = loadFileWithFileName(recentFileName);
+					fileName = recentFileName;			//change file name if it exist
+					
 				} catch (FileNotFoundException e) {
 
 					// if file not found / deleted, load mytextfile.txt
 					try {
 
 						recentList = loadDefaultTextFile(defaultFileName);
-
+						// write "mytextfile.txt" into default file
+						writeToDefaultFile(defaultFileName);
+						
 					} catch (FileNotFoundException e1) {
 
-						// if default file does no exist, return empty array
-						// list
-						// change back file name to default
-						fileName = defaultFileName;
+						// if default file does no exist, return empty array list
 
 						// write "mytextfile.txt" into default file
 						writeToDefaultFile(defaultFileName);
@@ -138,28 +138,23 @@ public class Storage {
 			} else {
 				recentDirectory = splitLine[0];
 				recentFileName = getFileName(mostRecentFile, recentDirectory);
-				fileName = recentFileName;
-				savedDirectory = recentDirectory;
-
+				
 				try {
 					recentList = loadFileWithDirectory(recentDirectory, recentFileName);
-
-				} catch (NotDirectoryException | FileNotFoundException e) {
+					//change filename and directory if it exist
+					fileName = recentFileName;
+					savedDirectory = recentDirectory;
 					
-					//If file or directory does not exist
-					//change back to default directory 
-					savedDirectory = "";
+				} catch (NotDirectoryException | FileNotFoundException e) {
 
 					try {
 						
 						//load list from default text file ("mytextfile.txt")
 						recentList = loadDefaultTextFile(defaultFileName);
-						fileName = defaultFileName;				// change back file name to default
+						writeToDefaultFile(defaultFileName);	// write "mytextfile.txt" into default file
 						
 					} catch (FileNotFoundException e1) {
 						// if default file does no exist, return empty array list
-						fileName = defaultFileName;				// change back file name to default
-
 						writeToDefaultFile(defaultFileName);	// write "mytextfile.txt" into default file
 
 						return recentList;
@@ -292,7 +287,7 @@ public class Storage {
 		}
 	}
 
-	// write directory and filename to default file to keep track
+	// write directory and filename to default file to keep track of recent file
 	private void writeToDefaultFile(String toWrite) throws IOException {
 		FileWriter writer = new FileWriter(defaultFile, true);
 		writer.write(toWrite + "\r\n");
