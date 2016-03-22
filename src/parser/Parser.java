@@ -22,7 +22,7 @@ public class Parser {
                 DescriptionParser details = new DescriptionParser(commandString.substring(4).trim());
                 return new Command(CommandType.ADD, details.getDescription(), details.getStartTime(), details.getEndTime());
             } else if (commandString.startsWith("delete")) {
-                return new Command(CommandType.DELETE, Integer.parseInt(commandString.substring(7)));
+                return new Command(CommandType.DELETE, Integer.parseInt(commandString.substring(7).trim()));
             } else if (commandString.startsWith("edit")) {
                 String content = commandString.substring(5);
                 String firstWord = getFirstWord(content);
@@ -32,7 +32,7 @@ public class Parser {
                 return new Command(CommandType.EDIT, Integer.parseInt(firstWord),
                         details.getDescription(), details.getStartTime(), details.getEndTime());
             } else if (commandString.startsWith("complete")) {
-                return new Command(CommandType.COMPLETE, Integer.parseInt(commandString.substring(5)));
+                return new Command(CommandType.COMPLETE, Integer.parseInt(commandString.substring(9).trim());
             } else if (commandString.startsWith("done")) {
                 return new Command (CommandType.DONE);
             } else if (commandString.startsWith("search")) {
