@@ -13,7 +13,9 @@ public class DescriptionParser {
         DateTimeFormatter[] formatters = {
                 DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"),
                 DateTimeFormatter.ofPattern("H:m d-M-yy"),
-                DateTimeFormatter.ofPattern("H:m d-M-yyyy")
+                DateTimeFormatter.ofPattern("H:m d-M-yyyy"),
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"),
+                DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
         };
 
         input = input.trim();
