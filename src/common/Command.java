@@ -38,7 +38,7 @@ public class Command {
     }
 
     public Command(String description) {
-    	this.description = description;
+        this.description = description;
     }
     
     /******************
@@ -56,4 +56,5 @@ public class Command {
     public int getId() {
         return id;
     }
+    
 }
