@@ -15,7 +15,7 @@ public class Result {
     private int newTaskId;
     
     public Result() {
-        this(CommandType.INVALID, false, "Invalid command!", new ArrayList<Task>(), NO_NEW_TASK_ID);
+        this(CommandType.INVALID, false, "Invalid!", new ArrayList<Task>(), NO_NEW_TASK_ID);
     }
     
     public Result(CommandType commandType, boolean isSuccess, String message, ArrayList<Task> results) {

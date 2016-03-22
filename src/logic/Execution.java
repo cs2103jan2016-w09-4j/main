@@ -52,6 +52,7 @@ public class Execution {
 			e.printStackTrace();
 		}
 		
+		Collections.sort(mainList);
 		return mainList;
 	}
 	
@@ -104,6 +105,7 @@ public class Execution {
 				e.printStackTrace();
 			}
 		}
+	    Collections.sort(mainList);
 		storage.setMainList(mainList);
 		return mainList;
 	}
