@@ -52,10 +52,10 @@ public class Execution {
             e.printStackTrace();
         }
         
-        Collections.sort(mainList);
+        sortList();
         return mainList;
     }
-    
+
     public ArrayList<Task> completeCommand(int taskID){
         Task doneTask = mainList.get(taskID);
         doneList.add(doneTask);
@@ -104,7 +104,7 @@ public class Execution {
                 e.printStackTrace();
             }
         }
-        Collections.sort(mainList);
+        sortList();
         storage.setMainList(mainList);
         return mainList;
     }
@@ -210,6 +210,14 @@ public class Execution {
 
     public ArrayList<Category> getCategories() {
         return categories;
+    }
+    
+    // sort and update task id
+    private void sortList() {
+        Collections.sort(mainList);
+        for (int i = 0; i < mainList.size(); i++) {
+            mainList.get(i).setId(i + 1);
+        }
     }
     
 }

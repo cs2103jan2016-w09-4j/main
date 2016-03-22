@@ -45,6 +45,7 @@ public class DisplayController extends HiddenSidesPane {
     @FXML private VBox mainPanel;
     private VBox taskPanel, searchPanel;
     private SidebarController sidebar;
+    private Popup feedback;
     
     private static final String DISPLAY_FXML = "Display.fxml";
     private static final String SEARCH_HEADER_SINGLE = " search result found";
@@ -60,6 +61,7 @@ public class DisplayController extends HiddenSidesPane {
         initializeTaskPanel();
         initializeSearchPanel();
         initializeSidebarContent();
+        initializePopup();
         handleUserInteractions();
     }
 
@@ -105,6 +107,15 @@ public class DisplayController extends HiddenSidesPane {
         sidebar = new SidebarController(main);
         this.setLeft(sidebar);
         this.setTriggerDistance(30);
+    }
+    
+    private void initializePopup() {
+        feedback = new Popup();
+        feedback.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent event) {
+                feedback.hide();
+            }
+        });
     }
     
     private void handleUserInteractions() {
@@ -208,19 +219,16 @@ public class DisplayController extends HiddenSidesPane {
     }
 
     private void showFeedback(CommandType cmd, String msg, boolean isSuccess) {
-        // TODO: refactor this mess!!!!
         logger.log(Level.INFO, String.format("showing feedback for %1s, %2s", cmd, isSuccess));
 
-        final Popup window = new Popup();
-        window.setAutoHide(true);
-
         HBox box = createFeedback(cmd, msg, isSuccess);
-        window.getContent().add(box);
+        feedback.getContent().clear();
+        feedback.getContent().add(box);
         double x = primaryStage.getX() + 10;
         double y = primaryStage.getY() + primaryStage.getHeight();
-        window.setX(x);
-        window.setY(y);
-        window.show(primaryStage);
+        feedback.setX(x);
+        feedback.setY(y);
+        feedback.show(primaryStage);
     }
     
     private HBox createFeedback(CommandType commandType, String msg, boolean isSuccess) {
@@ -266,7 +274,7 @@ public class DisplayController extends HiddenSidesPane {
             startDate = "from " + dateFormat.format(date);
         }
         if ((date = task.getEndDate()) != null) {
-            endDate = "until " + dateFormat.format(date);
+            endDate = "by " + dateFormat.format(date);
         }
         
         if (startDate!=null && endDate!=null) {
@@ -300,7 +308,7 @@ public class DisplayController extends HiddenSidesPane {
         
         HBox details = new HBox();
         Date date;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy h:mma");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy h:mma");
         String startDate = null, endDate = null;
         Label startEndDate = null;
         
