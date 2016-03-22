@@ -3,9 +3,8 @@ package logic;
 import common.*;
 import storage.Storage;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.NotDirectoryException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -55,6 +54,33 @@ public class Execution {
         sortList();
         return mainList;
     }
+    
+    public ArrayList<Task> addTask(String description, LocalDateTime start, LocalDateTime end) {
+        Task newTask = new Task(description);
+        if (start != null) {
+            newTask.setStart(start);
+        }
+        if (end != null) {
+            newTask.setEnd(end);
+        }
+        
+        dictionary.add(description);
+        
+        if (!mainList.isEmpty()) {
+            saveMainListForUndo();
+        }
+        
+        mainList.add(newTask);
+        storage.setMainList(mainList);
+        try {
+            storage.appendToFile(newTask);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        sortList();
+        return mainList;
+    }
 
     public ArrayList<Task> completeCommand(int taskID){
         Task doneTask = mainList.get(taskID);
@@ -83,6 +109,7 @@ public class Execution {
             }
         }
         storage.setMainList(mainList);
+        sortList();
         return mainList;    
     }
     

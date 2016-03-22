@@ -17,8 +17,8 @@ public class ParserTest {
         Command actual = parser.parseCommand("add eat start 22:30 20-10-2000");
         assertEquals(expected.getType(), actual.getType());
         assertEquals(expected.getDescription(), actual.getDescription());
-        assertEquals(expected.getStartTime(), actual.getStartTime());
-        assertEquals(expected.getEndTime(), actual.getEndTime());
+        assertEquals(expected.getStartDate(), actual.getStartDate());
+        assertEquals(expected.getEndDate(), actual.getEndDate());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class ParserTest {
         Command actual = parser.parseCommand("add eat more food to get fat start 22:30 20-10-2000 end 9:10 29-8-2004");
         assertEquals(expected.getType(), actual.getType());
         assertEquals(expected.getDescription(), actual.getDescription());
-        assertEquals(expected.getStartTime(), actual.getStartTime());
-        assertEquals(expected.getEndTime(), actual.getEndTime());
+        assertEquals(expected.getStartDate(), actual.getStartDate());
+        assertEquals(expected.getEndDate(), actual.getEndDate());
     }
 }

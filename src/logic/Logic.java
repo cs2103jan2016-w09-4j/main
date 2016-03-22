@@ -7,7 +7,6 @@ import storage.Storage;
 import logic.Execution;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Logic {
 
@@ -35,7 +34,7 @@ public class Logic {
         switch(commandType) {
         
             case ADD :
-                list = execution.addTask(description);
+                list = execution.addTask(description, command.getStartDate(), command.getEndDate());
                 return new Result(commandType, true, "Added task", list);
             
             case DELETE :

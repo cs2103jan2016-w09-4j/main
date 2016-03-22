@@ -160,21 +160,21 @@ public class Task implements Comparable<Task> {
     }
 
     // Returns true if task is floating
-    private boolean isFloating() {
+    public boolean isFloating() {
         boolean hasStart = this.start != null;
         boolean hasEnd = this.end != null;
         return !hasStart && !hasEnd;
     }
     
     // Returns true if task is an event with a start and end
-    private boolean isEvent() {
+    public boolean isEvent() {
         boolean hasStart = this.start != null;
         boolean hasEnd = this.end != null;
         return hasStart && hasEnd;
     }
     
     // Returns true if task only has a deadline
-    private boolean isDeadline() {
+    public boolean isDeadline() {
         boolean hasStart = this.start != null;
         boolean hasEnd = this.end != null;
         return !hasStart && hasEnd;

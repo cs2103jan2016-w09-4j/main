@@ -1,13 +1,10 @@
 package ui;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -178,7 +175,7 @@ public class DisplayController extends HiddenSidesPane {
         } else {
             ObservableList<VBox> todayList = FXCollections.observableArrayList(todayTasks);
             ListView<VBox> todayListView = new ListView<VBox>(todayList);
-            todayListView.prefHeightProperty().bind(Bindings.size(todayList).multiply(58));
+            todayListView.prefHeightProperty().bind(Bindings.size(todayList).multiply(65));
             todayContent.getChildren().add(todayListView);
         }
         
@@ -195,7 +192,7 @@ public class DisplayController extends HiddenSidesPane {
         } else {
             ObservableList<VBox> otherList = FXCollections.observableArrayList(otherTasks);
             ListView<VBox> otherListView = new ListView<VBox>(otherList);
-            otherListView.prefHeightProperty().bind(Bindings.size(otherList).multiply(58));
+            otherListView.prefHeightProperty().bind(Bindings.size(otherList).multiply(65));
             otherContent.getChildren().add(otherListView);
         }
         
@@ -268,32 +265,33 @@ public class DisplayController extends HiddenSidesPane {
         Label desc = new Label(index + ". " + task.getDescription());
         
         HBox details = new HBox();
-        LocalDateTime date;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        String startDate = null, endDate = null;
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         Label startEndDate = null;
         
-        if ((date = task.getStartDate()) != null) {
-            startDate = "from " + formatter.format(date);
+        if (task.isDeadline()) {
+            String endDate = timeFormatter.format(task.getEndDate());
+            startEndDate = new Label("By " + endDate);
+        } else if (task.isEvent()) {
+            LocalDateTime start = task.getStartDate();
+            LocalDateTime end = task.getEndDate();
+            LocalDate now = LocalDate.now();
+            if (start.toLocalDate().equals(now) && end.toLocalDate().equals(now)) {
+                String startDate = timeFormatter.format(start);
+                String endDate = timeFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
+            } else if (start.toLocalDate().equals(now)) {
+                String startDate = timeFormatter.format(start);
+                String endDate = dateFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
+            } else if (end.toLocalDate().equals(now)) {
+                String startDate = dateFormatter.format(start);
+                String endDate = timeFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
+            }
+            
         }
-        if ((date = task.getEndDate()) != null) {
-            endDate = "by " + formatter.format(date);
-        }
-        
-        if (startDate != null && endDate != null) {
-            String dates = startDate + " " + endDate;
-            dates = dates.substring(0, 1).toLowerCase() + dates.substring(1);
-            startEndDate = new Label(dates);
-        } else if (startDate != null) {
-            String dates = startDate;
-            dates = dates.substring(0, 1).toLowerCase() + dates.substring(1);
-            startEndDate = new Label(dates);
-        } else {
-            String dates = endDate;
-            dates = dates.substring(0, 1).toLowerCase() + dates.substring(1);
-            startEndDate = new Label(dates);
-        }
-        
+
         if (startEndDate != null) {
             startEndDate.getStyleClass().add("details");
             details.getChildren().add(startEndDate);
@@ -310,32 +308,32 @@ public class DisplayController extends HiddenSidesPane {
         Label desc = new Label(index + ". " + task.getDescription());
         
         HBox details = new HBox();
-        LocalDateTime date;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        String startDate = null, endDate = null;
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         Label startEndDate = null;
         
-        if ((date = task.getStartDate()) != null) {
-            startDate = "from " + formatter.format(date);
+        if (task.isDeadline()) {
+            String endDate = dateFormatter.format(task.getEndDate());
+            startEndDate = new Label("By " + endDate);
+        } else if (task.isEvent()) {
+            LocalDateTime start = task.getStartDate();
+            LocalDateTime end = task.getEndDate();
+            LocalDate now = LocalDate.now();
+            if (start.toLocalDate().equals(now) && end.toLocalDate().equals(now)) {
+                String startDate = dateFormatter.format(start);
+                String endDate = dateFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
+            } else if (start.toLocalDate().equals(now)) {
+                String startDate = dateFormatter.format(start);
+                String endDate = dateFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
+            } else if (end.toLocalDate().equals(now)) {
+                String startDate = dateFormatter.format(start);
+                String endDate = dateFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
+            }
+            
         }
-        if ((date = task.getEndDate()) != null) {
-            endDate = "by " + formatter.format(date);
-        }
-        
-        if (startDate != null && endDate != null) {
-            String dates = startDate + " " + endDate;
-            dates = dates.substring(0, 1).toLowerCase() + dates.substring(1);
-            startEndDate = new Label(dates);
-        } else if (startDate != null) {
-            String dates = startDate;
-            dates = dates.substring(0, 1).toLowerCase() + dates.substring(1);
-            startEndDate = new Label(dates);
-        } else if (endDate != null){
-            String dates = endDate;
-            dates = dates.substring(0, 1).toLowerCase() + dates.substring(1);
-            startEndDate = new Label(dates);
-        }
-        
+
         if (startEndDate != null) {
             startEndDate.getStyleClass().add("details");
             details.getChildren().add(startEndDate);

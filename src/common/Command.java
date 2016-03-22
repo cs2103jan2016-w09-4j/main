@@ -72,11 +72,11 @@ public class Command {
         return id;
     }
 
-    public LocalDateTime getStartTime(){
+    public LocalDateTime getStartDate(){
         return start;
     }
 
-    public LocalDateTime getEndTime(){
+    public LocalDateTime getEndDate(){
         return end;
     }
 
