@@ -1,8 +1,8 @@
 import static org.junit.Assert.*;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.Test;
 
@@ -10,14 +10,14 @@ import common.Task;
 
 public class TaskTest {
     
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final String STR_SMALL = "aaa";
     private static final String STR_MID = "bbb";
     private static final String STR_BIG = "ccc";
     
     @Test
     public void testSameDate() throws ParseException {
-        Date date = dateFormat.parse("1/1/2016 12:00");
+        LocalDateTime date = LocalDateTime.parse("01/01/2016 12:00", formatter);
         
         /*
          * Equivalence partition:
@@ -31,11 +31,11 @@ public class TaskTest {
         assertTrue(t1.isSameDate(date) == false);
         
         Task t2 = new Task(STR_MID);
-        t2.setEnd("1/1/2016 00:00");
+        t2.setEnd("01/01/2016 00:00");
         assertTrue(t2.isSameDate(date) == true);
         
         Task t3 = new Task(STR_MID);
-        t3.setEnd("1/1/2016 23:59");
+        t3.setEnd("01/01/2016 23:59");
         assertTrue(t3.isSameDate(date) == true);
         
         Task t4 = new Task(STR_MID);
@@ -43,24 +43,24 @@ public class TaskTest {
         assertTrue(t4.isSameDate(date) == false);
         
         Task t5 = new Task(STR_MID);
-        t5.setEnd("2/1/2016 00:00");
+        t5.setEnd("02/01/2016 00:00");
         assertTrue(t5.isSameDate(date) == false);
 
         Task t6 = new Task(STR_MID);
-        t6.setStart("1/1/2016 00:00");
+        t6.setStart("01/01/2016 00:00");
         t6.setEnd("31/12/2016 00:00");
         assertTrue(t6.isSameDate(date) == true);
         
         Task t7 = new Task(STR_MID);
         t7.setStart("31/12/2015 23:59");
-        t7.setEnd("1/1/2016 23:59");
+        t7.setEnd("01/01/2016 23:59");
         assertTrue(t6.isSameDate(date) == true);
     }
     
     @Test
     public void testFloating() throws ParseException {
-        final Date date = dateFormat.parse("1/4/2016 12:00");
-        
+        LocalDateTime date = LocalDateTime.parse("01/04/2016 12:00", formatter);
+
         Task t1 = new Task(STR_MID);
         Task t2 = new Task(STR_MID);
         
@@ -78,9 +78,9 @@ public class TaskTest {
     
     @Test
     public void testDeadline() throws ParseException {
-        final Date smallDate = dateFormat.parse("1/4/2016 12:00");
-        final Date midDate = dateFormat.parse("7/7/2016 12:00");
-        final Date bigDate = dateFormat.parse("31/12/2016 12:00");
+        LocalDateTime smallDate = LocalDateTime.parse("01/04/2016 12:00", formatter);
+        LocalDateTime midDate = LocalDateTime.parse("07/07/2016 12:00", formatter);
+        LocalDateTime bigDate = LocalDateTime.parse("31/12/2016 12:00", formatter);
 
         Task t1 = new Task(STR_MID);
         t1.setEnd(midDate);

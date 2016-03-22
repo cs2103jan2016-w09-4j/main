@@ -1,9 +1,10 @@
 package common;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Task implements Comparable<Task> {
     
@@ -12,11 +13,12 @@ public class Task implements Comparable<Task> {
     
     private String description;
     private int id;
-    private Date start;
-    private Date end;
+    private LocalDateTime start;
+    private LocalDateTime end;
     private ArrayList<String> categories;
     
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
     
     public Task(String description) {
         this.description = description;
@@ -35,20 +37,20 @@ public class Task implements Comparable<Task> {
         return id;
     }
         
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return start;
     }
     
    public String getStartDateString() {
-        return dateFormat.format(start);
+        return formatter.format(start);
     }
 
-    public Date getEndDate() {
+    public LocalDateTime getEndDate() {
         return end;
     }
     
     public String getEndDateString() {
-        return dateFormat.format(end);
+        return formatter.format(end);
     }
 
     
@@ -68,21 +70,21 @@ public class Task implements Comparable<Task> {
         id = index;
     }
         
-    public void setStart(Date date) {
+    public void setStart(LocalDateTime date) {
         start = date;
     }
     
     public void setStart(String date) throws ParseException {
-        Date startDate = dateFormat.parse(date);
+        LocalDateTime startDate = LocalDateTime.parse(date, formatter);
         this.start = startDate;
     }
 
-    public void setEnd(Date date) {
+    public void setEnd(LocalDateTime date) {
         end = date;
     }
     
     public void setEnd(String date) throws ParseException {
-        Date endDate = dateFormat.parse(date);
+        LocalDateTime endDate = LocalDateTime.parse(date, formatter);
         this.end = endDate;
     }
 
@@ -94,14 +96,17 @@ public class Task implements Comparable<Task> {
      * HELPER METHODS *
      ******************/
 
-    public boolean isSameDate(Date date) {
-        String dateStr = dateFormat.format(date);
+    public boolean isSameDate(LocalDateTime dateTime) {
+        LocalDate date = dateTime.toLocalDate();
         if (isFloating()) {
             return false;
         } else if (isEvent()) {
-            return dateFormat.format(start).equals(dateStr) || dateFormat.format(end).equals(dateStr);
+            LocalDate startDate = start.toLocalDate();
+            LocalDate endDate = end.toLocalDate();
+            return startDate.equals(date) || endDate.equals(date);
         } else if (isDeadline()) {
-            return dateFormat.format(end).equals(dateStr);
+            LocalDate endDate = end.toLocalDate();
+            return endDate.equals(date);
         }
         return false;
     }
