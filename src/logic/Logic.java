@@ -74,7 +74,7 @@ public class Logic {
                 list = execution.completeCommand(taskID);
                 return new Result(commandType, true, "Marked as complete", list);
                 
-            case DONE :
+            case SEARCHOLD :
                 list = execution.getDoneList();
                 return new Result(commandType, true, "Showing completed tasks", list);
                 
