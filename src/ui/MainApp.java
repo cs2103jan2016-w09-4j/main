@@ -30,9 +30,9 @@ public class MainApp extends Application {
     private static final int WINDOW_HEIGHT_DEFAULT = 350;
     private static final int WINDOW_WIDTH_DEFAULT = 450;
     
-    private static final String RESOURCES_ICON_PROGRAM = "file:src/resources/icons/logo-smaller.png";
-    private static final String RESOURCE_FONT_ROBOTO = "file:src/resources/fonts/Roboto-Regular.ttf";
-    private static final String RESOURCE_FONT_ROBOTO_SLAB = "file:src/resources/fonts/RobotoSlab-Regular.ttf";
+    private static final String RESOURCES_ICON_PROGRAM = "/icons/logo-smaller.png";
+    private static final String RESOURCE_FONT_ROBOTO = "/fonts/Roboto-Regular.ttf";
+    private static final String RESOURCE_FONT_ROBOTO_SLAB = "/fonts/RobotoSlab-Regular.ttf";
     
     public static void main(String[] args) {
         launch(args);
@@ -50,8 +50,8 @@ public class MainApp extends Application {
     }
 
     private void initializeUI(Stage primaryStage) {
-        Font.loadFont(RESOURCE_FONT_ROBOTO, 10);
-        Font.loadFont(RESOURCE_FONT_ROBOTO_SLAB, 10);
+        Font.loadFont(getClass().getResource(RESOURCE_FONT_ROBOTO).toExternalForm(), 10);
+        Font.loadFont(getClass().getResource(RESOURCE_FONT_ROBOTO_SLAB).toExternalForm(), 10);
         root = new BorderPane();
         display = new DisplayController(this, primaryStage);
         input = new InputController(this);
