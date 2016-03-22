@@ -20,6 +20,7 @@ public class Task implements Comparable<Task> {
     
     public Task(String description) {
         this.description = description;
+        categories = new ArrayList<String>();
     }
 
     /******************
@@ -38,17 +39,17 @@ public class Task implements Comparable<Task> {
         return start;
     }
     
-   /*public String getStartDateString() {
+   public String getStartDateString() {
         return dateFormat.format(start);
-    }*/
+    }
 
     public Date getEndDate() {
         return end;
     }
     
-    /*public String getEndDateString() {
+    public String getEndDateString() {
         return dateFormat.format(end);
-    }*/
+    }
 
     
     public ArrayList<String> getCategories() {
