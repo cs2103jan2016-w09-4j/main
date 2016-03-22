@@ -1,10 +1,10 @@
 package common;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Command {
-    
+
     public enum CommandType {
         ADD, DELETE, EDIT, SEARCH, SAVE, LOAD, UNDO, REDO, HOME, COMPLETE, DONE, EXIT, INVALID;
     }
@@ -13,12 +13,19 @@ public class Command {
 
     private String description;
     private int id;
-    private Date start;
-    private Date end;
+    private LocalDateTime start;
+    private LocalDateTime end;
     private ArrayList<String> categories;
 
     public Command(CommandType type) {
         this.type = type;
+    }
+
+    public Command(CommandType type, String description, LocalDateTime start, LocalDateTime end){ // add
+        this.type = type;
+        this.description = description;
+        this.start = start;
+        this.end = end;
     }
 
     public Command(CommandType type, String description) {  // add, search
@@ -37,10 +44,18 @@ public class Command {
         this.description = description;
     }
 
+    public Command(CommandType type, int id, String description,  LocalDateTime start, LocalDateTime end) { // edit
+        this.type = type;
+        this.id = id;
+        this.description = description;
+        this.start = start;
+        this.end = end;
+    }
+
     public Command(String description) {
         this.description = description;
     }
-    
+
     /******************
      * GETTER METHODS *
      ******************/
@@ -56,5 +71,13 @@ public class Command {
     public int getId() {
         return id;
     }
-    
+
+    public LocalDateTime getStartTime(){
+        return start;
+    }
+
+    public LocalDateTime getEndTime(){
+        return end;
+    }
+
 }
