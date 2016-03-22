@@ -28,9 +28,9 @@ public class Parser {
                 String description = content.substring(firstWord.length()).trim();
                 return new Command(CommandType.EDIT, Integer.parseInt(firstWord), description);
             } else if (commandStr.startsWith("complete")) {
-            	return new Command(CommandType.COMPLETE, Integer.parseInt(commandStr.substring(5)));
+                return new Command(CommandType.COMPLETE, Integer.parseInt(commandStr.substring(5)));
             } else if (commandStr.startsWith("done")) {
-            	return new Command (CommandType.DONE);
+                return new Command (CommandType.DONE);
             } else if (commandStr.startsWith("search")) {
                 return new Command(CommandType.SEARCH, commandStr.substring(6).trim());
             } else if (commandStr.startsWith("save")) {
@@ -42,9 +42,9 @@ public class Parser {
             } else if (commandStr.startsWith("redo")) {
                 return new Command(CommandType.REDO);
             } else if (commandStr.startsWith("home")) {
-            	return new Command(CommandType.HOME);
+                return new Command(CommandType.HOME);
             } else if (commandStr.startsWith("exit")) {
-            	return new Command(CommandType.EXIT);
+                return new Command(CommandType.EXIT);
             } else {
                 return new Command(CommandType.INVALID);
             }

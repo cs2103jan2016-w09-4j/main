@@ -17,29 +17,29 @@ public class Task implements Comparable<Task> {
     private ArrayList<String> categories;
     
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-	
-	public Task(String description) {
-		this.description = description;
-	}
+    
+    public Task(String description) {
+        this.description = description;
+    }
 
     /******************
      * GETTER METHODS *
      ******************/
     
-	public String getDescription() {
-		return description;
-	}
-	
-	public int getId() {
-	    return id;
-	}
-    	
+    public String getDescription() {
+        return description;
+    }
+    
+    public int getId() {
+        return id;
+    }
+        
     public Date getStartDate() {
         return start;
     }
     
    /*public String getStartDateString() {
-    	return dateFormat.format(start);
+        return dateFormat.format(start);
     }*/
 
     public Date getEndDate() {
@@ -47,7 +47,7 @@ public class Task implements Comparable<Task> {
     }
     
     /*public String getEndDateString() {
-    	return dateFormat.format(end);
+        return dateFormat.format(end);
     }*/
 
     
@@ -174,4 +174,4 @@ public class Task implements Comparable<Task> {
         return !hasStart && hasEnd;
     }
 
-}	
+}

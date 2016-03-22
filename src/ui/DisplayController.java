@@ -49,8 +49,8 @@ public class DisplayController extends HiddenSidesPane {
     private static final String DISPLAY_FXML = "Display.fxml";
     private static final String SEARCH_HEADER_SINGLE = " search result found";
     private static final String SEARCH_HEADER_PLURAL = " search results found";
-    private static final String RESOURCES_ICON_SUCCESS = "file:main/src/resources/icons/success-smaller.png";
-    private static final String RESOURCES_ICONS_FAIL = "file:main/src/resources/icons/fail-smaller.png";
+    private static final String RESOURCES_ICON_SUCCESS = "/icons/success-smaller.png";
+    private static final String RESOURCES_ICONS_FAIL = "/icons/fail-smaller.png";
 
     public DisplayController(MainApp main, Stage primaryStage) {
         this.main = main;
