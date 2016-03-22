@@ -156,7 +156,7 @@ public class Execution {
                 dictionary.add(description);
                 return loadBack;
             }   
-        } catch (NotDirectoryException | FileNotFoundException e) {
+        }  catch (IOException e) {
             e.printStackTrace();
         }
         return new ArrayList<Task>();
