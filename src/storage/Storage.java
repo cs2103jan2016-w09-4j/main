@@ -70,8 +70,11 @@ public class Storage {
             FileWriter out = new FileWriter(file);
             out.write(fileName + "\r\n");
             storeFileNames.add(fileName);
+            
+            FileWriter out2 = new FileWriter(fileName);
 
             out.close();
+            out2.close();
 
             // file already exist, read from file
         } else {
@@ -127,9 +130,6 @@ public class Storage {
 
                         // if default file does no exist, return empty array list
 
-                        // write "mytextfile.txt" into default file
-                        writeToDefaultFile(defaultFileName);
-
                         return recentList;
 
                     }
@@ -155,8 +155,6 @@ public class Storage {
                         
                     } catch (FileNotFoundException e1) {
                         // if default file does no exist, return empty array list
-                        writeToDefaultFile(defaultFileName);    // write "mytextfile.txt" into default file
-
                         return recentList;
                     }
                 }
