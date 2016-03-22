@@ -89,9 +89,10 @@ public class Execution {
     public ArrayList<Task> editTask(int taskID, String newDescription) {
         boolean foundTask = false;
         dictionary.add(newDescription);
+        int index = taskID - 1;
         
-        if(mainList.get(taskID) != null){
-            mainList.get(taskID).setDescription(newDescription);
+        if(mainList.get(index) != null){
+            mainList.get(index).setDescription(newDescription);
             foundTask = true;
         }
         if (!foundTask) {
@@ -200,7 +201,7 @@ public class Execution {
     
     public ArrayList<String> getDictionary(){
         Collections.sort(dictionary);
-        return dictionary;  
+        return dictionary;
     }
     
     public ArrayList<Task> getDoneList(){

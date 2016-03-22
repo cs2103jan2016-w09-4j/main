@@ -7,6 +7,7 @@ import storage.Storage;
 import logic.Execution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Logic {
 
@@ -15,6 +16,8 @@ public class Logic {
     private Storage storage;
     private Execution execution;
     private static Logic logic = new Logic();
+    
+    private static final int MAX_PREDICTIONS = 5;
     
     public Logic() {
         this.parser = new Parser();
@@ -45,7 +48,6 @@ public class Logic {
                 
             case SEARCH :
                 list = execution.searchTask(description);
-                System.out.println(getPredictions());
                 return new Result(commandType, true, "Searched tasks", list);
             
             case HOME :
@@ -97,16 +99,42 @@ public class Logic {
         return execute(command);
     }
     
-    public ArrayList<String> getPredictions(){
-        return execution.getDictionary();
-    }
-    
     public ArrayList<String> getPredictions(String input) {
+        input = input.trim();
         if (input.isEmpty()) {
             return null;
-        } else {
-            return getPredictions();
         }
+        ArrayList<String> predictions = new ArrayList<String>();
+        String[] params = input.split("\\s+", 2);
+        String firstWord = params[0];
+        if (firstWord.equalsIgnoreCase("add") || firstWord.equalsIgnoreCase("search")) {
+            ArrayList<String> dictionary = execution.getDictionary();
+            if (params.length == 1) {
+                // retrieve any entry
+                for (int i = 0; i < Math.min(MAX_PREDICTIONS, dictionary.size()); i++) {
+                    predictions.add(firstWord + " " + dictionary.get(i));
+                }
+            } else {
+                // retrieve entry matching user input
+                String argument = params[1];
+                for (int i = 0; i < dictionary.size() && predictions.size() < MAX_PREDICTIONS; i++) {
+                    if (dictionary.get(i).startsWith(argument)) {
+                        predictions.add(firstWord + " " + dictionary.get(i));
+                    }
+                }
+            }
+        } else if (firstWord.equalsIgnoreCase("edit")) {
+            if (params.length == 2) {
+                // retrieve task description
+                try {
+                    int id = Integer.parseInt(params[1]);
+                    predictions.add(firstWord + " " + id + " " + execution.getMainList().get(id-1).getDescription());
+                } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                    // no predictions
+                }
+            }
+        }
+        return predictions;
     }
     
     public ArrayList<Task> getMainList() {

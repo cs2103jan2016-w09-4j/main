@@ -52,16 +52,10 @@ public class InputController extends VBox {
     private void handleUserInteractions() {
         commandBar.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                /*KeyCode key = event.getCode();
-                if (key == KeyCode.PAGE_DOWN) {
-                    logger.info("user pressed page down");
-                } else if (key == KeyCode.PAGE_UP) {
-                    logger.info("user pressed page up");
-                } else if (key == KeyCode.ENTER) {*/
-                    String input = commandBar.getText();
-                    logger.info("user entered: " + input);
-                    commandBar.clear();
-                    main.handleCommand(input);
+                String input = commandBar.getText();
+                logger.info("user entered: " + input);
+                commandBar.clear();
+                main.handleCommand(input);
             }
         });
         
