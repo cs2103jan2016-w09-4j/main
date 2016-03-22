@@ -185,7 +185,8 @@ public class Storage {
     }
 
     // Obtain filename without directory
-    private static String getFileName(String line, String toReplace) {
+    private static String getFileName(String line, String directoryToReplace) {
+    	String toReplace = directoryToReplace + " , ";
         String lineWithoutDirectory = line.replace(toReplace, "").trim();
 
         return lineWithoutDirectory;
@@ -282,6 +283,10 @@ public class Storage {
             //write to default file to load most recent
             String toWrite = directory + " , " + userFileName;
             writeToDefaultFile(toWrite);
+            
+            //set new file name and directory
+			fileName = userFileName;
+			savedDirectory = directory;
         }
     }
 
@@ -306,7 +311,7 @@ public class Storage {
             readFileWhenFileExists(file, listFromFile);
             
             fileName = userFileName;        //update filename for future writing of data
-
+            writeToDefaultFile(fileName);
         } else if (!isValid) {
             throw new FileNotFoundException();
         }
@@ -357,6 +362,10 @@ public class Storage {
                 //update filename and directory
                 fileName = userFileName;
                 savedDirectory = directory;
+                
+                //write to default file to load most recent
+				String toWrite = directory + " , " + userFileName;
+				writeToDefaultFile(toWrite);
                 
             } else if (!isFileValid) {
                 throw new FileNotFoundException();
