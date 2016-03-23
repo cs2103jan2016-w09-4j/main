@@ -83,7 +83,8 @@ public class Execution {
     }
 
     public ArrayList<Task> completeCommand(int taskID){
-        Task doneTask = mainList.get(taskID);
+        int index = taskID - 1;
+        Task doneTask = mainList.get(index);
         doneList.add(doneTask);
         
         deleteTask(taskID);

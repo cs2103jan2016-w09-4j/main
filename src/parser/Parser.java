@@ -33,8 +33,8 @@ public class Parser {
                         details.getDescription(), details.getStartTime(), details.getEndTime());
             } else if (commandString.startsWith("complete")) {
                 return new Command(CommandType.COMPLETE, Integer.parseInt(commandString.substring(9).trim()));
-            } else if (commandString.startsWith("done")) {
-                return new Command (CommandType.DONE);
+            } else if (commandString.startsWith("searchold")) {
+                return new Command (CommandType.SEARCHOLD);
             } else if (commandString.startsWith("search")) {
                 return new Command(CommandType.SEARCH, commandString.substring(6).trim());
             } else if (commandString.startsWith("save")) {
