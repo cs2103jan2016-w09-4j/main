@@ -8,13 +8,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import junitx.framework.FileAssert;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import common.Task;
 import storage.Storage;
 
 public class StorageTest {
-	
+
 	private Storage testStorage;
 	private ArrayList<Task> testList;
 	private ArrayList<Task> getDataFromFile;
@@ -27,17 +29,12 @@ public class StorageTest {
 	private String outputException3 = "";
 	String expectedDirectory = "/Users/Documents/testDirectory";
 
-	@Test
-	public void testMethods() throws IOException {
+	@Before
+	public void init() throws IOException {
 		System.out.println("initializing");
 		testStorage = new Storage();
 		testList = testStorage.getMainList();
 		getDataFromFile = new ArrayList<Task>();
-
-		String readLine;
-		Task taskFromFile;
-		int count;
-		File file1, file2, file3;
 
 		if (testList.isEmpty()) {
 			System.out.println("main list is empty");
@@ -56,8 +53,13 @@ public class StorageTest {
 
 		System.out.println("Print main list");
 		printResult(testList);
+	}
 
-		// @Test writeToFile
+	@Test
+	public void testWriteToFile() throws IOException {
+		String readLine;
+		Task taskFromFile;
+		int count;
 		testStorage.writeToFile();
 
 		// read file into arraylist
@@ -82,12 +84,15 @@ public class StorageTest {
 		}
 		// test content
 		assertEquals(testList.size(), count);
+	}
 
-		// @Test saveToFile
+	@Test
+	public void testSaveToFile() throws FileNotFoundException, IOException {
+
 		getDataFromFile.clear();
 		testStorage.saveToFile(fileName2);
-		file2 = new File(fileName1);
-		file3 = new File(fileName2);
+		File file2 = new File(fileName1);
+		File file3 = new File(fileName2);
 		FileAssert.assertEquals(file2, file3);
 
 		// file2.delete();
@@ -95,19 +100,25 @@ public class StorageTest {
 
 		// @Test loadFileWithFileName()
 		getDataFromFile.clear();
-		file1 = new File(fileName1);
+		File file1 = new File(fileName1);
 		getDataFromFile = testStorage.loadFileWithFileName(fileName1);
 		assertEquals(getDataFromFile, testList);
 
 		file1.delete();
+	}
 
-		// @Test saving and loading
+	@Test
+	public void testSaveAndLoadInvalid() throws IOException {
+
 		getDataFromFile.clear();
 		testStorage.saveToFile(fileName1);
 		getDataFromFile = testStorage.loadFileWithFileName(fileName1);
 		assertEquals(getDataFromFile, testList);
 
 		// @Test testInvalidFileForLoading()
+		// Equivalence partition:
+		// test possible file names and invalid file names
+		// loadFile
 		try {
 			testStorage.loadFileWithFileName("not a file");
 		} catch (FileNotFoundException fnfe) {
@@ -116,6 +127,7 @@ public class StorageTest {
 
 		assertEquals("Invalid File", outputException3);
 	}
+
 
 	/*
 	 * @Test public void appendToFile() throws IOException { File file1 = new
