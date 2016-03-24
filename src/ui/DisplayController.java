@@ -377,20 +377,9 @@ public class DisplayController extends HiddenSidesPane {
             } else if (task.isEvent()) {
                 LocalDateTime start = task.getStartDate();
                 LocalDateTime end = task.getEndDate();
-                LocalDate now = LocalDate.now();
-                if (start.toLocalDate().equals(now) && end.toLocalDate().equals(now)) {
-                    String startDate = dateFormatter.format(start);
-                    String endDate = dateFormatter.format(end);
-                    startEndDate = new Label("From " + startDate + " to " + endDate);
-                } else if (start.toLocalDate().equals(now)) {
-                    String startDate = dateFormatter.format(start);
-                    String endDate = dateFormatter.format(end);
-                    startEndDate = new Label("From " + startDate + " to " + endDate);
-                } else if (end.toLocalDate().equals(now)) {
-                    String startDate = dateFormatter.format(start);
-                    String endDate = dateFormatter.format(end);
-                    startEndDate = new Label("From " + startDate + " to " + endDate);
-                }
+                String startDate = dateFormatter.format(start);
+                String endDate = dateFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
             }
         }
 
