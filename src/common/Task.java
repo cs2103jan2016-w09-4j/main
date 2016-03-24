@@ -23,6 +23,9 @@ public class Task implements Comparable<Task> {
     public Task(String description) {
         this.description = description;
         categories = new ArrayList<String>();
+        start = null;
+        end = null;
+        id = -1;
     }
 
     /******************
