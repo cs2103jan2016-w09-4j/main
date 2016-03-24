@@ -231,26 +231,37 @@ public class Storage {
 		ArrayList<String> allTaskToString = convertTaskToString(mainList);
 		for (int i=0; i<allTaskToString.size(); i++) {
 			String lineToWrite = allTaskToString.get(i);
-			writer.write(lineToWrite);
+			writer.write(lineToWrite + "\r\n");
 		}
 		
 		writer.close();
 	}
-
+	
 	public void appendToFile(Task taskToAdd) throws IOException {
-
+		ArrayList<Task> taskList = new ArrayList<Task>();
+		taskList.add(taskToAdd);
+		ArrayList<String> stringList = convertTaskToString(taskList);
+		
+		
 		if (savedDirectory.isEmpty()) {
 			FileWriter writer = new FileWriter(fileName, true);
 			BufferedWriter bufferedWriter = new BufferedWriter(writer);
-			bufferedWriter.write(taskToAdd.getDescription() + "\r\n");
-
+			String lineToAppend = stringList.get(0);
+			bufferedWriter.write(lineToAppend + "\r\n");
+			
 			bufferedWriter.close();
 			writer.close();
-
+			
 		} else {
 			File accessFile = new File(savedDirectory + "/" + fileName);
-			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile(), true);
-			writeTasksFromMainList(writer);
+			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile(),true);
+			BufferedWriter bufferedWriter = new BufferedWriter(writer);
+			String lineToAppend = stringList.get(0);
+			bufferedWriter.write(lineToAppend + "\r\n");
+			
+			bufferedWriter.close();
+			writer.close();
+			//writeTasksFromMainList(writer);	
 		}
 
 	}
@@ -512,7 +523,7 @@ public class Storage {
 							task1.setStart(start.trim());
 
 							// get category
-							lineToReplace = "From " + start;
+							lineToReplace = "FROM " + start;
 							category = getFields(withoutDescription, lineToReplace); 
 							// get: #school #work
 							setMultipleCategories(task1, category);
@@ -525,7 +536,7 @@ public class Storage {
 						// get: From 22/03/2016  08:00 To  22/03/2016 13:00
 
 						// get start time
-						indexOfTo = withoutDescription.indexOf("To");
+						indexOfTo = withoutDescription.indexOf("TO");
 						start = withoutDescription.substring(5, indexOfTo);
 						task1.setStart(start.trim());
 
@@ -535,7 +546,7 @@ public class Storage {
 							// 08:00 To 22/03/2016 13:00
 
 							// get end time
-							lineToReplace = "From " + start;
+							lineToReplace = "FROM " + start;
 							String onlyEnd = getFields(withoutDescription, lineToReplace); 
 							// get: To 22/03/2016 13:00
 							end = onlyEnd.substring(3, onlyEnd.length());
@@ -546,7 +557,7 @@ public class Storage {
 							// To 22/03/2016 13:00 #school #work
 
 							// get end time
-							lineToReplace = "From " + start;
+							lineToReplace = "FROM " + start;
 							String onlyEnd = getFields(withoutDescription, lineToReplace); 
 							// get: To 22/03/2016 13:00 #work #school
 
@@ -555,7 +566,7 @@ public class Storage {
 							task1.setEnd(end.trim());
 
 							// get category
-							lineToReplace = "To " + end;
+							lineToReplace = "TO " + end;
 							category = getFields(onlyEnd, lineToReplace); 
 							// get: #school #work
 							setMultipleCategories(task1, category);
@@ -648,7 +659,6 @@ public class Storage {
 					}
 
 					line2 = categoryLine;
-					System.out.println("2.line2 is " + line2);
 				}
 			}
 
