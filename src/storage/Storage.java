@@ -26,10 +26,10 @@ public class Storage {
 
 	// default file name is "mytextfile.txt"
 	public Storage() {
-		fileName = "mytextfile.txt";
+		fileName = "MyTasks.txt";
 		savedDirectory = "";
 		mainList = new ArrayList<Task>();
-		defaultFile = "defaultfile.txt";
+		defaultFile = "DefaultFile.txt";
 		storeFileNames = new ArrayList<String>();
 	}
 
@@ -101,7 +101,7 @@ public class Storage {
 	private ArrayList<Task> getMostRecentList(ArrayList<String> listOfFileNames) throws IOException {
 		String recentFileName;
 		String recentDirectory;
-		String defaultFileName = "mytextfile.txt";
+		String defaultFileName = "MyTasks.txt";
 		ArrayList<Task> recentList = new ArrayList<Task>();
 
 		if (!listOfFileNames.isEmpty()) {
@@ -623,14 +623,14 @@ public class Storage {
 
 			// get start from task
 
-			if (task1.getStartDateString().isEmpty()) {
+			if (task1.getStartDateString() == null) {
 				indicator = "-";
 			} else {
 				start = task1.getStartDateString();
 				indicator = "+";
 			}
 
-			if (task1.getEndDateString().isEmpty()) {
+			if (task1.getEndDateString() == null) {
 				indicator = indicator + "-";
 			} else {
 				end = task1.getEndDateString();
