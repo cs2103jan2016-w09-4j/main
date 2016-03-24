@@ -33,4 +33,34 @@ public class ParserTest {
         assertEquals(expected.getStartDate(), actual.getStartDate());
         assertEquals(expected.getEndDate(), actual.getEndDate());
     }
+
+    @Test
+    public void noTimeTest() {
+        Parser parser = new Parser();
+        Command expected = new Command(CommandType.ADD, "a task with no time");
+        Command actual = parser.parseCommand("add a task with no time");
+        assertEquals(expected.getType(), actual.getType());
+        assertEquals(expected.getDescription(), actual.getDescription());
+        assertEquals(expected.getStartDate(), actual.getStartDate());
+        assertEquals(expected.getEndDate(), actual.getEndDate());
+    }
+
+    @Test
+    public void noTimeWithStartKeywordTest() {
+        Parser parser = new Parser();
+        Command expected = new Command(CommandType.ADD, "a task that starts at night");
+        Command actual = parser.parseCommand("add a task that starts at night");
+        assertEquals(expected.getType(), actual.getType());
+        assertEquals(expected.getDescription(), actual.getDescription());
+        assertEquals(expected.getStartDate(), actual.getStartDate());
+        assertEquals(expected.getEndDate(), actual.getEndDate());
+    }
+
+    @Test
+    public void saveTest() {
+        Parser parser = new Parser();
+        Command expected = new Command(CommandType.SAVE);
+        Command actual = parser.parseCommand("save");
+        assertEquals(expected, actual);
+    }
 }
