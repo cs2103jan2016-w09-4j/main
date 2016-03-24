@@ -25,7 +25,6 @@ public class Task implements Comparable<Task> {
         categories = new ArrayList<String>();
         start = null;
         end = null;
-        id = -1;
     }
 
     /******************
