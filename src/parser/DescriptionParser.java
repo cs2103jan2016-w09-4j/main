@@ -20,69 +20,62 @@ public class DescriptionParser {
 
         input = input.trim();
 
-        try {
-            int startIndex = input.indexOf(" start");
-            if (startIndex!=-1) {
-                int cutIndex = input.length();
-                for (int i = startIndex + 7; i<input.length(); i++) {
-                    if (Character.isLetter(input.charAt(i))){
-                        cutIndex = i-1;
-                        break;
-                    }
-                }
-
-                boolean parsed = false;
-                for (DateTimeFormatter formatter: formatters){
-                    if (parsed) break;
-                    try {
-                        String timeString = input.substring(startIndex+7, cutIndex);
-                        start =  LocalDateTime.parse(timeString, formatter);
-                    }
-                    catch (DateTimeParseException exc){
-                        parsed = !parsed;
-                    }
-                    finally {
-                        parsed = !parsed;
-                    }
+        int startIndex = input.indexOf(" start");
+        if (startIndex!=-1) {
+            int cutIndex = input.length();
+            for (int i = startIndex + 7; i<input.length(); i++) {
+                if (Character.isLetter(input.charAt(i))){
+                    cutIndex = i-1;
+                    break;
                 }
             }
-            else {
-                startIndex = input.length();
-            }
 
-            int endIndex = input.indexOf(" end");
-            if (endIndex!=-1){
-                int cutIndex = input.length();
-                for (int i = endIndex + 5; i<input.length(); i++) {
-                    if (Character.isLetter(input.charAt(i))){
-                        cutIndex = i-1;
-                        break;
-                    }
+            boolean parsed = false;
+            for (DateTimeFormatter formatter: formatters){
+                if (parsed) break;
+                try {
+                    String timeString = input.substring(startIndex+7, cutIndex).trim();
+                    start =  LocalDateTime.parse(timeString, formatter);
+                    parsed = true;
                 }
-
-                boolean parsed = false;
-                for (DateTimeFormatter formatter: formatters){
-                    if (parsed) break;
-                    try {
-                        end =  LocalDateTime.parse(input.substring(endIndex+5, cutIndex), formatter);
-                    }
-                    catch (DateTimeParseException exc){
-                        parsed = !parsed;
-                    }
-                    finally {
-                        parsed = !parsed;
-                    }
+                catch (DateTimeParseException exc){
                 }
             }
-            else {
-                endIndex = input.length();
-            }
 
-            description = input.substring(0, Math.min(startIndex, endIndex)).trim();
+            if (!parsed) startIndex = input.length();
         }
-        catch(DateTimeParseException exc){
-            description = input;
+        else {
+            startIndex = input.length();
         }
+
+        int endIndex = input.indexOf(" end");
+        if (endIndex!=-1){
+            int cutIndex = input.length();
+            for (int i = endIndex + 5; i<input.length(); i++) {
+                if (Character.isLetter(input.charAt(i))){
+                    cutIndex = i-1;
+                    break;
+                }
+            }
+
+            boolean parsed = false;
+            for (DateTimeFormatter formatter: formatters){
+                if (parsed) break;
+                try {
+                    end =  LocalDateTime.parse(input.substring(endIndex+5, cutIndex).trim(), formatter);
+                    parsed = true;
+                }
+                catch (DateTimeParseException exc){
+                }
+            }
+
+            if (!parsed) endIndex = input.length();
+        }
+        else {
+            endIndex = input.length();
+        }
+
+        description = input.substring(0, Math.min(startIndex, endIndex)).trim();
     }
 
     public LocalDateTime getStartTime(){
