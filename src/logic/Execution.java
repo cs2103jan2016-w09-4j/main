@@ -4,6 +4,7 @@ import common.*;
 import storage.Storage;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -186,7 +187,10 @@ public class Execution {
             }   
         }  catch (IOException e) {
             e.printStackTrace();
-        }
+        } catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return new ArrayList<Task>();
     }
     

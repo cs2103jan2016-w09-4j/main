@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.NotDirectoryException;
+import java.text.ParseException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -117,7 +118,7 @@ public class Storage {
 					recentList = loadFileWithFileName(recentFileName);
 					fileName = recentFileName; // change file name if it exist
 
-				} catch (FileNotFoundException e) {
+				} catch (FileNotFoundException | ParseException e) {
 
 					// if file not found / deleted, load mytextfile.txt
 					try {
@@ -126,10 +127,9 @@ public class Storage {
 						// write "mytextfile.txt" into default file
 						writeToDefaultFile(defaultFileName);
 
-					} catch (FileNotFoundException e1) {
+					} catch (FileNotFoundException | ParseException e1) {
 
-						// if default file does no exist, return empty array
-						// list
+						// if default file does no exist, return empty list
 
 						return recentList;
 
@@ -146,18 +146,16 @@ public class Storage {
 					fileName = recentFileName;
 					savedDirectory = recentDirectory;
 
-				} catch (NotDirectoryException | FileNotFoundException e) {
+				} catch (NotDirectoryException | FileNotFoundException | ParseException e) {
 
 					try {
 
 						// load list from default text file ("mytextfile.txt")
 						recentList = loadDefaultTextFile(defaultFileName);
-						writeToDefaultFile(defaultFileName); // write
-																// "mytextfile.txt"
-																// into default
-																// file
+						writeToDefaultFile(defaultFileName); 
+						// write "mytextfile.txt" into default file
 
-					} catch (FileNotFoundException e1) {
+					} catch (FileNotFoundException | ParseException e1) {
 						// if default file does no exist, return empty array
 						// list
 						return recentList;
@@ -173,7 +171,7 @@ public class Storage {
 	 * In cases where the most recent file is not found or does not exist It
 	 * will return the list from the default file - 'mytextfile.txt'
 	 */
-	private ArrayList<Task> loadDefaultTextFile(String defaultFileName) throws FileNotFoundException, IOException {
+	private ArrayList<Task> loadDefaultTextFile(String defaultFileName) throws FileNotFoundException, IOException, ParseException {
 		ArrayList<Task> recentList;
 		recentList = loadFileWithFileName(defaultFileName);
 		fileName = defaultFileName; // change back file name to default
@@ -222,30 +220,48 @@ public class Storage {
 	}
 
 	private void writeTasksFromMainList(FileWriter writer) throws IOException {
-		for (int i = 0; i < mainList.size(); i++) {
+		/*for (int i = 0; i < mainList.size(); i++) {
 			Task taskToAdd = mainList.get(i);
-
 			String taskDescription = taskToAdd.getDescription();
 			writer.write(taskDescription + "\r\n");
 		}
 
+		writer.close();*/
+		
+		ArrayList<String> allTaskToString = convertTaskToString(mainList);
+		for (int i=0; i<allTaskToString.size(); i++) {
+			String lineToWrite = allTaskToString.get(i);
+			writer.write(lineToWrite + "\r\n");
+		}
+		
 		writer.close();
 	}
-
+	
 	public void appendToFile(Task taskToAdd) throws IOException {
-
+		ArrayList<Task> taskList = new ArrayList<Task>();
+		taskList.add(taskToAdd);
+		ArrayList<String> stringList = convertTaskToString(taskList);
+		
+		
 		if (savedDirectory.isEmpty()) {
 			FileWriter writer = new FileWriter(fileName, true);
 			BufferedWriter bufferedWriter = new BufferedWriter(writer);
-			bufferedWriter.write(taskToAdd.getDescription() + "\r\n");
-
+			String lineToAppend = stringList.get(0);
+			bufferedWriter.write(lineToAppend + "\r\n");
+			
 			bufferedWriter.close();
 			writer.close();
-
+			
 		} else {
 			File accessFile = new File(savedDirectory + "/" + fileName);
-			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile(), true);
-			writeTasksFromMainList(writer);
+			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile(),true);
+			BufferedWriter bufferedWriter = new BufferedWriter(writer);
+			String lineToAppend = stringList.get(0);
+			bufferedWriter.write(lineToAppend + "\r\n");
+			
+			bufferedWriter.close();
+			writer.close();
+			//writeTasksFromMainList(writer);	
 		}
 
 	}
@@ -307,7 +323,7 @@ public class Storage {
 	 * This method loads data from a specific file. This method will throw an
 	 * exception if the file does not exist
 	 */
-	public ArrayList<Task> loadFileWithFileName(String userFileName) throws IOException, FileNotFoundException {
+	public ArrayList<Task> loadFileWithFileName(String userFileName) throws IOException, FileNotFoundException, ParseException {
 
 		File file = new File(userFileName);
 		ArrayList<String> listFromFile = new ArrayList<String>();
@@ -347,7 +363,7 @@ public class Storage {
 	 */
 
 	public ArrayList<Task> loadFileWithDirectory(String directory, String userFileName)
-			throws IOException, FileNotFoundException, NotDirectoryException {
+			throws IOException, FileNotFoundException, NotDirectoryException, ParseException {
 
 		ArrayList<String> listFromLoadFile = new ArrayList<String>();
 
@@ -392,7 +408,7 @@ public class Storage {
 	 * This method converts ArrayList<String> read from file to ArrayList<Task>
 	 * to allow execution of other commands
 	 */
-	private ArrayList<Task> convertStringToTask(ArrayList<String> listFromFile) {
+	/*private ArrayList<Task> convertStringToTask(ArrayList<String> listFromFile) {
 		ArrayList<Task> updatedMainList = new ArrayList<Task>();
 
 		for (int i = 0; i < listFromFile.size(); i++) {
@@ -403,26 +419,28 @@ public class Storage {
 		}
 
 		return updatedMainList;
-	}
+	}*/
 
 	// This method converts String to Task to allow execution of other commands
-	/*public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList, ArrayList<Task> taskList)
+	public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList)
 			throws ParseException {
 		Task task1 = new Task("");
 		String description, start, end, category;
 		String withoutDescription, lineToReplace;
-
+		ArrayList<Task> taskList = new ArrayList<Task>();
+		
 		for (int i = 0; i < stringList.size(); i++) {
 			String line = stringList.get(i);
-
+			
 			// check existence
 			int indexOfFrom = line.indexOf("From");
 			int indexOfTo = line.indexOf("To");
 			int indexOfCategory = line.indexOf('#');
-
+			
 			// only have description eg: meeting
 			if (indexOfFrom == -1 && indexOfTo == -1 && indexOfCategory == -1) {
-				task1.setDescription(line);
+
+				task1 = new Task(line);
 
 			} else {
 
@@ -442,7 +460,7 @@ public class Storage {
 
 						// get category
 						lineToReplace = description;
-						category = getFields(line, lineToReplace);
+						category = getFields(line, lineToReplace); 
 						// get: #work #school
 
 						setMultipleCategories(task1, category);
@@ -456,13 +474,12 @@ public class Storage {
 
 						// get end date
 						lineToReplace = description;
-						withoutDescription = getFields(line, lineToReplace);
+						withoutDescription = getFields(line, lineToReplace); 
 						// get: To 22/03/2016 13:00
 
 						// check category
 						if (indexOfCategory != -1) {
-							// have category eg: To 22/03/2016 13:00 #school
-							// #work
+							// have category eg: To 22/03/2016 13:00 #school #work
 							indexOfCategory = withoutDescription.indexOf("#");
 							end = withoutDescription.substring(3, indexOfCategory);
 							task1.setEnd(end.trim());
@@ -489,17 +506,15 @@ public class Storage {
 
 						// check category
 						if (indexOfCategory == -1) {
-							// means no category eg: meeting From 22/03/2016
-							// 08:00
-							withoutDescription = getFields(line, description);
+							// means no category eg: meeting From 22/03/2016 08:00
+							withoutDescription = getFields(line, description); 
 							// get: From 22/03/2016 08:00
 							start = withoutDescription.substring(5, withoutDescription.length());
 							task1.setStart(start);
 
 						} else {
-							// have category eg: meeting From 22/03/2016 08:00
-							// #school #work
-							withoutDescription = getFields(line, description);
+							// have category eg: meeting From 22/03/2016 08:00 #school #work
+							withoutDescription = getFields(line, description); 
 							// get: From 22/03/2016 08:00 #school #work
 
 							// get start
@@ -508,21 +523,20 @@ public class Storage {
 							task1.setStart(start.trim());
 
 							// get category
-							lineToReplace = "From " + start;
-							category = getFields(withoutDescription, lineToReplace);
+							lineToReplace = "FROM " + start;
+							category = getFields(withoutDescription, lineToReplace); 
 							// get: #school #work
 							setMultipleCategories(task1, category);
 						}
 
 					} else {
-						// have end date eg: meeting From 22/03/2016 08:00 To
-						// 22/03/2016 13:00
+						// have end date eg: meeting From 22/03/2016 08:00 To 22/03/2016 13:00
 
-						withoutDescription = getFields(line, description);
-						// get: From 22/03/2016 08:00 To 22/03/2016 13:00
+						withoutDescription = getFields(line, description); 
+						// get: From 22/03/2016  08:00 To  22/03/2016 13:00
 
 						// get start time
-						indexOfTo = withoutDescription.indexOf("To");
+						indexOfTo = withoutDescription.indexOf("TO");
 						start = withoutDescription.substring(5, indexOfTo);
 						task1.setStart(start.trim());
 
@@ -532,8 +546,8 @@ public class Storage {
 							// 08:00 To 22/03/2016 13:00
 
 							// get end time
-							lineToReplace = "From " + start;
-							String onlyEnd = getFields(withoutDescription, lineToReplace);
+							lineToReplace = "FROM " + start;
+							String onlyEnd = getFields(withoutDescription, lineToReplace); 
 							// get: To 22/03/2016 13:00
 							end = onlyEnd.substring(3, onlyEnd.length());
 							task1.setEnd(end);
@@ -543,20 +557,18 @@ public class Storage {
 							// To 22/03/2016 13:00 #school #work
 
 							// get end time
-							lineToReplace = "From " + start;
-							String onlyEnd = getFields(withoutDescription, lineToReplace);
-							// get To 22/03/2016 13:00 #work #school
+							lineToReplace = "FROM " + start;
+							String onlyEnd = getFields(withoutDescription, lineToReplace); 
+							// get: To 22/03/2016 13:00 #work #school
 
 							indexOfCategory = onlyEnd.indexOf('#');
 							end = onlyEnd.substring(3, indexOfCategory);
 							task1.setEnd(end.trim());
-							System.out.println("16.end time is " + end);
 
 							// get category
-							lineToReplace = "To " + end;
-							category = getFields(onlyEnd, lineToReplace);
+							lineToReplace = "TO " + end;
+							category = getFields(onlyEnd, lineToReplace); 
 							// get: #school #work
-
 							setMultipleCategories(task1, category);
 						}
 					}
@@ -586,19 +598,26 @@ public class Storage {
 			name = categoryName.substring(1, categoryName.length());
 			task1.setCategory(name);
 		}
-	}*/
+	}
 
 	// This method converts Task to String object for writing purpose
-	/*public static ArrayList<String> convertTaskToString(ArrayList<String> stringList, ArrayList<Task> taskList) {
+	public static ArrayList<String> convertTaskToString(ArrayList<Task> taskList) {
 		String line1 = null, line2 = null;
 		String categoryLine = "";
 		String description, start = null, end = null;
 		String indicator;
 		boolean isCategoryEmpty = false;
-
+		Task task1;
+		ArrayList<String> stringList = new ArrayList<String>();
+		
 		for (int i = 0; i < taskList.size(); i++) {
-			Task task1 = taskList.get(i);
-
+			
+			task1 = taskList.get(i);
+			categoryLine = "";
+			description ="";
+			start = "";
+			end = "";
+			
 			// get description from task
 			description = task1.getDescription();
 
@@ -619,8 +638,11 @@ public class Storage {
 			}
 
 			ArrayList<String> categoryList = task1.getCategories();
+			
 			if (categoryList.isEmpty()) {
 				indicator = indicator + "-";
+				isCategoryEmpty = false;
+					
 			} else {
 
 				isCategoryEmpty = true;
@@ -640,17 +662,18 @@ public class Storage {
 				}
 			}
 
-			if (start != null && end != null) {
+			if (!start.isEmpty() && !end.isEmpty()) {
 				line1 = indicator + " " + description + " FROM " + start + " TO " + end;
-			} else if (start != null && end == null) {
+			} else if (!start.isEmpty() && end.isEmpty()) {
 				line1 = indicator + " " + description + " FROM " + start;
-			} else if (start == null && end != null) {
+			} else if (start.isEmpty() && !end.isEmpty()) {
 				line1 = indicator + " " + description + " TO " + end;
-			} else if (start == null && end == null) {
+			} else if (start.isEmpty() && end.isEmpty()) {
 				line1 = indicator + " " + description;
 			}
 
-			String finalLine;
+			String finalLine = "";
+
 			if (isCategoryEmpty) {
 				finalLine = line1 + line2;
 			} else {
@@ -666,7 +689,7 @@ public class Storage {
 		String lineWithoutDirectory = line.replace(toReplace, "").trim();
 
 		return lineWithoutDirectory;
-	}*/
+	}
 
 	// for load commands
 	public void setMainList(ArrayList<Task> mainList) {

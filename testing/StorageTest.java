@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import junitx.framework.FileAssert;
@@ -87,7 +88,7 @@ public class StorageTest {
 	}
 
 	@Test
-	public void testSaveToFile() throws FileNotFoundException, IOException {
+	public void testSaveToFile() throws FileNotFoundException, IOException, ParseException {
 
 		getDataFromFile.clear();
 		testStorage.saveToFile(fileName2);
@@ -108,7 +109,7 @@ public class StorageTest {
 	}
 
 	@Test
-	public void testSaveAndLoadInvalid() throws IOException {
+	public void testSaveAndLoadInvalid() throws IOException, ParseException {
 
 		getDataFromFile.clear();
 		testStorage.saveToFile(fileName1);
