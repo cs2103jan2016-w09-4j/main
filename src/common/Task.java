@@ -179,5 +179,11 @@ public class Task implements Comparable<Task> {
         boolean hasEnd = this.end != null;
         return !hasStart && hasEnd;
     }
+    
+    @Override
+    public String toString() {
+        String str = description + "/" + start + "/" + end;
+        return str;
+    }
 
 }
