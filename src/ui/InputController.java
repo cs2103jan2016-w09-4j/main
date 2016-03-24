@@ -21,7 +21,9 @@ public class InputController extends VBox {
     private static Logger logger = Logger.getLogger("MainApp.InputController");
     private MainApp main;
     @FXML TextField commandBar;
-    
+
+    private static final String FXML_INPUT = "Input.fxml";
+
     public InputController(MainApp main) {
         this.main = main;
         try {
@@ -39,7 +41,7 @@ public class InputController extends VBox {
     }
 
     private void loadFXML() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Input.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_INPUT));
         loader.setController(this);
         loader.setRoot(this);
         try {

@@ -182,7 +182,7 @@ public class Task implements Comparable<Task> {
     
     @Override
     public String toString() {
-        String str = description + "/" + start + "/" + end;
+        String str = description + "/" + id + "/" + start + "/" + end;
         return str;
     }
 
