@@ -44,13 +44,15 @@ public class DisplayController extends HiddenSidesPane {
     private Stage primaryStage;
     
     @FXML private VBox mainPanel;
-    private VBox taskPanel, searchPanel;
+    private VBox taskPanel, searchPanel, completedPanel;
     private SidebarController sidebar;
     private Popup feedback;
     
     private static final String DISPLAY_FXML = "Display.fxml";
     private static final String SEARCH_HEADER_SINGLE = " search result found";
     private static final String SEARCH_HEADER_PLURAL = " search results found";
+    private static final String COMPLETED_HEADER_SINGLE = " completed task";
+    private static final String COMPLETED_HEADER_PLURAL = " completed tasks";
     private static final String RESOURCES_ICON_SUCCESS = "/icons/success-smaller.png";
     private static final String RESOURCES_ICONS_FAIL = "/icons/fail-smaller.png";
 
@@ -61,6 +63,7 @@ public class DisplayController extends HiddenSidesPane {
         loadFXML();
         initializeTaskPanel();
         initializeSearchPanel();
+        initializeCompletedPanel();
         initializeSidebarContent();
         initializePopup();
         handleUserInteractions();
@@ -102,6 +105,11 @@ public class DisplayController extends HiddenSidesPane {
     private void initializeSearchPanel() {
         searchPanel = new VBox();
         searchPanel.getStyleClass().add("panel-search");
+    }
+    
+    private void initializeCompletedPanel() {
+        completedPanel = new VBox();
+        completedPanel.getStyleClass().add("panel-task");
     }
 
     private void initializeSidebarContent() {
@@ -145,6 +153,9 @@ public class DisplayController extends HiddenSidesPane {
         if (cmd == CommandType.SEARCH) {
             updateSearchPanel(result.getResults());
             this.setContent(searchPanel);
+        } else if (cmd == CommandType.COMPLETE || cmd == CommandType.SEARCHOLD) {
+            updateCompletedPanel(result.getResults());
+            this.setContent(completedPanel);
         } else {
             ArrayList<Task> allTasks = result.getResults();
             updateTaskPanel(allTasks);
@@ -216,6 +227,19 @@ public class DisplayController extends HiddenSidesPane {
         ListView<VBox> searchListView = new ListView<VBox>(searchList);
         searchListView.prefHeightProperty().bind(Bindings.size(searchList).multiply(58));
         searchPanel.getChildren().addAll(searchHeader, searchListView);
+    }
+    
+    private void updateCompletedPanel(ArrayList<Task> results) {
+        completedPanel.getChildren().clear();
+        Label completedHeader = createHeader(results.size() + (results.size() == 1 ? COMPLETED_HEADER_SINGLE : COMPLETED_HEADER_PLURAL));
+        ArrayList<VBox> completedTasks = new ArrayList<VBox>();
+        for (Task result : results) {
+            completedTasks.add(createCompleted(result));
+        }
+        ObservableList<VBox> completedList = FXCollections.observableArrayList(completedTasks);
+        ListView<VBox> completedListView = new ListView<VBox>(completedList);
+        completedListView.prefHeightProperty().bind(Bindings.size(completedList).multiply(58));
+        completedPanel.getChildren().addAll(completedHeader, completedListView);
     }
 
     private void showFeedback(CommandType cmd, String msg, boolean isSuccess) {
@@ -306,6 +330,48 @@ public class DisplayController extends HiddenSidesPane {
         VBox entry = new VBox();
         
         Label desc = new Label(index + ". " + task.getDescription());
+        
+        HBox details = new HBox();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        Label startEndDate = null;
+        
+        if (task.isDeadline()) {
+            String endDate = dateFormatter.format(task.getEndDate());
+            startEndDate = new Label("By " + endDate);
+        } else if (task.isEvent()) {
+            LocalDateTime start = task.getStartDate();
+            LocalDateTime end = task.getEndDate();
+            LocalDate now = LocalDate.now();
+            if (start.toLocalDate().equals(now) && end.toLocalDate().equals(now)) {
+                String startDate = dateFormatter.format(start);
+                String endDate = dateFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
+            } else if (start.toLocalDate().equals(now)) {
+                String startDate = dateFormatter.format(start);
+                String endDate = dateFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
+            } else if (end.toLocalDate().equals(now)) {
+                String startDate = dateFormatter.format(start);
+                String endDate = dateFormatter.format(end);
+                startEndDate = new Label("From " + startDate + " to " + endDate);
+            }
+            
+        }
+
+        if (startEndDate != null) {
+            startEndDate.getStyleClass().add("details");
+            details.getChildren().add(startEndDate);
+        }
+        
+        entry.getChildren().addAll(desc, details);
+        entry.getStyleClass().add("entry-task");
+        return entry;
+    }
+    
+    private VBox createCompleted(Task task) {
+        VBox entry = new VBox();
+        
+        Label desc = new Label(task.getDescription());
         
         HBox details = new HBox();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
