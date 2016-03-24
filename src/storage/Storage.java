@@ -404,188 +404,71 @@ public class Storage {
 		return mainList;
 	}
 
-	/*
-	 * This method converts ArrayList<String> read from file to ArrayList<Task>
-	 * to allow execution of other commands
-	 */
-	/*private ArrayList<Task> convertStringToTask(ArrayList<String> listFromFile) {
-		ArrayList<Task> updatedMainList = new ArrayList<Task>();
-
-		for (int i = 0; i < listFromFile.size(); i++) {
-			String getLineFromFile = listFromFile.get(i);
-			Task newTask = new Task(getLineFromFile);
-
-			updatedMainList.add(newTask);
-		}
-
-		return updatedMainList;
-	}*/
 
 	// This method converts String to Task to allow execution of other commands
 	public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList)
 			throws ParseException {
+		
 		Task task1 = new Task("");
 		String description, start, end, category;
-		String withoutDescription, lineToReplace;
+		String lineToReplace;
+		int count = 0;
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		
 		for (int i = 0; i < stringList.size(); i++) {
 			String line = stringList.get(i);
 			
-			// check existence
-			int indexOfFrom = line.indexOf("From");
-			int indexOfTo = line.indexOf("To");
-			int indexOfCategory = line.indexOf('#');
-			
-			// only have description eg: meeting
-			if (indexOfFrom == -1 && indexOfTo == -1 && indexOfCategory == -1) {
-
-				task1 = new Task(line);
-
+			//if (line.isEmpty()) {		//break line
+			if (line.equals("-----------------------------------")) {
+				//System.out.println("Encountered break line, continue");
+				continue;
 			} else {
+				String[] splitLine = line.split(" ");
+				String indicator = splitLine[0];
+				String field = splitLine[1];
 
-				if (indexOfFrom == -1) {
-					// means no start date
-
-					// check for end date
-					if (indexOfTo == -1) {
-						// means no end date
-
-						// only have description and category eg: meeting #work
-						// #school
-
-						// get description
-						description = line.substring(0, indexOfCategory);
-						task1 = setDescription(description);
-
-						// get category
-						lineToReplace = description;
-						category = getFields(line, lineToReplace); 
-						// get: #work #school
-
+				// will always have description
+				if (field.equals("Description:")) {
+					lineToReplace = indicator + " " + field;
+					description = getFields(line,lineToReplace);
+					task1.setDescription(description);
+					count++;
+					//System.out.println("222.count is " + count);
+				} else if (field.equals("Start:")) {
+					if (indicator.equals("+")) {
+						lineToReplace = indicator + " " + field;
+						start = getFields(line,lineToReplace);
+						task1.setStart(start);
+					} 
+					count++;
+					//System.out.println("222.count is " + count);
+				} else if (field.equals("End:")) {
+					if (indicator.equals("+")) {
+						lineToReplace = indicator + " " + field;
+						end = getFields(line,lineToReplace);
+						task1.setEnd(end);
+					}
+					count++;
+					//System.out.println("222.count is " + count);
+				} else if (field.equals("Category:")) {
+					if (indicator.equals("+")) {
+						lineToReplace = indicator + " " + field;
+						category = getFields(line,lineToReplace);
 						setMultipleCategories(task1, category);
-
-					} else {
-						// have end date eg: meeting To 22/03/2016 13:00
-
-						// get description
-						description = line.substring(0, indexOfTo);
-						task1 = setDescription(description);
-
-						// get end date
-						lineToReplace = description;
-						withoutDescription = getFields(line, lineToReplace); 
-						// get: To 22/03/2016 13:00
-
-						// check category
-						if (indexOfCategory != -1) {
-							// have category eg: To 22/03/2016 13:00 #school #work
-							indexOfCategory = withoutDescription.indexOf("#");
-							end = withoutDescription.substring(3, indexOfCategory);
-							task1.setEnd(end.trim());
-
-							category = withoutDescription.substring(indexOfCategory, withoutDescription.length());
-							setMultipleCategories(task1, category);
-
-						} else {
-							// means no category eg: To 22/03/2016 13:00
-							end = withoutDescription.substring(3, withoutDescription.length());
-							task1.setEnd(end);
-						}
 					}
-
-					// have start time
-				} else if (indexOfFrom != -1) {
-
-					description = line.substring(0, indexOfFrom);
-					task1 = setDescription(description);
-
-					// check for end date
-					if (indexOfTo == -1) {
-						// means no end date eg: meeting From 22/03/2016 08:00
-
-						// check category
-						if (indexOfCategory == -1) {
-							// means no category eg: meeting From 22/03/2016 08:00
-							withoutDescription = getFields(line, description); 
-							// get: From 22/03/2016 08:00
-							start = withoutDescription.substring(5, withoutDescription.length());
-							task1.setStart(start);
-
-						} else {
-							// have category eg: meeting From 22/03/2016 08:00 #school #work
-							withoutDescription = getFields(line, description); 
-							// get: From 22/03/2016 08:00 #school #work
-
-							// get start
-							indexOfCategory = withoutDescription.indexOf("#");
-							start = withoutDescription.substring(5, indexOfCategory);
-							task1.setStart(start.trim());
-
-							// get category
-							lineToReplace = "FROM " + start;
-							category = getFields(withoutDescription, lineToReplace); 
-							// get: #school #work
-							setMultipleCategories(task1, category);
-						}
-
-					} else {
-						// have end date eg: meeting From 22/03/2016 08:00 To 22/03/2016 13:00
-
-						withoutDescription = getFields(line, description); 
-						// get: From 22/03/2016  08:00 To  22/03/2016 13:00
-
-						// get start time
-						indexOfTo = withoutDescription.indexOf("TO");
-						start = withoutDescription.substring(5, indexOfTo);
-						task1.setStart(start.trim());
-
-						// check category
-						if (indexOfCategory == -1) {
-							// means no category eg: meeting From 22/03/2016
-							// 08:00 To 22/03/2016 13:00
-
-							// get end time
-							lineToReplace = "FROM " + start;
-							String onlyEnd = getFields(withoutDescription, lineToReplace); 
-							// get: To 22/03/2016 13:00
-							end = onlyEnd.substring(3, onlyEnd.length());
-							task1.setEnd(end);
-
-						} else {
-							// have category eg: meeting From 22/03/2016 08:00
-							// To 22/03/2016 13:00 #school #work
-
-							// get end time
-							lineToReplace = "FROM " + start;
-							String onlyEnd = getFields(withoutDescription, lineToReplace); 
-							// get: To 22/03/2016 13:00 #work #school
-
-							indexOfCategory = onlyEnd.indexOf('#');
-							end = onlyEnd.substring(3, indexOfCategory);
-							task1.setEnd(end.trim());
-
-							// get category
-							lineToReplace = "TO " + end;
-							category = getFields(onlyEnd, lineToReplace); 
-							// get: #school #work
-							setMultipleCategories(task1, category);
-						}
-					}
+					count++;
+					//System.out.println("222.count is " + count);
 				}
 			}
-
-			taskList.add(task1);
-		}
-
-		return taskList;
-
-	}
-
-	private static Task setDescription(String description) {
-		Task task1;
-		task1 = new Task(description.trim());
-		return task1;
+			
+			if (count == 4) {
+				taskList.add(task1);
+				task1 = new Task("");
+				count = 0;
+				}
+		 }
+		 
+		 return taskList;
 	}
 
 	private static void setMultipleCategories(Task task1, String category) {
@@ -602,88 +485,79 @@ public class Storage {
 
 	// This method converts Task to String object for writing purpose
 	public static ArrayList<String> convertTaskToString(ArrayList<Task> taskList) {
-		String line1 = null, line2 = null;
-		String categoryLine = "";
+		String linesOfCategory = "";
 		String description, start = null, end = null;
-		String indicator;
-		boolean isCategoryEmpty = false;
+		String descriptionLine, startLine, endLine, categoryLine;
 		Task task1;
 		ArrayList<String> stringList = new ArrayList<String>();
 		
 		for (int i = 0; i < taskList.size(); i++) {
 			
 			task1 = taskList.get(i);
-			categoryLine = "";
+			linesOfCategory = "";
 			description ="";
 			start = "";
 			end = "";
 			
 			// get description from task
 			description = task1.getDescription();
+			descriptionLine = "+ Description: " + description;
+			//get: +Description: meeting
 
 			// get start from task
 
-			if (task1.getStartDateString() == null) {
-				indicator = "-";
+			if (task1.getStartDateString().isEmpty()) {
+				startLine = "- Start: ";
+
 			} else {
 				start = task1.getStartDateString();
-				indicator = "+";
+				startLine = "+ Start: " + start;
+
 			}
 
-			if (task1.getEndDateString() == null) {
-				indicator = indicator + "-";
+			if (task1.getEndDateString().isEmpty()) {
+				endLine = "- End: ";
+
 			} else {
 				end = task1.getEndDateString();
-				indicator = indicator + "+";
+				endLine = "+ End: " + end;
 			}
 
 			ArrayList<String> categoryList = task1.getCategories();
 			
 			if (categoryList.isEmpty()) {
-				indicator = indicator + "-";
-				isCategoryEmpty = false;
-					
+				categoryLine = "- Category: ";
+				
+			
 			} else {
-
-				isCategoryEmpty = true;
-				indicator = indicator + "+";
 
 				// only one category
 				if (categoryList.size() == 1) {
-					line2 = " #" + categoryList.get(0);
+					categoryLine = "+ Category: " + "#" + categoryList.get(0);
+				
 				} else {
 					int count = 0;
 					while (count < categoryList.size()) {
-						categoryLine = categoryLine + " #" + categoryList.get(count);
+						linesOfCategory = linesOfCategory + " #" + categoryList.get(count);
 						count++;
 					}
-
-					line2 = categoryLine;
+					
+					categoryLine = "+ Category:" + linesOfCategory;
 				}
 			}
-
-			if (!start.isEmpty() && !end.isEmpty()) {
-				line1 = indicator + " " + description + " FROM " + start + " TO " + end;
-			} else if (!start.isEmpty() && end.isEmpty()) {
-				line1 = indicator + " " + description + " FROM " + start;
-			} else if (start.isEmpty() && !end.isEmpty()) {
-				line1 = indicator + " " + description + " TO " + end;
-			} else if (start.isEmpty() && end.isEmpty()) {
-				line1 = indicator + " " + description;
-			}
-
-			String finalLine = "";
-
-			if (isCategoryEmpty) {
-				finalLine = line1 + line2;
-			} else {
-				finalLine = line1;
-			}
-
-			stringList.add(finalLine);
+			
+			stringList.add(descriptionLine);
+			stringList.add(startLine);
+			stringList.add(endLine);
+			stringList.add(categoryLine);
+			
+			String breakLine = "-----------------------------------";
+			stringList.add(breakLine);
+			
 		}
 		return stringList;
 	}
+
 
 	private static String getFields(String line, String toReplace) {
 		String lineWithoutDirectory = line.replace(toReplace, "").trim();
