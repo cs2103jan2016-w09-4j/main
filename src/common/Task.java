@@ -44,7 +44,12 @@ public class Task implements Comparable<Task> {
     }
     
    public String getStartDateString() {
-        return formatter.format(start);
+	   if (start != null) {
+		   return formatter.format(start);
+	   } 
+	   
+	   String start2 = "";
+	   return start2;
     }
 
     public LocalDateTime getEndDate() {
@@ -52,7 +57,13 @@ public class Task implements Comparable<Task> {
     }
     
     public String getEndDateString() {
-        return formatter.format(end);
+        //return formatter.format(end);
+    	if (end != null) {
+    		return formatter.format(end);
+ 	   } 
+ 	   
+ 	   String start2 = "";
+ 	   return start2;
     }
 
     
