@@ -46,6 +46,5 @@ public class LogicTest{
         assertArrayEquals(mainList.toArray(), compareList.toArray());
         mainList.clear();
         compareList.clear();
-    }
-    
+    }    
 }
