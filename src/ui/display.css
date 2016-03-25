@@ -60,6 +60,12 @@
     -fx-background-radius: 0;
 }
 
+.entry-task-modified {
+    -fx-padding: 2;
+    -fx-background-color: #A1E7C6;
+    -fx-background-radius: 0;
+}
+
 .desc {
     -fx-font-size: 15;
     -fx-wrap-text: true;

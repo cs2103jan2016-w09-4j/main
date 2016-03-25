@@ -16,6 +16,7 @@ public class Task implements Comparable<Task> {
     private LocalDateTime start;
     private LocalDateTime end;
     private ArrayList<String> categories;
+    private boolean isModified;
     
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -25,6 +26,7 @@ public class Task implements Comparable<Task> {
         categories = new ArrayList<String>();
         start = null;
         end = null;
+        isModified = false;
     }
 
     /******************
@@ -66,9 +68,12 @@ public class Task implements Comparable<Task> {
  	   return start2;
     }
 
-    
     public ArrayList<String> getCategories() {
         return categories;
+    }
+    
+    public boolean isModified() {
+        return isModified;
     }
     
     /******************
@@ -103,6 +108,10 @@ public class Task implements Comparable<Task> {
 
     public void setCategory(String categoryName) {
         categories.add(categoryName);
+    }
+    
+    public void setModified(boolean isModified) {
+        this.isModified = isModified;
     }
     
     /******************

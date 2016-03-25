@@ -56,9 +56,10 @@ public class DisplayController extends HiddenSidesPane {
     private static final String RESOURCES_ICON_SUCCESS = "/icons/success-smaller.png";
     private static final String RESOURCES_ICONS_FAIL = "/icons/fail-smaller.png";
     
-    private static final int TYPE_TODAY = 1;
-    private static final int TYPE_OTHER = 2;
-    private static final int TYPE_COMPLETED = 3;
+    private static final int TYPE_COMPLETED = 1;
+    private static final int TYPE_MODIFIED = 2;
+    private static final int TYPE_OTHER = 3;
+    private static final int TYPE_TODAY = 4;
 
     public DisplayController(MainApp main, Stage primaryStage) {
         this.main = main;
@@ -174,8 +175,11 @@ public class DisplayController extends HiddenSidesPane {
     
     private void updateTaskPanel(ArrayList<Task> allTasks) {
         assert (taskPanel != null);
+        
         LocalDateTime todayDateTime = LocalDateTime.now();
         LocalDate todayDate = todayDateTime.toLocalDate();
+        
+        // place tasks in Today or Others section
         ArrayList<VBox> todayTasks = new ArrayList<VBox>();
         ArrayList<VBox> otherTasks = new ArrayList<VBox>();
         for (Task task : allTasks) {
@@ -305,7 +309,9 @@ public class DisplayController extends HiddenSidesPane {
         // when the text description is very long
         entry.setPrefWidth(1);
         entry.getChildren().addAll(desc, details);
-        if (task.isOverdue(todayDate)) {
+        if (task.isModified()) {
+            entry.getStyleClass().add("entry-task-modified");
+        } else if (task.isOverdue(todayDate)) {
             entry.getStyleClass().add("entry-task-overdue");
         } else {
             entry.getStyleClass().add("entry-task");
@@ -322,7 +328,9 @@ public class DisplayController extends HiddenSidesPane {
         // when the text description is very long
         entry.setPrefWidth(1);
         entry.getChildren().addAll(desc, details);
-        if (task.isOverdue(todayDate)) {
+        if (task.isModified()) {
+            entry.getStyleClass().add("entry-task-modified");
+        } else if (task.isOverdue(todayDate)) {
             entry.getStyleClass().add("entry-task-overdue");
         } else {
             entry.getStyleClass().add("entry-task");
