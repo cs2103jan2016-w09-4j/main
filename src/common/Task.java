@@ -108,7 +108,14 @@ public class Task implements Comparable<Task> {
     /******************
      * HELPER METHODS *
      ******************/
-
+    
+    public boolean isOverdue(LocalDateTime dateTime) {
+        if (isEvent() || isDeadline()) {
+            return end.compareTo(dateTime) < 0;
+        }
+        return false;
+    }
+    
     public boolean isSameDate(LocalDateTime dateTime) {
         LocalDate date = dateTime.toLocalDate();
         if (isFloating()) {

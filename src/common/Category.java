@@ -4,18 +4,15 @@ public class Category {
 
     private String name;
     private int count;
-    private int tasksLeft;
-    private int tasksTotal;
-
-    public Category() {
-        this("New Category");
-    }
     
     public Category(String name) {
         this.name = name;
         this.count = 0;
-        this.tasksLeft = 0;
-        this.tasksTotal = 0;
+    }
+    
+    public Category(String name, int count) {
+        this.name = name;
+        this.count = count;
     }
     
     /******************
@@ -30,14 +27,6 @@ public class Category {
         return count;
     }
     
-    public int getTasksLeft() {
-        return tasksLeft;
-    }
-    
-    public int getTasksTotal() {
-        return tasksTotal;
-    }
-    
     /******************
      * SETTER METHODS *
      ******************/
@@ -49,13 +38,4 @@ public class Category {
     public void setCount(int count) {
         this.count = count;
     }
-
-    public void setTasksLeft(int tasksLeft) {
-        this.tasksLeft = tasksLeft;
-    }
-
-    public void setTasksTotal(int tasksTotal) {
-        this.tasksTotal = tasksTotal;
-    }
-    
 }

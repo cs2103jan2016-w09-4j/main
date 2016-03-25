@@ -54,6 +54,12 @@
     -fx-background-radius: 0;
 }
 
+.entry-task-overdue {
+    -fx-padding: 2;
+    -fx-background-color: #FFAB8E;
+    -fx-background-radius: 0;
+}
+
 .desc {
     -fx-font-size: 15;
     -fx-wrap-text: true;

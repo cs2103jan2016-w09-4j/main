@@ -179,9 +179,9 @@ public class DisplayController extends HiddenSidesPane {
         ArrayList<VBox> otherTasks = new ArrayList<VBox>();
         for (Task task : allTasks) {
             if (task.isSameDate(todayDate)) {
-                todayTasks.add(createToday(task));
+                todayTasks.add(createToday(task, todayDate));
             } else {
-                otherTasks.add(createOther(task));
+                otherTasks.add(createOther(task, todayDate));
             }
         }
         
@@ -222,11 +222,12 @@ public class DisplayController extends HiddenSidesPane {
 
     private void updateSearchPanel(ArrayList<Task> results) {
         assert (searchPanel != null);
-
+        LocalDateTime todayDate = LocalDateTime.now();
+        
         Label searchHeader = createHeader(results.size() + (results.size() == 1 ? HEADER_SEARCH_SINGLE : HEADER_SEARCH_PLURAL));
         ArrayList<VBox> searchTasks = new ArrayList<VBox>();
         for (Task result : results) {
-            searchTasks.add(createOther(result));
+            searchTasks.add(createOther(result, todayDate));
         }
         ListView<VBox> searchListView = createListView(searchTasks);
         
@@ -297,7 +298,7 @@ public class DisplayController extends HiddenSidesPane {
         return todayListView;
     }
 
-    private VBox createToday(Task task) {
+    private VBox createToday(Task task, LocalDateTime todayDate) {
         Label desc = new Label(task.getId() + ". " + task.getDescription());
         HBox details = createTaskDetails(task, TYPE_TODAY);
         
@@ -306,11 +307,15 @@ public class DisplayController extends HiddenSidesPane {
         // when the text description is very long
         entry.setPrefWidth(1);
         entry.getChildren().addAll(desc, details);
-        entry.getStyleClass().add("entry-task");
+        if (task.isOverdue(todayDate)) {
+            entry.getStyleClass().add("entry-task-overdue");
+        } else {
+            entry.getStyleClass().add("entry-task");
+        }
         return entry;
     }
     
-    private VBox createOther(Task task) {
+    private VBox createOther(Task task, LocalDateTime todayDate) {
         Label desc = new Label(task.getId() + ". " + task.getDescription());
         HBox details = createTaskDetails(task, TYPE_OTHER);
 
@@ -319,7 +324,11 @@ public class DisplayController extends HiddenSidesPane {
         // when the text description is very long
         entry.setPrefWidth(1);
         entry.getChildren().addAll(desc, details);
-        entry.getStyleClass().add("entry-task");
+        if (task.isOverdue(todayDate)) {
+            entry.getStyleClass().add("entry-task-overdue");
+        } else {
+            entry.getStyleClass().add("entry-task");
+        }
         return entry;
     }
     
@@ -328,7 +337,7 @@ public class DisplayController extends HiddenSidesPane {
         HBox details = createTaskDetails(task, TYPE_COMPLETED);
         
         VBox entry = new VBox();
-        // prevent ListView from showing horizontal scrollbar
+        // prevent ListView from showing horizontal scroll bar
         // when the text description is very long
         entry.setPrefWidth(1);
         entry.getChildren().addAll(desc, details);
