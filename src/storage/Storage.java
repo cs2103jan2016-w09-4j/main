@@ -573,7 +573,11 @@ public class Storage {
 		return lineWithoutDirectory;
 	}
 
-	// for load commands
+	/* This method is used when Logic make changes to the main list
+	 * and pass the updated list to Storage
+	 * This method is also used for load commands to give Logic
+	 * the new main list 
+	 */
 	public void setMainList(ArrayList<Task> mainList) {
 		Storage.mainList = mainList;
 	}
