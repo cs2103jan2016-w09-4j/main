@@ -63,7 +63,7 @@ public class DisplayController extends HiddenSidesPane {
     public DisplayController(MainApp main, Stage primaryStage) {
         this.main = main;
         this.primaryStage = primaryStage;
-        initializeLogger();
+        //initializeLogger();
         loadFXML();
         initializeTaskPanel();
         initializeSearchPanel();

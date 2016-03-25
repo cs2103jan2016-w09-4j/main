@@ -26,7 +26,7 @@ public class SidebarController extends VBox {
     
     public SidebarController(MainApp main) {
         this.main = main;
-        initializeLogger();
+        //initializeLogger();
         loadFXML();
         initializeSidebar();
     }

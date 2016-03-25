@@ -50,8 +50,8 @@ public class MainApp extends Application {
     }
 
     private void initializeUI(Stage primaryStage) {
-        Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO).toExternalForm(), 10);
-        Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO_SLAB).toExternalForm(), 10);
+        Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO).toExternalForm(), 20);
+        Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO_SLAB).toExternalForm(), 20);
         root = new BorderPane();
         display = new DisplayController(this, primaryStage);
         input = new InputController(this);

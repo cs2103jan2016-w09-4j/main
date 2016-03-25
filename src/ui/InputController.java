@@ -26,6 +26,12 @@ public class InputController extends VBox {
 
     public InputController(MainApp main) {
         this.main = main;
+        //initializeLogger();
+        loadFXML();
+        handleUserInteractions();
+    }
+
+    private void initializeLogger() {
         try {
             Handler fh = new FileHandler("log_ui_input");
             logger.addHandler(fh);
@@ -36,8 +42,6 @@ public class InputController extends VBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        loadFXML();
-        handleUserInteractions();
     }
 
     private void loadFXML() {
