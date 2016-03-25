@@ -14,19 +14,24 @@ import common.Task;
 
 public class Storage {
 
+	private static final String HEADER_CURRENT = "CURRENT TASKS:";
+	private static final String HEADER_COMPLETED = "COMPLETED TASKS:";
 	private static final String DEFAULT_FILE = "DefaultFile.txt";
 	private static final String DEFAULT_TEXTFILE = "MyTasks.txt";
-	
+
 	private static final int NUMBER_OF_FIELDS = 4;
-	
+
 	private static final String FIELDS_DESCRIPTION = "Description:";
 	private static final String FIELDS_START = "Start:";
 	private static final String FIELDS_END = "End:";
 	private static final String FIELDS_CATEGORY = "Category:";
 	private static final String FIELDS_CATEGORY_INDICATOR = "#";
 	private static final String FIELDS_BREAKLINE = "-----------------------------------";
-	
+	private static final String FIELDS_HEADERLINE = "=================";
+
 	private static ArrayList<Task> mainList;
+	private static ArrayList<String> completedList;
+
 	private static String fileName;
 	private static String savedDirectory;
 
@@ -39,17 +44,19 @@ public class Storage {
 	// default file name is "MyTasks.txt"
 	public Storage() {
 		fileName = DEFAULT_TEXTFILE;
-		savedDirectory = "";
-		mainList = new ArrayList<Task>();
 		defaultFile = DEFAULT_FILE;
+		savedDirectory = "";
+
+		mainList = new ArrayList<Task>();
+		completedList = new ArrayList<String>();
 		storeFileNames = new ArrayList<String>();
 	}
 
 	/*
-	 * This method returns the main list to Logic. The most recent main list from
-	 * the last saved file will be returned. If this is the first time the user
-	 * is using, it will return an empty ArrayList. If the user did not save to
-	 * any file, it will return the list from the default file
+	 * This method returns the main list to Logic. The most recent main list
+	 * from the last saved file will be returned. If this is the first time the
+	 * user is using, it will return an empty ArrayList. If the user did not
+	 * save to any file, it will return the list from the default file
 	 */
 	public ArrayList<Task> getMainList() {
 		ArrayList<String> fileNameList;
@@ -64,13 +71,18 @@ public class Storage {
 			// do nothing
 			// will end up returning empty arraylist
 		}
-		
+
 		// if the loaded file is not empty, set it as the main list
 		if (!recentTaskList.isEmpty()) {
 			setMainList(recentTaskList);
 		}
 
 		return mainList;
+	}
+
+	// Returns completed list to Logic
+	public ArrayList<String> getCompletedList() {
+		return completedList;
 	}
 
 	// get file names from default file
@@ -85,8 +97,8 @@ public class Storage {
 			FileWriter out = new FileWriter(file);
 			out.write(fileName + "\r\n");
 			storeFileNames.add(fileName);
-			
-			//create "MyTasks.txt"
+
+			// create "MyTasks.txt"
 			FileWriter out2 = new FileWriter(fileName);
 
 			out.close();
@@ -158,7 +170,7 @@ public class Storage {
 					try {
 						// load list from default text file ("MyTasks.txt")
 						recentList = loadDefaultTextFile(defaultFileName);
-						writeToDefaultFile(defaultFileName); 
+						writeToDefaultFile(defaultFileName);
 						// write "MyTasks.txt" into default file
 
 					} catch (FileNotFoundException | ParseException e1) {
@@ -176,7 +188,8 @@ public class Storage {
 	 * In cases where the most recent file is not found or does not exist It
 	 * will return the list from the default file - 'mytextfile.txt'
 	 */
-	private ArrayList<Task> loadDefaultTextFile(String defaultFileName) throws FileNotFoundException, IOException, ParseException {
+	private ArrayList<Task> loadDefaultTextFile(String defaultFileName)
+			throws FileNotFoundException, IOException, ParseException {
 		ArrayList<Task> recentList;
 		recentList = loadFileWithFileName(defaultFileName);
 		fileName = defaultFileName; // change back file name to default
@@ -213,49 +226,94 @@ public class Storage {
 		if (savedDirectory.isEmpty()) {
 
 			FileWriter writer = new FileWriter(fileName);
+
+			// Write heading for current tasks
+			writeCurrentHeader(writer);
+
+			// Write current tasks
 			writeTasksFromMainList(writer);
+
+			// Write heading for completed tasks
+			writeCompletedHeader(writer);
+
+			// Write completed tasks
+			writeTaskFromCompletedList(writer);
+
+			writer.close();
 
 		} else {
 			// if the most recent file is from another directory
 			// write to this directory and file
 			File accessFile = new File(savedDirectory + "/" + fileName);
 			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile());
+			
+			// Write heading for current tasks
+			writeCurrentHeader(writer);
+
+			// Write current tasks
 			writeTasksFromMainList(writer);
+
+			// Write heading for completed tasks
+			writeCompletedHeader(writer);
+
+			// Write completed tasks
+			writeTaskFromCompletedList(writer);
+
+			writer.close();
 		}
+	}
+	
+	// This method writes the "Current Task" header into the file
+	private void writeCurrentHeader(FileWriter writer) throws IOException {
+		writer.write(FIELDS_HEADERLINE + "\r\n");
+		writer.write(HEADER_CURRENT + "\r\n");
+		writer.write(FIELDS_HEADERLINE + "\r\n");
+	}
+	
+	// This method writes the "Completed Task" header into the file
+	private void writeCompletedHeader(FileWriter writer) throws IOException {
+		writer.write("\r\n");
+		writer.write(FIELDS_HEADERLINE + "\r\n");
+		writer.write(HEADER_COMPLETED + "\r\n");
+		writer.write(FIELDS_HEADERLINE + "\r\n");
 	}
 
 	private void writeTasksFromMainList(FileWriter writer) throws IOException {
-
 		ArrayList<String> allTaskToString = convertTaskToString(mainList);
-		for (int i=0; i<allTaskToString.size(); i++) {
+		for (int i = 0; i < allTaskToString.size(); i++) {
 			String lineToWrite = allTaskToString.get(i);
 			writer.write(lineToWrite + "\r\n");
 		}
-		
-		writer.close();
 	}
-	
+
+	private void writeTaskFromCompletedList(FileWriter writer) throws IOException {
+		for (int i = 0; i < completedList.size(); i++) {
+			String lineToWrite = completedList.get(i);
+			System.out.println("line to write is " + lineToWrite);
+			writer.write(lineToWrite + "\r\n");
+		}
+	}
+
 	public void appendToFile(Task taskToAdd) throws IOException {
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		taskList.add(taskToAdd);
-		
+
 		ArrayList<String> stringList = convertTaskToString(taskList);
-		
-		
+
 		if (savedDirectory.isEmpty()) {
 			FileWriter writer = new FileWriter(fileName, true);
 			BufferedWriter bufferedWriter = appendLineToFile(stringList, writer);
-			
+
 			bufferedWriter.close();
 			writer.close();
-			
+
 		} else {
 			File accessFile = new File(savedDirectory + "/" + fileName);
-			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile(),true);
+			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile(), true);
 			BufferedWriter bufferedWriter = appendLineToFile(stringList, writer);
-			
+
 			bufferedWriter.close();
-			writer.close();	
+			writer.close();
 		}
 
 	}
@@ -315,7 +373,7 @@ public class Storage {
 
 	// write directory and filename to default file to keep track of recent file
 	private void writeToDefaultFile(String toWrite) throws IOException {
-		//FileWriter writer = new FileWriter(defaultFile, true);
+		// FileWriter writer = new FileWriter(defaultFile, true);
 		FileWriter writer = new FileWriter(defaultFile);
 		writer.write(toWrite + "\r\n");
 		writer.close();
@@ -325,7 +383,8 @@ public class Storage {
 	 * This method loads data from a specific file. This method will throw an
 	 * exception if the file does not exist
 	 */
-	public ArrayList<Task> loadFileWithFileName(String userFileName) throws IOException, FileNotFoundException, ParseException {
+	public ArrayList<Task> loadFileWithFileName(String userFileName)
+			throws IOException, FileNotFoundException, ParseException {
 
 		File file = new File(userFileName);
 		ArrayList<String> listFromFile = new ArrayList<String>();
@@ -335,9 +394,9 @@ public class Storage {
 			readFileWhenFileExists(file, listFromFile);
 
 			// update filename for future writing
-			fileName = userFileName; 
+			fileName = userFileName;
 			writeToDefaultFile(fileName);
-			
+
 		} else if (!isValid) {
 			throw new FileNotFoundException();
 		}
@@ -407,25 +466,31 @@ public class Storage {
 		return mainList;
 	}
 
-
 	// This method converts String to Task to allow execution of other commands
-	public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList)
-			throws ParseException {
-		
+	public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList) throws ParseException {
+
 		Task task1 = new Task("");
 		String description, start, end, category;
 		String lineToReplace;
 		int countFields = 0;
+		int indexOfCompletedTask = 0;
 		ArrayList<Task> taskList = new ArrayList<Task>();
-		
+
 		for (int i = 0; i < stringList.size(); i++) {
 			String line = stringList.get(i);
-			
-			//break line, contains at least 10 "-";
-			if (line.contains("----------")) {
-				//System.out.println("Encountered break line, continue");
+
+			// break line, contains at least 10 "-";
+			if (line.contains("----------") || line.contains("==========") || line.isEmpty()) {
+				// System.out.println("Encountered break line, continue");
 				continue;
-			
+				
+			} else if (line.equalsIgnoreCase(HEADER_CURRENT)) {
+				continue;
+				
+			} else if (line.equalsIgnoreCase(HEADER_COMPLETED)) {
+				// break as the current list all add to current ,main list
+				indexOfCompletedTask = i + 2;
+				break;	
 			} else {
 				String[] splitLine = line.split(" ");
 				String field = splitLine[0];
@@ -433,44 +498,60 @@ public class Storage {
 				// will always have description
 				if (field.equals(FIELDS_DESCRIPTION)) {
 					lineToReplace = field;
-					description = getFields(line,lineToReplace);
+					description = getFields(line, lineToReplace);
 					task1.setDescription(description);
 					countFields++;
 
 				} else if (field.equals(FIELDS_START)) {
 					if (splitLine.length > 1) {
 						lineToReplace = field;
-						start = getFields(line,lineToReplace);
+						start = getFields(line, lineToReplace);
 						task1.setStart(start);
-					} 
+					}
 					countFields++;
 
 				} else if (field.equals(FIELDS_END)) {
 					if (splitLine.length > 1) {
 						lineToReplace = field;
-						end = getFields(line,lineToReplace);
+						end = getFields(line, lineToReplace);
 						task1.setEnd(end);
 					}
 					countFields++;
-					
+
 				} else if (field.equals(FIELDS_CATEGORY)) {
 					if (splitLine.length > 1) {
 						lineToReplace = field;
-						category = getFields(line,lineToReplace);
+						category = getFields(line, lineToReplace);
 						setMultipleCategories(task1, category);
 					}
 					countFields++;
 				}
 			}
-			
+
 			if (countFields == NUMBER_OF_FIELDS) {
 				taskList.add(task1);
 				task1 = new Task("");
 				countFields = 0;
-				}
-		 }
-		 
-		 return taskList;
+			}
+		}
+		
+		addCompletedTask(stringList, indexOfCompletedTask);
+
+		return taskList;
+	}
+	
+	// This method stores the completed tasks in arraylist
+	private static void addCompletedTask(ArrayList<String> stringList, int indexOfCompletedTask) {
+
+		// contains completed task from previous use
+		if (!completedList.isEmpty()) {
+			completedList.clear();
+		}
+		
+		for (int j = indexOfCompletedTask; j<stringList.size(); j++) {
+			String lineToAdd = stringList.get(j);
+			completedList.add(lineToAdd);
+		}
 	}
 
 	private static void setMultipleCategories(Task task1, String category) {
@@ -478,7 +559,7 @@ public class Storage {
 		String categoryName;
 		String name;
 		String[] multipleCategories = category.split(" ");
-		
+
 		for (int j = 0; j < multipleCategories.length; j++) {
 			categoryName = multipleCategories[j];
 			name = categoryName.substring(1, categoryName.length());
@@ -493,19 +574,19 @@ public class Storage {
 		String descriptionLine, startLine, endLine, categoryLine;
 		Task task1;
 		ArrayList<String> stringList = new ArrayList<String>();
-		
+
 		for (int i = 0; i < taskList.size(); i++) {
-			
+
 			task1 = taskList.get(i);
 			linesOfCategory = "";
-			description ="";
+			description = "";
 			start = "";
 			end = "";
-			
+
 			// get description from task
 			description = task1.getDescription();
 			descriptionLine = FIELDS_DESCRIPTION + " " + description;
-			//get: Description: meeting
+			// get: Description: meeting
 
 			// get start from task
 
@@ -527,32 +608,31 @@ public class Storage {
 			}
 
 			ArrayList<String> categoryList = task1.getCategories();
-			
+
 			if (categoryList.isEmpty()) {
 				categoryLine = FIELDS_CATEGORY + " ";
-				
-			
+
 			} else {
 
 				// only one category
 				if (categoryList.size() == 1) {
 					categoryLine = FIELDS_CATEGORY + " " + FIELDS_CATEGORY_INDICATOR + categoryList.get(0);
-				
+
 				} else {
 					int countCategory = 0;
 					linesOfCategory = getMultipleCategories(linesOfCategory, categoryList, countCategory);
 					categoryLine = FIELDS_CATEGORY + linesOfCategory;
 				}
 			}
-			
+
 			stringList.add(descriptionLine);
 			stringList.add(startLine);
 			stringList.add(endLine);
 			stringList.add(categoryLine);
-			
+
 			String breakLine = FIELDS_BREAKLINE;
 			stringList.add(breakLine);
-			
+
 		}
 		return stringList;
 	}
@@ -566,20 +646,23 @@ public class Storage {
 		return linesOfCategory;
 	}
 
-
 	private static String getFields(String line, String toReplace) {
 		String lineWithoutDirectory = line.replace(toReplace, "").trim();
 
 		return lineWithoutDirectory;
 	}
 
-	/* This method is used when Logic make changes to the main list
-	 * and pass the updated list to Storage
-	 * This method is also used for load commands to give Logic
-	 * the new main list 
+	/*
+	 * This method is used when Logic make changes to the main list and pass the
+	 * updated list to Storage This method is also used for load commands to
+	 * give Logic the new main list
 	 */
 	public void setMainList(ArrayList<Task> mainList) {
 		Storage.mainList = mainList;
+	}
+
+	public void setCompletedList(ArrayList<String> completedList) {
+		Storage.completedList = completedList;
 	}
 
 	/*
