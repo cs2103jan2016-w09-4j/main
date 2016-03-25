@@ -57,7 +57,7 @@ public class StorageTest {
 	}
 
 	@Test
-	public void testWriteToFile() throws IOException {
+	public void writeToFile_ContentsOfAnotherFile_CorrectNumOfTasks() throws IOException {
 		String readLine;
 		Task taskFromFile;
 		int count;
@@ -88,7 +88,7 @@ public class StorageTest {
 	}
 
 	@Test
-	public void testSaveToFile() throws FileNotFoundException, IOException, ParseException {
+	public void saveToFile_NewFile_FileSaved() throws FileNotFoundException, IOException, ParseException {
 
 		getDataFromFile.clear();
 		testStorage.saveToFile(fileName2);
@@ -109,7 +109,7 @@ public class StorageTest {
 	}
 
 	@Test
-	public void testSaveAndLoadInvalid() throws IOException, ParseException {
+	public void loadFile_InvalidFileName_ExceptionThrown() throws IOException, ParseException {
 
 		getDataFromFile.clear();
 		testStorage.saveToFile(fileName1);

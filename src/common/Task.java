@@ -22,10 +22,23 @@ public class Task implements Comparable<Task> {
 
     
     public Task(String description) {
+        this(description, null, null);
+    }
+    
+    public Task(String description, LocalDateTime start, LocalDateTime end) {
         this.description = description;
+        this.start = start;
+        this.end = end;
         categories = new ArrayList<String>();
-        start = null;
-        end = null;
+        isModified = false;
+    }
+    
+    public Task(String description, LocalDateTime start, LocalDateTime end, int id) {
+        this.description = description;
+        this.start = start;
+        this.end = end;
+        this.id = id;
+        categories = new ArrayList<String>();
         isModified = false;
     }
 
@@ -258,6 +271,15 @@ public class Task implements Comparable<Task> {
     public String toString() {
         String str = description + "/" + id + "/" + start + "/" + end;
         return str;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Task) {
+            Task t2 = (Task) o;
+            return this.toString().equals(t2.toString());
+        }
+        return false;
     }
 
 }

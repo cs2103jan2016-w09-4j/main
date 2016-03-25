@@ -1,31 +1,95 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.junit.Test;
 
 import common.*;
+import common.Command.CommandType;
 import logic.Logic;
 
 public class LogicTest{
     
-    Logic hey = Logic.getInstance();
+    Logic logic = Logic.getInstance();
     ArrayList<Task> mainList = new ArrayList<Task>();
     ArrayList<Task> compareList = new ArrayList<Task>();
     
+    /*
+    @Test
+    public void addTask_MissingDescription_InvalidCommand() {
+        Result result1 = logic.processCommand("add");
+        assertEquals(Command.CommandType.INVALID, result1.getCommandType());
+        
+        Result result2 = logic.processCommand("add ");
+        assertEquals(Command.CommandType.INVALID, result2.getCommandType());
+        
+        Result result3 = logic.processCommand("add end 31/12/2016 12:00");
+        assertEquals(Command.CommandType.INVALID, result3.getCommandType());
+    }
     
+    @Test
+    public void addTask_HaveStartButNoEnd_InvalidCommand() {
+        Result result1 = logic.processCommand("add 111 start 01/01/2016 12:00");
+        assertEquals(Command.CommandType.INVALID, result1.getCommandType());
+    }
+    */
+
+    @Test
+    public void testUserSessionOne() {
+        addTask_AllTaskTypes_AddedInOrder();
+        saveTasks_WithFileName_Success();
+        loadTasks_WithFileName_Success();
+    }
+
+    public void addTask_AllTaskTypes_AddedInOrder() {
+        logic.processCommand("add Hello");
+        logic.processCommand("add Goodbye");
+        logic.processCommand("add Meeting end 25/05/2016 14:00");
+        logic.processCommand("add Meeting end 24/05/2016 14:00");
+        logic.processCommand("add Meeting start 24/05/2016 12:00 end 26/05/2016 14:00");
+        mainList = logic.getMainList();
+        
+        compareList = new ArrayList<Task>();
+        compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 24, 14, 0), 1));
+        compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 25, 14, 0), 2));
+        compareList.add(new Task("Meeting", LocalDateTime.of(2016, 05, 24, 12, 0), LocalDateTime.of(2016, 05, 26, 14, 0), 3));
+        compareList.add(new Task("Goodbye", null, null, 4));
+        compareList.add(new Task("Hello", null, null, 5));
+        assertArrayEquals(compareList.toArray(), mainList.toArray());
+    }
+    
+    public void saveTasks_WithFileName_Success() {
+        Result result = logic.processCommand("save logic_testFile1.txt");
+        assertEquals(Command.CommandType.SAVE, result.getCommandType());
+        assertEquals(true, result.isSuccess());
+    }
+    
+    public void loadTasks_WithFileName_Success() {
+        logic.processCommand("load logic_testFile1.txt");
+        mainList = logic.getMainList();
+        
+        compareList = new ArrayList<Task>();
+        compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 24, 14, 0), 1));
+        compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 25, 14, 0), 2));
+        compareList.add(new Task("Meeting", LocalDateTime.of(2016, 05, 24, 12, 0), LocalDateTime.of(2016, 05, 26, 14, 0), 3));
+        compareList.add(new Task("Goodbye", null, null, 4));
+        compareList.add(new Task("Hello", null, null, 5));
+        assertArrayEquals(compareList.toArray(), mainList.toArray());
+    }
+    
+    /*
     @Test
     public void testOne(){  
         
-        hey.processCommand("add hello");
-        hey.processCommand("add goodbye");
-        hey.processCommand("add meeting 2pm");
-        hey.processCommand("delete 2");
-        hey.processCommand("save logic_testFile1.txt");
-        mainList = hey.getMainList();
-        compareList = hey.processCommand("load logic_expected1.txt").getResults();
+        logic.processCommand("add hello");
+        logic.processCommand("add goodbye");
+        logic.processCommand("add meeting 2pm");
+        logic.processCommand("delete 2");
+        logic.processCommand("save logic_testFile1.txt");
+        mainList = logic.getMainList();
+        compareList = logic.processCommand("load logic_expected1.txt").getResults();
         assertArrayEquals(mainList.toArray(), compareList.toArray());
         mainList.clear();
         compareList.clear();
@@ -34,17 +98,18 @@ public class LogicTest{
     @Test
     public void testTwo(){
         
-        hey.processCommand("add 123456");
-        hey.processCommand("add take me to the top");
-        hey.processCommand("add hello there");
-        hey.processCommand("add myself; yourself");
-        hey.processCommand("edit 1 used to be numbers here");
-        hey.processCommand("undo");
-        hey.processCommand("save logic_testFile2.txt");
-        mainList = hey.getMainList();
-        compareList = hey.processCommand("load logic_expected2.txt").getResults();
+        logic.processCommand("add 123456");
+        logic.processCommand("add take me to the top");
+        logic.processCommand("add hello there");
+        logic.processCommand("add myself; yourself");
+        logic.processCommand("edit 1 used to be numbers here");
+        logic.processCommand("undo");
+        logic.processCommand("save logic_testFile2.txt");
+        mainList = logic.getMainList();
+        compareList = logic.processCommand("load logic_expected2.txt").getResults();
         assertArrayEquals(mainList.toArray(), compareList.toArray());
         mainList.clear();
         compareList.clear();
-    }    
+    }
+    */    
 }

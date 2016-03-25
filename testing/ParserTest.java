@@ -10,8 +10,20 @@ import common.Command.CommandType;
 import parser.Parser;
 
 public class ParserTest {
+
     @Test
-    public void parseTest() {
+    public void parseCommand_AddWithDescriptionOnly_AddCommand() {
+        Parser parser = new Parser();
+        Command expected = new Command(CommandType.ADD, "a task with no time");
+        Command actual = parser.parseCommand("add a task with no time");
+        assertEquals(expected.getType(), actual.getType());
+        assertEquals(expected.getDescription(), actual.getDescription());
+        assertEquals(expected.getStartDate(), actual.getStartDate());
+        assertEquals(expected.getEndDate(), actual.getEndDate());
+    }
+    
+    @Test
+    public void parseCommand_AddWithEnd_AddCommand() {
         Parser parser = new Parser();
         Command expected = new Command(CommandType.ADD, "eat", LocalDateTime.of(LocalDate.of(2000, 10, 20), LocalTime.of(22, 30)), null);
         Command actual = parser.parseCommand("add eat start 22:30 20-10-2000");
@@ -22,7 +34,7 @@ public class ParserTest {
     }
 
     @Test
-    public void moreTest() {
+    public void parseCommand_AddWithStartAndEnd_AddCommand() {
         Parser parser = new Parser();
         Command expected = new Command(CommandType.ADD, "eat more food to get fat",
                 LocalDateTime.of(LocalDate.of(2000, 10, 20), LocalTime.of(22, 30)),
@@ -35,18 +47,7 @@ public class ParserTest {
     }
 
     @Test
-    public void noTimeTest() {
-        Parser parser = new Parser();
-        Command expected = new Command(CommandType.ADD, "a task with no time");
-        Command actual = parser.parseCommand("add a task with no time");
-        assertEquals(expected.getType(), actual.getType());
-        assertEquals(expected.getDescription(), actual.getDescription());
-        assertEquals(expected.getStartDate(), actual.getStartDate());
-        assertEquals(expected.getEndDate(), actual.getEndDate());
-    }
-
-    @Test
-    public void noTimeWithStartKeywordTest() {
+    public void parseCommand_AddWithStartKeyWordInDescription_AddCommand() {
         Parser parser = new Parser();
         Command expected = new Command(CommandType.ADD, "a task that starts at night");
         Command actual = parser.parseCommand("add a task that starts at night");
@@ -57,10 +58,11 @@ public class ParserTest {
     }
 
     @Test
-    public void saveTest() {
+    public void parseCommand_SaveNoDirectory_SaveCommand() {
         Parser parser = new Parser();
         Command expected = new Command(CommandType.SAVE);
         Command actual = parser.parseCommand("save");
-        assertEquals(expected, actual);
+        assertEquals(expected.getType(), actual.getType());
     }
+    
 }
