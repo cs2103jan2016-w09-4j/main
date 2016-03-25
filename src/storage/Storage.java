@@ -413,59 +413,58 @@ public class Storage {
 		Task task1 = new Task("");
 		String description, start, end, category;
 		String lineToReplace;
-		int count = 0;
+		int countFields = 0;
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		
 		for (int i = 0; i < stringList.size(); i++) {
 			String line = stringList.get(i);
 			
-			//if (line.isEmpty()) {		//break line
-			if (line.equals("-----------------------------------")) {
+			//break line, contains at least 10 "-";
+			if (line.contains("----------")) {
 				//System.out.println("Encountered break line, continue");
 				continue;
 			} else {
 				String[] splitLine = line.split(" ");
-				String indicator = splitLine[0];
-				String field = splitLine[1];
+				String field = splitLine[0];
 
 				// will always have description
 				if (field.equals("Description:")) {
-					lineToReplace = indicator + " " + field;
+					lineToReplace = field;
 					description = getFields(line,lineToReplace);
 					task1.setDescription(description);
-					count++;
+					countFields++;
 					//System.out.println("222.count is " + count);
 				} else if (field.equals("Start:")) {
-					if (indicator.equals("+")) {
-						lineToReplace = indicator + " " + field;
+					if (splitLine.length > 1) {
+						lineToReplace = field;
 						start = getFields(line,lineToReplace);
 						task1.setStart(start);
 					} 
-					count++;
+					countFields++;
 					//System.out.println("222.count is " + count);
 				} else if (field.equals("End:")) {
-					if (indicator.equals("+")) {
-						lineToReplace = indicator + " " + field;
+					if (splitLine.length > 1) {
+						lineToReplace = field;
 						end = getFields(line,lineToReplace);
 						task1.setEnd(end);
 					}
-					count++;
+					countFields++;
 					//System.out.println("222.count is " + count);
 				} else if (field.equals("Category:")) {
-					if (indicator.equals("+")) {
-						lineToReplace = indicator + " " + field;
+					if (splitLine.length > 1) {
+						lineToReplace = field;
 						category = getFields(line,lineToReplace);
 						setMultipleCategories(task1, category);
 					}
-					count++;
+					countFields++;
 					//System.out.println("222.count is " + count);
 				}
 			}
 			
-			if (count == 4) {
+			if (countFields == 4) {
 				taskList.add(task1);
 				task1 = new Task("");
-				count = 0;
+				countFields = 0;
 				}
 		 }
 		 
@@ -502,48 +501,48 @@ public class Storage {
 			
 			// get description from task
 			description = task1.getDescription();
-			descriptionLine = "+ Description: " + description;
-			//get: +Description: meeting
+			descriptionLine = "Description: " + description;
+			//get: Description: meeting
 
 			// get start from task
 
 			if (task1.getStartDateString().isEmpty()) {
-				startLine = "- Start: ";
+				startLine = "Start: ";
 
 			} else {
 				start = task1.getStartDateString();
-				startLine = "+ Start: " + start;
+				startLine = "Start: " + start;
 
 			}
 
 			if (task1.getEndDateString().isEmpty()) {
-				endLine = "- End: ";
+				endLine = "End: ";
 
 			} else {
 				end = task1.getEndDateString();
-				endLine = "+ End: " + end;
+				endLine = "End: " + end;
 			}
 
 			ArrayList<String> categoryList = task1.getCategories();
 			
 			if (categoryList.isEmpty()) {
-				categoryLine = "- Category: ";
+				categoryLine = "Category: ";
 				
 			
 			} else {
 
 				// only one category
 				if (categoryList.size() == 1) {
-					categoryLine = "+ Category: " + "#" + categoryList.get(0);
+					categoryLine = "Category: " + "#" + categoryList.get(0);
 				
 				} else {
-					int count = 0;
-					while (count < categoryList.size()) {
-						linesOfCategory = linesOfCategory + " #" + categoryList.get(count);
-						count++;
+					int countCategory = 0;
+					while (countCategory < categoryList.size()) {
+						linesOfCategory = linesOfCategory + " #" + categoryList.get(countCategory);
+						countCategory++;
 					}
 					
-					categoryLine = "+ Category:" + linesOfCategory;
+					categoryLine = "Category:" + linesOfCategory;
 				}
 			}
 			
