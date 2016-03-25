@@ -24,7 +24,7 @@ public class Storage {
 	// To store all file names
 	private static ArrayList<String> storeFileNames;
 
-	// default file name is "mytextfile.txt"
+	// default file name is "MyTasks.txt"
 	public Storage() {
 		fileName = "MyTasks.txt";
 		savedDirectory = "";
@@ -34,9 +34,9 @@ public class Storage {
 	}
 
 	/*
-	 * This method returns the main list to Logic The most recent main list from
-	 * the last saved file will be returned If this is the first time the user
-	 * is using, it will return an empty ArrayList If the user did not save to
+	 * This method returns the main list to Logic. The most recent main list from
+	 * the last saved file will be returned. If this is the first time the user
+	 * is using, it will return an empty ArrayList. If the user did not save to
 	 * any file, it will return the list from the default file
 	 */
 	public ArrayList<Task> getMainList() {
@@ -52,7 +52,8 @@ public class Storage {
 			// do nothing
 			// will end up returning empty arraylist
 		}
-
+		
+		// if the loaded file is not empty, set it as the main list
 		if (!recentTaskList.isEmpty()) {
 			setMainList(recentTaskList);
 		}
@@ -68,10 +69,12 @@ public class Storage {
 
 		// created file, for first time use
 		if (isCreated) {
+			// Create default file
 			FileWriter out = new FileWriter(file);
 			out.write(fileName + "\r\n");
 			storeFileNames.add(fileName);
-
+			
+			//create "MyTasks.txt"
 			FileWriter out2 = new FileWriter(fileName);
 
 			out.close();
@@ -116,15 +119,14 @@ public class Storage {
 
 				try {
 					recentList = loadFileWithFileName(recentFileName);
-					fileName = recentFileName; // change file name if it exist
 
 				} catch (FileNotFoundException | ParseException e) {
 
-					// if file not found / deleted, load mytextfile.txt
+					// if file not found / deleted, load MyTasks.txt
 					try {
 
 						recentList = loadDefaultTextFile(defaultFileName);
-						// write "mytextfile.txt" into default file
+						// write "MyTasks.txt" into default file
 						writeToDefaultFile(defaultFileName);
 
 					} catch (FileNotFoundException | ParseException e1) {
@@ -142,18 +144,15 @@ public class Storage {
 
 				try {
 					recentList = loadFileWithDirectory(recentDirectory, recentFileName);
-					// change filename and directory if it exist
-					fileName = recentFileName;
-					savedDirectory = recentDirectory;
 
 				} catch (NotDirectoryException | FileNotFoundException | ParseException e) {
 
 					try {
 
-						// load list from default text file ("mytextfile.txt")
+						// load list from default text file ("MyTasks.txt")
 						recentList = loadDefaultTextFile(defaultFileName);
 						writeToDefaultFile(defaultFileName); 
-						// write "mytextfile.txt" into default file
+						// write "MyTasks.txt" into default file
 
 					} catch (FileNotFoundException | ParseException e1) {
 						// if default file does no exist, return empty array
@@ -314,7 +313,8 @@ public class Storage {
 
 	// write directory and filename to default file to keep track of recent file
 	private void writeToDefaultFile(String toWrite) throws IOException {
-		FileWriter writer = new FileWriter(defaultFile, true);
+		//FileWriter writer = new FileWriter(defaultFile, true);
+		FileWriter writer = new FileWriter(defaultFile);
 		writer.write(toWrite + "\r\n");
 		writer.close();
 	}
@@ -332,9 +332,10 @@ public class Storage {
 		if (isValid) {
 			readFileWhenFileExists(file, listFromFile);
 
-			fileName = userFileName; // update filename for future writing of
-										// data
+			// update filename for future writing
+			fileName = userFileName; 
 			writeToDefaultFile(fileName);
+			
 		} else if (!isValid) {
 			throw new FileNotFoundException();
 		}
@@ -412,59 +413,58 @@ public class Storage {
 		Task task1 = new Task("");
 		String description, start, end, category;
 		String lineToReplace;
-		int count = 0;
+		int countFields = 0;
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		
 		for (int i = 0; i < stringList.size(); i++) {
 			String line = stringList.get(i);
 			
-			//if (line.isEmpty()) {		//break line
-			if (line.equals("-----------------------------------")) {
+			//break line, contains at least 10 "-";
+			if (line.contains("----------")) {
 				//System.out.println("Encountered break line, continue");
 				continue;
 			} else {
 				String[] splitLine = line.split(" ");
-				String indicator = splitLine[0];
-				String field = splitLine[1];
+				String field = splitLine[0];
 
 				// will always have description
 				if (field.equals("Description:")) {
-					lineToReplace = indicator + " " + field;
+					lineToReplace = field;
 					description = getFields(line,lineToReplace);
 					task1.setDescription(description);
-					count++;
+					countFields++;
 					//System.out.println("222.count is " + count);
 				} else if (field.equals("Start:")) {
-					if (indicator.equals("+")) {
-						lineToReplace = indicator + " " + field;
+					if (splitLine.length > 1) {
+						lineToReplace = field;
 						start = getFields(line,lineToReplace);
 						task1.setStart(start);
 					} 
-					count++;
+					countFields++;
 					//System.out.println("222.count is " + count);
 				} else if (field.equals("End:")) {
-					if (indicator.equals("+")) {
-						lineToReplace = indicator + " " + field;
+					if (splitLine.length > 1) {
+						lineToReplace = field;
 						end = getFields(line,lineToReplace);
 						task1.setEnd(end);
 					}
-					count++;
+					countFields++;
 					//System.out.println("222.count is " + count);
 				} else if (field.equals("Category:")) {
-					if (indicator.equals("+")) {
-						lineToReplace = indicator + " " + field;
+					if (splitLine.length > 1) {
+						lineToReplace = field;
 						category = getFields(line,lineToReplace);
 						setMultipleCategories(task1, category);
 					}
-					count++;
+					countFields++;
 					//System.out.println("222.count is " + count);
 				}
 			}
 			
-			if (count == 4) {
+			if (countFields == 4) {
 				taskList.add(task1);
 				task1 = new Task("");
-				count = 0;
+				countFields = 0;
 				}
 		 }
 		 
@@ -501,48 +501,48 @@ public class Storage {
 			
 			// get description from task
 			description = task1.getDescription();
-			descriptionLine = "+ Description: " + description;
-			//get: +Description: meeting
+			descriptionLine = "Description: " + description;
+			//get: Description: meeting
 
 			// get start from task
 
 			if (task1.getStartDateString().isEmpty()) {
-				startLine = "- Start: ";
+				startLine = "Start: ";
 
 			} else {
 				start = task1.getStartDateString();
-				startLine = "+ Start: " + start;
+				startLine = "Start: " + start;
 
 			}
 
 			if (task1.getEndDateString().isEmpty()) {
-				endLine = "- End: ";
+				endLine = "End: ";
 
 			} else {
 				end = task1.getEndDateString();
-				endLine = "+ End: " + end;
+				endLine = "End: " + end;
 			}
 
 			ArrayList<String> categoryList = task1.getCategories();
 			
 			if (categoryList.isEmpty()) {
-				categoryLine = "- Category: ";
+				categoryLine = "Category: ";
 				
 			
 			} else {
 
 				// only one category
 				if (categoryList.size() == 1) {
-					categoryLine = "+ Category: " + "#" + categoryList.get(0);
+					categoryLine = "Category: " + "#" + categoryList.get(0);
 				
 				} else {
-					int count = 0;
-					while (count < categoryList.size()) {
-						linesOfCategory = linesOfCategory + " #" + categoryList.get(count);
-						count++;
+					int countCategory = 0;
+					while (countCategory < categoryList.size()) {
+						linesOfCategory = linesOfCategory + " #" + categoryList.get(countCategory);
+						countCategory++;
 					}
 					
-					categoryLine = "+ Category:" + linesOfCategory;
+					categoryLine = "Category:" + linesOfCategory;
 				}
 			}
 			
