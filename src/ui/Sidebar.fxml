@@ -7,8 +7,8 @@
 
 <fx:root xmlns:fx="http://javafx.com/fxml/1" type="VBox" styleClass="root">
     <Label text="Categories" styleClass="header" />
-    <VBox fx:id="categoryContent" >
-    </VBox>
+    <ScrollPane fx:id="categoryPanel" >
+    </ScrollPane>
 
     <stylesheets>
         <URL value="@sidebar.css" />

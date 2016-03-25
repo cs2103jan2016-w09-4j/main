@@ -21,27 +21,28 @@
 }
 
 .entry-cat {
-    -fx-padding: 2;
-    -fx-alignment: center;
-}
-
-.sticker {
-    -fx-background-color: #A1E7C6;
-    -fx-background-radius: 3;
+    -fx-padding: 3;
+    -fx-alignment: center-left;
 }
 
 .count {
     -fx-font-size: 12;
     -fx-wrap-text: true;
     -fx-text-alignment: center;
+    -fx-background-color: #A1E7C6;
+    -fx-background-radius: 3;
 }
 
 .scroll-pane {
     -fx-hbar-policy: never;
     -fx-vbar-policy: as-needed;
-    -fx-padding: 3, 0;
+    -fx-padding: 0;
     -fx-background-color: transparent;
     -fx-fit-to-width: true;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
 }
 
 .scroll-bar {
@@ -52,6 +53,7 @@
     -fx-background-color: #F6F6F6;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
+    -fx-border-width: 5;
     -fx-border-color: transparent;
 }
 

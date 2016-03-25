@@ -174,14 +174,15 @@ public class DisplayController extends HiddenSidesPane {
     
     private void updateTaskPanel(ArrayList<Task> allTasks) {
         assert (taskPanel != null);
-        LocalDateTime todayDate = LocalDateTime.now();
+        LocalDateTime todayDateTime = LocalDateTime.now();
+        LocalDate todayDate = todayDateTime.toLocalDate();
         ArrayList<VBox> todayTasks = new ArrayList<VBox>();
         ArrayList<VBox> otherTasks = new ArrayList<VBox>();
         for (Task task : allTasks) {
             if (task.isSameDate(todayDate)) {
-                todayTasks.add(createToday(task, todayDate));
+                todayTasks.add(createToday(task, todayDateTime));
             } else {
-                otherTasks.add(createOther(task, todayDate));
+                otherTasks.add(createOther(task, todayDateTime));
             }
         }
         
@@ -197,7 +198,6 @@ public class DisplayController extends HiddenSidesPane {
         }
         
         VBox todayPanel = new VBox();
-        VBox.setVgrow(todayContent, Priority.ALWAYS);
         todayPanel.getChildren().addAll(todayHeader, todayContent);
         
         // build other panel
@@ -212,7 +212,6 @@ public class DisplayController extends HiddenSidesPane {
         }
         
         VBox otherPanel = new VBox();
-        VBox.setVgrow(otherContent, Priority.ALWAYS);
         otherPanel.getChildren().addAll(otherHeader, otherContent);
         
         // add to task panel
@@ -294,7 +293,6 @@ public class DisplayController extends HiddenSidesPane {
     private ListView<VBox> createListView(ArrayList<VBox> todayTasks) {
         ObservableList<VBox> todayList = FXCollections.observableArrayList(todayTasks);
         ListView<VBox> todayListView = new ListView<VBox>(todayList);
-        todayListView.prefHeightProperty().bind(Bindings.size(todayList).multiply(65));
         return todayListView;
     }
 

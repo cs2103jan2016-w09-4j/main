@@ -109,6 +109,14 @@ public class Task implements Comparable<Task> {
      * HELPER METHODS *
      ******************/
     
+    /**
+     * Checks if this task is overdue relative to the given date and time.
+     * Returns true if and only if this task ends before the date and time.
+     * If this task is a floating task, returns false.
+     * 
+     * @param dateTime  date and time for comparison 
+     * @return          true if end is earlier than dateTime
+     */
     public boolean isOverdue(LocalDateTime dateTime) {
         if (isEvent() || isDeadline()) {
             return end.compareTo(dateTime) < 0;
@@ -116,8 +124,13 @@ public class Task implements Comparable<Task> {
         return false;
     }
     
-    public boolean isSameDate(LocalDateTime dateTime) {
-        LocalDate date = dateTime.toLocalDate();
+    /**
+     * Returns true if this task starts or ends on the given date.
+     * 
+     * @param date      date for comparison
+     * @return          true if start or end fall on the given date
+     */
+    public boolean isSameDate(LocalDate date) {
         if (isFloating()) {
             return false;
         } else if (isEvent()) {
@@ -131,7 +144,18 @@ public class Task implements Comparable<Task> {
         return false;
     }
 
-    @Override
+    /**
+     * Compares this task to another task.
+     * Comparison is mainly based on the start and end date/time. If the
+     * dates are equal, then the task description is used for comparison.
+     * Use to facilitate sorting methods.
+     * 
+     * @param t2        the other task to compare to
+     * @return          0 if the tasks are equal, a negative integer if
+     *                  this task is less than the specified task, and a
+     *                  positive integer if this task is greater than the
+     *                  specified task
+     */
     public int compareTo(Task t2) {
         if (t2 == null) {
             throw new NullPointerException();
@@ -179,21 +203,37 @@ public class Task implements Comparable<Task> {
         }
     }
 
-    // Returns true if task is floating
+    /**
+     * Returns true if this task is a floating task.
+     * A floating task is a task that does not have a start or end date.
+     * 
+     * @return          true if task is floating
+     */
     public boolean isFloating() {
         boolean hasStart = this.start != null;
         boolean hasEnd = this.end != null;
         return !hasStart && !hasEnd;
     }
     
-    // Returns true if task is an event with a start and end
+    /**
+     * Returns true if this task is an event.
+     * An event is a task that takes place within a specified period,
+     * i.e. has a start and end date.
+     * 
+     * @return          true if task is an event
+     */
     public boolean isEvent() {
         boolean hasStart = this.start != null;
         boolean hasEnd = this.end != null;
         return hasStart && hasEnd;
     }
     
-    // Returns true if task only has a deadline
+    /**
+     * Returns true if this task is a deadline.
+     * A deadline is a task that has an end date, but no start date.
+     * 
+     * @return          true if task is a deadline
+     */
     public boolean isDeadline() {
         boolean hasStart = this.start != null;
         boolean hasEnd = this.end != null;
@@ -201,6 +241,11 @@ public class Task implements Comparable<Task> {
     }
     
     @Override
+    /**
+     * Represents this task as a String.
+     * 
+     * @return          a String representation of this task, not null
+     */
     public String toString() {
         String str = description + "/" + id + "/" + start + "/" + end;
         return str;

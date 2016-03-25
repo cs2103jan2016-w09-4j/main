@@ -1,6 +1,7 @@
 import static org.junit.Assert.*;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -17,7 +18,7 @@ public class TaskTest {
     
     @Test
     public void testSameDate() throws ParseException {
-        LocalDateTime date = LocalDateTime.parse("01/01/2016 12:00", formatter);
+        LocalDate date = LocalDateTime.parse("01/01/2016 12:00", formatter).toLocalDate();
         
         /*
          * Equivalence partition:
