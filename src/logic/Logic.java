@@ -7,6 +7,8 @@ import storage.Storage;
 import logic.Execution;
 
 import java.util.ArrayList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Logic {
 
@@ -106,21 +108,33 @@ public class Logic {
         ArrayList<String> predictions = new ArrayList<String>();
         String[] params = input.split("\\s+", 2);
         String firstWord = params[0];
-        if (firstWord.equalsIgnoreCase("add") || firstWord.equalsIgnoreCase("search")) {
-            ArrayList<String> dictionary = execution.getDictionary();
+        if (firstWord.equalsIgnoreCase("add")) {
+            TreeSet<String> dictionary = execution.getDictionary();
             if (params.length == 1) {
-                // retrieve any entry
-                for (int i = 0; i < Math.min(MAX_PREDICTIONS, dictionary.size()); i++) {
-                    predictions.add(firstWord + " " + dictionary.get(i));
+                if (dictionary.size() > 1) {
+                    predictions.add(firstWord + " " + dictionary.first());
+                    predictions.add(firstWord + " " + dictionary.last());
+                } else if (dictionary.size() > 0) {
+                    predictions.add(firstWord + " " + dictionary.first());
                 }
             } else {
                 // retrieve entry matching user input
                 String argument = params[1];
-                for (int i = 0; i < dictionary.size() && predictions.size() < MAX_PREDICTIONS; i++) {
-                    if (dictionary.get(i).startsWith(argument)) {
-                        predictions.add(firstWord + " " + dictionary.get(i));
+                SortedSet<String> matches = dictionary.tailSet(argument);
+                for (String entry : matches) {
+                    predictions.add(firstWord + " " + entry);
+                    if (predictions.size() >= MAX_PREDICTIONS) {
+                        break;
                     }
                 }
+            }
+        } else if (firstWord.equalsIgnoreCase("search")) {
+            TreeSet<String> dictionary = execution.getDictionary();
+            if (dictionary.size() > 1) {
+                predictions.add(firstWord + " " + dictionary.first());
+                predictions.add(firstWord + " " + dictionary.last());
+            } if (dictionary.size() > 0) {
+                predictions.add(firstWord + " " + dictionary.first());
             }
         } else if (firstWord.equalsIgnoreCase("edit")) {
             if (params.length == 2) {

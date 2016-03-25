@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.TreeSet;
 
 public class Execution {
     
@@ -19,8 +20,8 @@ public class Execution {
     private static ArrayList<Task> previousCopyOfMainList;
     private static ArrayList<Task> copyOfMainListForRedo;
     private static ArrayList<Category> categories;
-    private ArrayList<String> dictionary;
-    
+    private TreeSet<String> dictionary;
+    private TreeSet<String> fileDictionary;
     
     public Execution() {
         storage = new Storage();
@@ -32,13 +33,14 @@ public class Execution {
         categories = new ArrayList<Category>();
         categories.add(new Category("Priority"));
         categories.add(new Category("Today"));
-        dictionary = new ArrayList<String>();
+        dictionary = new TreeSet<String>();
+        fileDictionary = new TreeSet<String>();
     }
     
     public ArrayList<Task> addTask(String description) {
         Task newTask = new Task(description);
         
-        dictionary.add(description);
+        updateDictionary(description);
         
         if (!mainList.isEmpty()) {
             saveMainListForUndo();
@@ -65,7 +67,7 @@ public class Execution {
             newTask.setEnd(end);
         }
         
-        dictionary.add(description);
+        updateDictionary(description);
         
         if (!mainList.isEmpty()) {
             saveMainListForUndo();
@@ -117,7 +119,7 @@ public class Execution {
     
     public ArrayList<Task> editTask(int taskID, String newDescription) {
         boolean foundTask = false;
-        dictionary.add(newDescription);
+        updateDictionary(newDescription);
         int index = taskID - 1;
         
         if(mainList.get(index) != null){
@@ -140,7 +142,7 @@ public class Execution {
     
     public ArrayList<Task> searchTask(String keyword) {
         searchResults.clear();
-        dictionary.add(keyword);
+        updateDictionary(keyword);
         for (int i = 0; i < mainList.size(); i++) {
             if (mainList.get(i).getDescription().contains(keyword)) {
                 searchResults.add(mainList.get(i));
@@ -156,11 +158,11 @@ public class Execution {
                 String directory = split[0].toLowerCase();
                 String userFileName = split[1];
                 storage.saveToFileWithDirectory(directory, userFileName);
-                dictionary.add(directory);
-                dictionary.add(userFileName);
+                updateFileDictionary(directory);
+                updateFileDictionary(userFileName);
             } else{
                 storage.saveToFile(description);
-                dictionary.add(description);
+                updateFileDictionary(description);
             }   
         } catch (Exception e){
             e.printStackTrace();
@@ -176,13 +178,13 @@ public class Execution {
                 String userFileName = split[1];
                 loadBack = storage.loadFileWithDirectory(directory, userFileName);
                 setMainList(loadBack);
-                dictionary.add(directory);
-                dictionary.add(userFileName);
+                updateFileDictionary(directory);
+                updateFileDictionary(userFileName);
                 return loadBack;
             } else{                 
                 loadBack = storage.loadFileWithFileName(description);
                 setMainList(loadBack);
-                dictionary.add(description);
+                updateFileDictionary(description);
                 return loadBack;
             }   
         }  catch (IOException e) {
@@ -192,6 +194,14 @@ public class Execution {
 			e.printStackTrace();
 		}
         return new ArrayList<Task>();
+    }
+    
+    private void updateDictionary(String text) {
+        dictionary.add(text);
+    }
+    
+    private void updateFileDictionary(String text) {
+        fileDictionary.add(text);
     }
     
     public void saveMainListForUndo() {
@@ -231,11 +241,10 @@ public class Execution {
         return previousCopyOfMainList;
     }
     
-    public ArrayList<String> getDictionary(){
-        Collections.sort(dictionary);
+    public TreeSet<String> getDictionary(){
         return dictionary;
     }
-    
+        
     public ArrayList<Task> getDoneList(){
         return doneList;
     }
