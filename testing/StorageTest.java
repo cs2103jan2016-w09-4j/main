@@ -26,8 +26,6 @@ public class StorageTest {
 	private String fileName2 = "newFile";
 
 	private String outputException = "";
-	private String outputException2 = "";
-	private String outputException3 = "";
 	String expectedDirectory = "/Users/Documents/testDirectory";
 
 	@Before
@@ -123,10 +121,10 @@ public class StorageTest {
 		try {
 			testStorage.loadFileWithFileName("not a file");
 		} catch (FileNotFoundException fnfe) {
-			outputException3 = "Invalid File";
+			outputException = "Invalid File";
 		}
 
-		assertEquals("Invalid File", outputException3);
+		assertEquals("Invalid File", outputException);
 	}
 
 
