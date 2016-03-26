@@ -36,20 +36,16 @@ public class Logic {
         switch(commandType) {
         
             case ADD :
-                list = execution.addTask(description, command.getStartDate(), command.getEndDate());
-                return new Result(commandType, true, "Added task", list);
+                return execution.addTask(description, command.getStartDate(), command.getEndDate());
             
             case DELETE :
-                list = execution.deleteTask(taskID);
-                return new Result(commandType, true, "Deleted task", list);
+                return execution.deleteTask(taskID);
             
             case EDIT :
-                list = execution.editTask(taskID, description);
-                return new Result(commandType, true, "Edited task", list);
+                return execution.editTask(taskID, description, command.getStartDate(), command.getEndDate());
                 
             case SEARCH :
-                list = execution.searchTask(description);
-                return new Result(commandType, true, "Searched tasks", list);
+                return execution.searchTask(description);
             
             case HOME :
                 list = execution.getMainList();
@@ -61,8 +57,7 @@ public class Logic {
                 return new Result(commandType, true, "Saved at " + description, list);
                 
             case LOAD :
-                list = execution.loadingTasks(description);
-                return new Result(commandType, true, "Loaded from " + description, list);
+                return execution.loadingTasks(description);
 
             case UNDO :
                 list = execution.undoCommand();
@@ -72,11 +67,10 @@ public class Logic {
                 list = execution.redoCommand();
                 return new Result(commandType, true, "Last command redone", list);
                 
-            case COMPLETE :
-                list = execution.completeCommand(taskID);
-                return new Result(commandType, true, "Marked as complete", list);
+            case DONE :
+                return execution.completeCommand(taskID);
                 
-            case SEARCHOLD :
+            case SEARCHDONE :
                 list = execution.getDoneList();
                 return new Result(commandType, true, "Showing completed tasks", list);
                 
@@ -84,11 +78,9 @@ public class Logic {
                 System.exit(0);
             
             case INVALID :
-                list = null;
                 return new Result();
                 
             default :
-                list = null;
                 return new Result();
                 
         }

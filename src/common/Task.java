@@ -22,15 +22,15 @@ public class Task implements Comparable<Task> {
 
     
     public Task(String description) {
-        this(description, null, null);
+        this(description, null, null, 0);
+    }
+    
+    public Task(String description, int id) {
+        this(description, null, null, id);
     }
     
     public Task(String description, LocalDateTime start, LocalDateTime end) {
-        this.description = description;
-        this.start = start;
-        this.end = end;
-        categories = new ArrayList<String>();
-        isModified = false;
+        this(description, start, end, 0);
     }
     
     public Task(String description, LocalDateTime start, LocalDateTime end, int id) {

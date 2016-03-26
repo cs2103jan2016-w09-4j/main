@@ -1,6 +1,7 @@
 package logic;
 
 import common.*;
+import common.Command.CommandType;
 import storage.Storage;
 
 import java.io.IOException;
@@ -37,28 +38,8 @@ public class Execution {
         fileDictionary = new TreeSet<String>();
     }
     
-    public ArrayList<Task> addTask(String description) {
-        Task newTask = new Task(description);
-        
-        updateDictionary(description);
-        
-        if (!mainList.isEmpty()) {
-            saveMainListForUndo();
-        }
-        
-        mainList.add(newTask);
-        storage.setMainList(mainList);
-        try {
-        	storage.writeToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        sortList();
-        return mainList;
-    }
-    
-    public ArrayList<Task> addTask(String description, LocalDateTime start, LocalDateTime end) {
+    public Result addTask(String description, LocalDateTime start, LocalDateTime end) {
+        clearModifiedStatus();
         Task newTask = new Task(description);
         if (start != null) {
             newTask.setStart(start);
@@ -66,7 +47,8 @@ public class Execution {
         if (end != null) {
             newTask.setEnd(end);
         }
-        
+        newTask.setModified(true);
+
         updateDictionary(description);
         
         if (!mainList.isEmpty()) {
@@ -82,19 +64,22 @@ public class Execution {
         }
         
         sortList();
-        return mainList;
+        return new Result(CommandType.ADD, true, "Added task", mainList);
     }
 
-    public ArrayList<Task> completeCommand(int taskID){
+    public Result completeCommand(int taskID){
+        clearModifiedStatus();
         int index = taskID - 1;
         Task doneTask = mainList.get(index);
         doneList.add(doneTask);
         
         deleteTask(taskID);
-        return doneList;
+        return new Result(CommandType.DONE, true, "Marked as completed", mainList);
     }
     
-    public ArrayList<Task> deleteTask(int taskID) {
+    public Result deleteTask(int taskID) {
+        clearModifiedStatus();
+        
         boolean foundTask = false;
         int index = taskID - 1;
         
@@ -104,7 +89,7 @@ public class Execution {
         }
         
         if (!foundTask) {
-            return new ArrayList<Task>();
+            return new Result(CommandType.DELETE, false, "Wrong task number", mainList);
         } else {
             try {
                 storage.writeToFile();
@@ -114,20 +99,30 @@ public class Execution {
         }
         storage.setMainList(mainList);
         sortList();
-        return mainList;    
+        return new Result(CommandType.DELETE, true, "Deleted", mainList);    
     }
     
-    public ArrayList<Task> editTask(int taskID, String newDescription) {
+    public Result editTask(int taskID, String newDescription, LocalDateTime start, LocalDateTime end) {
+        clearModifiedStatus();
+        
         boolean foundTask = false;
         updateDictionary(newDescription);
         int index = taskID - 1;
+        Task task = mainList.get(index);
         
-        if(mainList.get(index) != null){
-            mainList.get(index).setDescription(newDescription);
+        if(task != null){
+            task.setDescription(newDescription);
+            if (start != null) {
+                task.setStart(start);
+            }
+            if (end != null) {
+                task.setEnd(end);
+            }
+            task.setModified(true);
             foundTask = true;
         }
         if (!foundTask) {
-            return new ArrayList<Task>();
+            return new Result(CommandType.EDIT, false, "Wrong task number", mainList);
         } else {
             try {
                 storage.writeToFile();
@@ -135,12 +130,14 @@ public class Execution {
                 e.printStackTrace();
             }
         }
+        
         sortList();
         storage.setMainList(mainList);
-        return mainList;
+        return new Result(CommandType.EDIT, true, "Edited", mainList);
     }
-    
-    public ArrayList<Task> searchTask(String keyword) {
+
+    public Result searchTask(String keyword) {
+        clearModifiedStatus();
         searchResults.clear();
         updateDictionary(keyword);
         for (int i = 0; i < mainList.size(); i++) {
@@ -148,7 +145,7 @@ public class Execution {
                 searchResults.add(mainList.get(i));
             }
         }
-        return searchResults;
+        return new Result(CommandType.SEARCH, true, "Searched", searchResults);
     }
     
     public void savingTasks(String description){
@@ -169,7 +166,11 @@ public class Execution {
         }
     }
     
-    public ArrayList<Task> loadingTasks(String description){
+    public Result loadingTasks(String description){
+        clearModifiedStatus();
+        description = description.trim();
+        ArrayList<Task> temp = new ArrayList<Task>();
+        temp.addAll(mainList);
         try {
             ArrayList<Task> loadBack = new ArrayList<Task>();
             if(description.contains(" ")){
@@ -178,22 +179,21 @@ public class Execution {
                 String userFileName = split[1];
                 loadBack = storage.loadFileWithDirectory(directory, userFileName);
                 setMainList(loadBack);
+                sortList();
                 updateFileDictionary(directory);
                 updateFileDictionary(userFileName);
-                return loadBack;
-            } else{                 
+                return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
+            } else{
                 loadBack = storage.loadFileWithFileName(description);
                 setMainList(loadBack);
+                sortList();
                 updateFileDictionary(description);
-                return loadBack;
+                return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
             }   
-        }  catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-			// TODO Auto-generated catch block
+        }  catch (IOException | ParseException e) {
 			e.printStackTrace();
-		}
-        return new ArrayList<Task>();
+            return new Result(CommandType.LOAD, false, "Failed to load " + description, temp);
+        }
     }
     
     private void updateDictionary(String text) {
@@ -258,6 +258,12 @@ public class Execution {
         Collections.sort(mainList);
         for (int i = 0; i < mainList.size(); i++) {
             mainList.get(i).setId(i + 1);
+        }
+    }
+    
+    private void clearModifiedStatus() {
+        for (Task task : mainList) {
+            task.setModified(false);
         }
     }
     
