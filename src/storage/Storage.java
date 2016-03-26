@@ -1,6 +1,5 @@
 package storage;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.NotDirectoryException;
@@ -266,17 +265,20 @@ public class Storage {
 	}
 
 	private void writeTasksFromMainList(FileWriter writer) throws IOException {
-		ArrayList<String> allTaskToString = convertTaskToString(mainList);
-		for (int i = 0; i < allTaskToString.size(); i++) {
-			String lineToWrite = allTaskToString.get(i);
+		ArrayList<String> currentTaskToString = convertTaskToString(mainList);
+		
+		for (int i = 0; i < currentTaskToString.size(); i++) {
+			String lineToWrite = currentTaskToString.get(i);
 			writer.write(lineToWrite + "\r\n");
 		}
 	}
 
 	private void writeTaskFromCompletedList(FileWriter writer) throws IOException {
-		for (int i = 0; i < completedList.size(); i++) {
-			String lineToWrite = completedList.get(i);
-			System.out.println("line to write is " + lineToWrite);
+		ArrayList<String> completedTaskToString = convertTaskToString(completedList);
+		
+		for (int i = 0; i < completedTaskToString.size(); i++) {
+			String lineToWrite = completedTaskToString.get(i);
+			//System.out.println("line to write is " + lineToWrite);
 			writer.write(lineToWrite + "\r\n");
 		}
 	}
@@ -330,7 +332,6 @@ public class Storage {
 
 	// write directory and filename to default file to keep track of recent file
 	private void writeToDefaultFile(String toWrite) throws IOException {
-		// FileWriter writer = new FileWriter(defaultFile, true);
 		FileWriter writer = new FileWriter(defaultFile);
 		writer.write(toWrite + "\r\n");
 		writer.close();
@@ -430,9 +431,8 @@ public class Storage {
 	// This method converts String to Task to allow execution of other commands
 	public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList) throws ParseException {
 
-		Task task1 = new Task("");
+		Task currentTask = new Task("");
 		String description, start, end, category;
-		String lineToReplace;
 		int countFields = 0;
 		int indexOfCompletedTask = 0;
 		ArrayList<Task> taskList = new ArrayList<Task>();
@@ -458,40 +458,36 @@ public class Storage {
 
 				// will always have description
 				if (field.equals(FIELDS_DESCRIPTION)) {
-					lineToReplace = field;
-					description = getFields(line, lineToReplace);
-					task1.setDescription(description);
+					description = getFields(line, field);
+					currentTask.setDescription(description);
 					countFields++;
 
 				} else if (field.equals(FIELDS_START)) {
 					if (splitLine.length > 1) {
-						lineToReplace = field;
-						start = getFields(line, lineToReplace);
-						task1.setStart(start);
+						start = getFields(line, field);
+						currentTask.setStart(start);
 					}
 					countFields++;
 
 				} else if (field.equals(FIELDS_END)) {
 					if (splitLine.length > 1) {
-						lineToReplace = field;
-						end = getFields(line, lineToReplace);
-						task1.setEnd(end);
+						end = getFields(line, field);
+						currentTask.setEnd(end);
 					}
 					countFields++;
 
 				} else if (field.equals(FIELDS_CATEGORY)) {
 					if (splitLine.length > 1) {
-						lineToReplace = field;
-						category = getFields(line, lineToReplace);
-						setMultipleCategories(task1, category);
+						category = getFields(line, field);
+						setMultipleCategories(currentTask, category);
 					}
 					countFields++;
 				}
 			}
 
 			if (countFields == NUMBER_OF_FIELDS) {
-				taskList.add(task1);
-				task1 = new Task("");
+				taskList.add(currentTask);
+				currentTask = new Task("");
 				countFields = 0;
 			}
 		}
@@ -502,16 +498,57 @@ public class Storage {
 	}
 
 	// This method stores the completed tasks in arraylist
-	private static void addCompletedTask(ArrayList<String> stringList, int indexOfCompletedTask) {
+	private static void addCompletedTask(ArrayList<String> stringList, int indexOfCompletedTask) throws ParseException {
 
-		// contains completed task from previous use
-		if (!completedList.isEmpty()) {
-			completedList.clear();
-		}
-
+		int countFields = 0;
+		Task completedTask = new Task("");
+		
 		for (int j = indexOfCompletedTask; j < stringList.size(); j++) {
-			String lineToAdd = stringList.get(j);
-			completedList.add(lineToAdd);
+			String line = stringList.get(j);
+			
+			// break line, contains at least 10 "-";
+			if (line.contains("----------") || line.contains("==========")) {
+				// System.out.println("Encountered break line, continue");
+				continue;
+
+			} else {
+				String[] splitLine = line.split(" ");
+				String field = splitLine[0];
+
+				// will always have description
+				if (field.equals(FIELDS_DESCRIPTION)) {
+					String description = getFields(line, field);
+					completedTask.setDescription(description);
+					countFields ++;
+
+				} else if (field.equals(FIELDS_START)) {
+					if (splitLine.length > 1) {
+						String start = getFields(line, field);
+						completedTask.setStart(start);
+					}
+					countFields++;
+
+				} else if (field.equals(FIELDS_END)) {
+					if (splitLine.length > 1) {
+						String end = getFields(line, field);
+						completedTask.setEnd(end);
+					}
+					countFields++;
+
+				} else if (field.equals(FIELDS_CATEGORY)) {
+					if (splitLine.length > 1) {
+						String category = getFields(line, field);
+						setMultipleCategories(completedTask, category);
+					}
+					countFields++;
+				}
+			}
+
+			if (countFields == NUMBER_OF_FIELDS) {
+				completedList.add(completedTask);
+				completedTask = new Task("");
+				countFields = 0;
+			}
 		}
 	}
 
@@ -636,7 +673,7 @@ public class Storage {
 		Storage.mainList = mainList;
 	}
 
-	public void setCompletedList(ArrayList<String> completedList) {
+	public void setCompletedList(ArrayList<Task> completedList) {
 		Storage.completedList = completedList;
 	}
 
