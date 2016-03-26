@@ -25,7 +25,7 @@ public class Execution {
     
     public Execution() {
         storage = new Storage();
-        mainList = new ArrayList<Task>();
+        mainList = storage.getMainList();
         doneList = new ArrayList<Task>();
         searchResults = new ArrayList<Task>();
         previousCopyOfMainList = new ArrayList<Task>();
@@ -85,13 +85,13 @@ public class Execution {
         return mainList;
     }
 
-    public ArrayList<Task> completeCommand(int taskID){
+    public void completeCommand(int taskID){
         int index = taskID - 1;
         Task doneTask = mainList.get(index);
         doneList.add(doneTask);
         
         deleteTask(taskID);
-        return doneList;
+      
     }
     
     public ArrayList<Task> deleteTask(int taskID) {
