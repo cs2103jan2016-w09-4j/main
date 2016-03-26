@@ -30,7 +30,7 @@ public class Storage {
 	private static final String FIELDS_HEADERLINE = "=================";
 
 	private static ArrayList<Task> mainList;
-	private static ArrayList<String> completedList;
+	private static ArrayList<Task> completedList;
 
 	private static String fileName;
 	private static String savedDirectory;
@@ -48,14 +48,13 @@ public class Storage {
 		savedDirectory = "";
 
 		mainList = new ArrayList<Task>();
-		completedList = new ArrayList<String>();
+		completedList = new ArrayList<Task>();
 		storeFileNames = new ArrayList<String>();
-		
-		//Create default file for load recent feature
-		File file = new File(defaultFile);
-		boolean isCreated;
-		
+
+		// Create default file for load recent feature
 		try {
+			File file = new File(defaultFile);
+			boolean isCreated;
 			isCreated = file.createNewFile();
 			// created file, for first time use
 			if (isCreated) {
@@ -92,20 +91,20 @@ public class Storage {
 			// do nothing
 			// will end up returning empty arraylist
 		}
-		
+
 		setMainList(recentTaskList);
 
 		return mainList;
 	}
 
 	// Returns completed list to Logic
-	public ArrayList<String> getCompletedList() {
+	public ArrayList<Task> getCompletedList() {
 		return completedList;
 	}
 
 	// get file names from default file
 	private ArrayList<String> getFileNameList() throws IOException {
-		
+
 		File file = new File(defaultFile);
 		Scanner scanner;
 		scanner = readFileNames(file);
@@ -129,51 +128,49 @@ public class Storage {
 		String defaultFileName = DEFAULT_TEXTFILE;
 		ArrayList<Task> recentList = new ArrayList<Task>();
 
-		if (!listOfFileNames.isEmpty()) {
-			String mostRecentFile = getMostRecentFileName(listOfFileNames);
+		String mostRecentFile = getMostRecentFileName(listOfFileNames);
 
-			// check if there is directory
-			String[] splitLine = mostRecentFile.split(" , ");
+		// check if there is directory
+		String[] splitLine = mostRecentFile.split(" , ");
 
-			// consist only the filename
-			if (splitLine.length == 1) {
-				recentFileName = splitLine[0];
+		// consist only the filename
+		if (splitLine.length == 1) {
+			recentFileName = splitLine[0];
 
+			try {
+				recentList = loadFileWithFileName(recentFileName);
+
+			} catch (FileNotFoundException | ParseException e) {
+				// if file not found / deleted, load MyTasks.txt
 				try {
-					recentList = loadFileWithFileName(recentFileName);
+					recentList = loadDefaultTextFile(defaultFileName);
+					// write "MyTasks.txt" into default file
+					writeToDefaultFile(defaultFileName);
 
-				} catch (FileNotFoundException | ParseException e) {
-					// if file not found / deleted, load MyTasks.txt
-					try {
-						recentList = loadDefaultTextFile(defaultFileName);
-						// write "MyTasks.txt" into default file
-						writeToDefaultFile(defaultFileName);
-
-					} catch (FileNotFoundException | ParseException e1) {
-						// if default file does no exist, return empty list
-						return recentList;
-					}
+				} catch (FileNotFoundException | ParseException e1) {
+					// if default file does no exist, return empty list
+					return recentList;
 				}
+			}
 
-			} else {
-				recentDirectory = splitLine[0];
-				recentFileName = getFileName(mostRecentFile, recentDirectory);
+		} else {
+			recentDirectory = splitLine[0];
+			recentFileName = getFileName(mostRecentFile, recentDirectory);
+
+			try {
+				recentList = loadFileWithDirectory(recentDirectory, recentFileName);
+
+			} catch (NotDirectoryException | FileNotFoundException | ParseException e) {
 
 				try {
-					recentList = loadFileWithDirectory(recentDirectory, recentFileName);
+					// load list from default text file ("MyTasks.txt")
+					recentList = loadDefaultTextFile(defaultFileName);
+					writeToDefaultFile(defaultFileName);
+					// write "MyTasks.txt" into default file
 
-				} catch (NotDirectoryException | FileNotFoundException | ParseException e) {
-
-					try {
-						// load list from default text file ("MyTasks.txt")
-						recentList = loadDefaultTextFile(defaultFileName);
-						writeToDefaultFile(defaultFileName);
-						// write "MyTasks.txt" into default file
-
-					} catch (FileNotFoundException | ParseException e1) {
-						// if default file does no exist, return empty list
-						return recentList;
-					}
+				} catch (FileNotFoundException | ParseException e1) {
+					// if default file does no exist, return empty list
+					return recentList;
 				}
 			}
 		}
@@ -243,7 +240,7 @@ public class Storage {
 			// write to this directory and file
 			File accessFile = new File(savedDirectory + "/" + fileName);
 			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile());
-			
+
 			writeCurrentHeader(writer);
 			writeTasksFromMainList(writer);
 			writeCompletedHeader(writer);
@@ -252,14 +249,14 @@ public class Storage {
 			writer.close();
 		}
 	}
-	
+
 	// This method writes the "Current Task" header into the file
 	private void writeCurrentHeader(FileWriter writer) throws IOException {
 		writer.write(FIELDS_HEADERLINE + "\r\n");
 		writer.write(HEADER_CURRENT + "\r\n");
 		writer.write(FIELDS_HEADERLINE + "\r\n");
 	}
-	
+
 	// This method writes the "Completed Task" header into the file
 	private void writeCompletedHeader(FileWriter writer) throws IOException {
 		writer.write("\r\n");
@@ -284,36 +281,6 @@ public class Storage {
 		}
 	}
 
-	public void appendToFile(Task taskToAdd) throws IOException {
-		ArrayList<Task> taskList = new ArrayList<Task>();
-		taskList.add(taskToAdd);
-
-		ArrayList<String> stringList = convertTaskToString(taskList);
-
-		if (savedDirectory.isEmpty()) {
-			FileWriter writer = new FileWriter(fileName, true);
-			BufferedWriter bufferedWriter = appendLineToFile(stringList, writer);
-
-			bufferedWriter.close();
-			writer.close();
-
-		} else {
-			File accessFile = new File(savedDirectory + "/" + fileName);
-			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile(), true);
-			BufferedWriter bufferedWriter = appendLineToFile(stringList, writer);
-
-			bufferedWriter.close();
-			writer.close();
-		}
-
-	}
-
-	private BufferedWriter appendLineToFile(ArrayList<String> stringList, FileWriter writer) throws IOException {
-		BufferedWriter bufferedWriter = new BufferedWriter(writer);
-		String lineToAppend = stringList.get(0);
-		bufferedWriter.write(lineToAppend + "\r\n");
-		return bufferedWriter;
-	}
 
 	// ================================================================================
 	// Saving and Loading commands
@@ -455,9 +422,9 @@ public class Storage {
 
 		return mainList;
 	}
-	
+
 	// ================================================================================
-	// 	Methods used to convert types
+	// Methods used to convert types
 	// ================================================================================
 
 	// This method converts String to Task to allow execution of other commands
@@ -477,14 +444,14 @@ public class Storage {
 			if (line.contains("----------") || line.contains("==========") || line.isEmpty()) {
 				// System.out.println("Encountered break line, continue");
 				continue;
-				
+
 			} else if (line.equalsIgnoreCase(HEADER_CURRENT)) {
 				continue;
-				
+
 			} else if (line.equalsIgnoreCase(HEADER_COMPLETED)) {
 				// break as the current list all add to current ,main list
 				indexOfCompletedTask = i + 2;
-				break;	
+				break;
 			} else {
 				String[] splitLine = line.split(" ");
 				String field = splitLine[0];
@@ -528,12 +495,12 @@ public class Storage {
 				countFields = 0;
 			}
 		}
-		
+
 		addCompletedTask(stringList, indexOfCompletedTask);
 
 		return taskList;
 	}
-	
+
 	// This method stores the completed tasks in arraylist
 	private static void addCompletedTask(ArrayList<String> stringList, int indexOfCompletedTask) {
 
@@ -541,8 +508,8 @@ public class Storage {
 		if (!completedList.isEmpty()) {
 			completedList.clear();
 		}
-		
-		for (int j = indexOfCompletedTask; j<stringList.size(); j++) {
+
+		for (int j = indexOfCompletedTask; j < stringList.size(); j++) {
 			String lineToAdd = stringList.get(j);
 			completedList.add(lineToAdd);
 		}
@@ -645,19 +612,19 @@ public class Storage {
 
 		return lineWithoutDirectory;
 	}
-	
+
 	/*
-	 * This method adds the data from file to mainlist to update 
-	 * For load commands
+	 * This method adds the data from file to mainlist to update For load
+	 * commands
 	 */
 	private void updateMainList(ArrayList<Task> dataFromFile) {
 		for (int j = 0; j < dataFromFile.size(); j++) {
 			mainList.add(dataFromFile.get(j));
 		}
 	}
-	
+
 	// ================================================================================
-	// 	Setter Methods
+	// Setter Methods
 	// ================================================================================
 
 	/*
