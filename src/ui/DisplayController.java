@@ -155,10 +155,10 @@ public class DisplayController extends HiddenSidesPane {
         if (cmd == CommandType.SEARCH) {
             updateSearchPanel(result.getResults());
             this.setContent(searchPanel);
-        } else if (cmd == CommandType.SEARCHOLD) {
+        } else if (cmd == CommandType.SEARCHDONE) {
             updateCompletedPanel(result.getResults());
             this.setContent(completedPanel);
-        } else if (cmd == CommandType.COMPLETE) {
+        } else if (cmd == CommandType.DONE) {
             sidebar.update();
             updateCompletedPanel(result.getResults());
             this.setContent(completedPanel);
