@@ -39,7 +39,11 @@ public class Execution {
     }
     
     public Result addTask(String description, LocalDateTime start, LocalDateTime end) {
+        // preprocessing
         clearModifiedStatus();
+        saveMainListForUndo();
+        
+        // create a new Task with specified details
         Task newTask = new Task(description);
         if (start != null) {
             newTask.setStart(start);
@@ -48,91 +52,97 @@ public class Execution {
             newTask.setEnd(end);
         }
         newTask.setModified(true);
+        
+        // add to list
+        mainList.add(newTask);
 
+        // postprocessing
+        sortList();
         updateDictionary(description);
         
-        if (!mainList.isEmpty()) {
-            saveMainListForUndo();
-        }
-        
-        mainList.add(newTask);
+        // save
         storage.setMainList(mainList);
         try {
-        	storage.writeToFile();
+            storage.writeToFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
         
-        sortList();
         return new Result(CommandType.ADD, true, "Added task", mainList);
     }
 
     public Result completeCommand(int taskID){
         clearModifiedStatus();
+        saveMainListForUndo();
+        
         int index = taskID - 1;
         Task doneTask = mainList.get(index);
         doneList.add(doneTask);
-        
         deleteTask(taskID);
+        
         return new Result(CommandType.DONE, true, "Marked as completed", mainList);
     }
     
     public Result deleteTask(int taskID) {
         clearModifiedStatus();
+        saveMainListForUndo();
         
-        boolean foundTask = false;
+        // remove from list
         int index = taskID - 1;
-        
-        if(mainList.get(index) != null){
+        try {
             mainList.remove(index);
-            foundTask = true;
+        } catch (IndexOutOfBoundsException e) {
+            return new Result(CommandType.DELETE, false, "Wrong task number", mainList);
+        }
+
+        sortList();
+        
+        // save
+        storage.setMainList(mainList);
+        try {
+            storage.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         
-        if (!foundTask) {
-            return new Result(CommandType.DELETE, false, "Wrong task number", mainList);
-        } else {
-            try {
-                storage.writeToFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        storage.setMainList(mainList);
-        sortList();
         return new Result(CommandType.DELETE, true, "Deleted", mainList);    
     }
     
     public Result editTask(int taskID, String newDescription, LocalDateTime start, LocalDateTime end) {
         clearModifiedStatus();
+        saveMainListForUndo();
         
-        boolean foundTask = false;
-        updateDictionary(newDescription);
+        // edit task with the specified details
         int index = taskID - 1;
-        Task task = mainList.get(index);
-        
-        if(task != null){
-            task.setDescription(newDescription);
-            if (start != null) {
-                task.setStart(start);
-            }
-            if (end != null) {
-                task.setEnd(end);
-            }
-            task.setModified(true);
-            foundTask = true;
-        }
-        if (!foundTask) {
+        Task task = null;
+        try {
+            task = mainList.get(index);
+        } catch (IndexOutOfBoundsException e) {
             return new Result(CommandType.EDIT, false, "Wrong task number", mainList);
-        } else {
-            try {
-                storage.writeToFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        }
+        if (task == null) { // will task ever be null?
+            return new Result(CommandType.EDIT, false, "Couldn't edit that task", mainList);
+        }
+        task.setDescription(newDescription);
+        if (start != null) {
+            task.setStart(start);
+        }
+        if (end != null) {
+            task.setEnd(end);
+        }
+        task.setModified(true);
+
+        sortList();
+        updateDictionary(newDescription);
+        
+        // save
+        storage.setMainList(mainList);
+        try {
+            storage.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         
-        sortList();
-        storage.setMainList(mainList);
         return new Result(CommandType.EDIT, true, "Edited", mainList);
     }
 
@@ -140,16 +150,18 @@ public class Execution {
         clearModifiedStatus();
         searchResults.clear();
         updateDictionary(keyword);
+        
         for (int i = 0; i < mainList.size(); i++) {
             if (mainList.get(i).getDescription().contains(keyword)) {
                 searchResults.add(mainList.get(i));
             }
         }
+        
         return new Result(CommandType.SEARCH, true, "Searched", searchResults);
     }
     
     public void savingTasks(String description){
-        try{    
+        try{
             if(description.contains(" ")){
                 String[] split = description.split(" ");
                 String directory = split[0].toLowerCase();
@@ -167,10 +179,12 @@ public class Execution {
     }
     
     public Result loadingTasks(String description){
-        clearModifiedStatus();
         description = description.trim();
+        clearModifiedStatus();
+        // store temp copy of original list in case loading of new list fails
         ArrayList<Task> temp = new ArrayList<Task>();
         temp.addAll(mainList);
+        
         try {
             ArrayList<Task> loadBack = new ArrayList<Task>();
             if(description.contains(" ")){
@@ -262,6 +276,7 @@ public class Execution {
         }
     }
     
+    // set all tasks status to be unmodified
     private void clearModifiedStatus() {
         for (Task task : mainList) {
             task.setModified(false);
