@@ -21,7 +21,6 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.control.Label;
@@ -31,7 +30,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
@@ -47,18 +45,18 @@ public class DisplayController extends HiddenSidesPane {
     private SidebarController sidebar;
     private Popup feedback;
     
-    private static final String FXML_DISPLAY = "Display.fxml";
-    private static final String HEADER_SEARCH_SINGLE = " search result found";
-    private static final String HEADER_SEARCH_PLURAL = " search results found";
     private static final String HEADER_COMPLETED_SINGLE = " completed task";
     private static final String HEADER_COMPLETED_PLURAL = " completed tasks";
+    private static final String HEADER_SEARCH_SINGLE = " search result found";
+    private static final String HEADER_SEARCH_PLURAL = " search results found";
+    
+    private static final String FXML_DISPLAY = "Display.fxml";
     private static final String RESOURCES_ICON_SUCCESS = "/icons/success-smaller.png";
     private static final String RESOURCES_ICONS_FAIL = "/icons/fail-smaller.png";
     
     private static final int TYPE_COMPLETED = 1;
-    private static final int TYPE_MODIFIED = 2;
-    private static final int TYPE_OTHER = 3;
-    private static final int TYPE_TODAY = 4;
+    private static final int TYPE_OTHER = 2;
+    private static final int TYPE_TODAY = 3;
 
     public DisplayController(MainApp main, Stage primaryStage) {
         this.main = main;
@@ -220,8 +218,6 @@ public class DisplayController extends HiddenSidesPane {
         // add to task panel
         taskPanel.getChildren().clear();
         taskPanel.getChildren().addAll(todayPanel, otherPanel);
-        //VBox.setVgrow(todayPanel, Priority.SOMETIMES);
-        //VBox.setVgrow(otherPanel,Priority.ALWAYS);
     }
 
     private void updateSearchPanel(ArrayList<Task> results) {
@@ -299,10 +295,10 @@ public class DisplayController extends HiddenSidesPane {
         ObservableList<VBox> list = FXCollections.observableArrayList(tasks);
         ListView<VBox> listView = new ListView<VBox>(list);
         listView.prefHeightProperty().bind(Bindings.size(list).multiply(65));
-        VBox.setVgrow(listView, Priority.ALWAYS);
+        listView.setMaxHeight(primaryStage.getHeight()/2.1);
         return listView;
     }
-
+    
     private VBox createToday(Task task, LocalDateTime todayDate) {
         Label desc = new Label(task.getId() + ". " + task.getDescription());
         HBox details = createTaskDetails(task, TYPE_TODAY);
