@@ -26,7 +26,7 @@ public class Execution {
     
     public Execution() {
         storage = new Storage();
-        mainList = new ArrayList<Task>();
+        mainList = storage.getMainList();
         doneList = new ArrayList<Task>();
         searchResults = new ArrayList<Task>();
         previousCopyOfMainList = new ArrayList<Task>();
@@ -234,6 +234,7 @@ public class Execution {
     
     public void setMainList(ArrayList<Task> mainList){
         Execution.mainList = mainList;
+        sortList();
     }
         
     // edition

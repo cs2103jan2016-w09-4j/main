@@ -18,16 +18,17 @@ public class Logic {
     private Execution execution;
     private static Logic logic = new Logic();
     
+    private ArrayList<Task> list;
     private static final int MAX_PREDICTIONS = 5;
     
     public Logic() {
         this.parser = new Parser();
         this.storage = new Storage();
         this.execution = new Execution();
+        this.list = storage.getMainList();
     }
 
     private Result execute(Command command){
-        ArrayList<Task> list = new ArrayList<Task>();
         
         CommandType commandType = command.getType();
         String description = command.getDescription();
@@ -48,12 +49,14 @@ public class Logic {
                 return execution.searchTask(description);
             
             case HOME :
-                list = execution.getMainList();
+                list = storage.getMainList();
+                execution.setMainList(list);
+                
                 return new Result(commandType, true, "Return home", list);
                 
             case SAVE :
                 execution.savingTasks(description);
-                list = execution.getMainList();
+                list = storage.getMainList();
                 return new Result(commandType, true, "Saved at " + description, list);
                 
             case LOAD :

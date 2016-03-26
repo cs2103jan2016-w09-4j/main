@@ -31,9 +31,9 @@ public class Parser {
                 DescriptionParser details = new DescriptionParser(description);
                 return new Command(CommandType.EDIT, Integer.parseInt(firstWord),
                         details.getDescription(), details.getStartTime(), details.getEndTime());
-            } else if (command.startsWith("complete")) {
-                return new Command(CommandType.DONE, Integer.parseInt(commandString.substring(9).trim()));
-            } else if (command.startsWith("searchold")) {
+            } else if (command.startsWith("done")) {
+                return new Command(CommandType.DONE, Integer.parseInt(commandString.substring(4).trim()));
+            } else if (command.startsWith("searchdone")) {
                 return new Command (CommandType.SEARCHDONE);
             } else if (command.startsWith("search")) {
                 return new Command(CommandType.SEARCH, commandString.substring(6).trim());
