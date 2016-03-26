@@ -41,25 +41,16 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) {
         logger.log(Level.INFO, "initalizing components");
         initializeLogic();
-        initializeUI(primaryStage);
         initializeWindow(primaryStage);
+        initializeUI(primaryStage);
     }
     
     private void initializeLogic() {
         logic = new Logic();
     }
 
-    private void initializeUI(Stage primaryStage) {
-        Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO).toExternalForm(), 20);
-        Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO_SLAB).toExternalForm(), 20);
-        root = new BorderPane();
-        display = new DisplayController(this, primaryStage);
-        input = new InputController(this);
-        root.setCenter(display);
-        root.setBottom(input);
-    }
-
     private void initializeWindow(Stage primaryStage) {
+        root = new BorderPane();
         primaryStage.setMinWidth(WINDOW_WIDTH_MIN);
         primaryStage.setMinHeight(WINDOW_HEIGHT_MIN);
         Scene scene = new Scene(root, WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT);
@@ -68,6 +59,15 @@ public class MainApp extends Application {
         primaryStage.getIcons().add(new Image(RESOURCES_ICON_PROGRAM));
     }
     
+    private void initializeUI(Stage primaryStage) {
+        Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO).toExternalForm(), 20);
+        Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO_SLAB).toExternalForm(), 20);
+        display = new DisplayController(this, primaryStage);
+        input = new InputController(this);
+        root.setCenter(display);
+        root.setBottom(input);
+    }
+
     /* ||||||||||||||||||||||||||||||||||||||||||
      * ||                                      ||
      * ||   METHODS THAT INTERACT WITH LOGIC   ||
