@@ -54,6 +54,8 @@ public class Logic {
             
             case HOME :
                 list = storage.getMainList();
+                execution.setMainList(list);
+                
                 return new Result(commandType, true, "Return home", list);
                 
             case SAVE :
