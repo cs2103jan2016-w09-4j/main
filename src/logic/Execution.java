@@ -234,6 +234,7 @@ public class Execution {
     
     public void setMainList(ArrayList<Task> mainList){
         Execution.mainList = mainList;
+        sortList();
     }
         
     // edition
