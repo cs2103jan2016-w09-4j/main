@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 public class Command {
 
     public enum CommandType {
-        ADD, DELETE, EDIT, SEARCH, SAVE, LOAD, UNDO, REDO, HOME, COMPLETE, SEARCHOLD, EXIT, INVALID;
+        ADD, DELETE, EDIT, SEARCH, SAVE, LOAD, UNDO, REDO, HOME, DONE, SEARCHDONE, EXIT, INVALID;
     }
 
     CommandType type;
