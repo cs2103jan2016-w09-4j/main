@@ -43,7 +43,6 @@ public class DisplayController extends HiddenSidesPane {
     private MainApp main;
     private Stage primaryStage;
     
-    @FXML private VBox mainPanel;
     private VBox taskPanel, searchPanel, completedPanel;
     private SidebarController sidebar;
     private Popup feedback;
@@ -221,6 +220,8 @@ public class DisplayController extends HiddenSidesPane {
         // add to task panel
         taskPanel.getChildren().clear();
         taskPanel.getChildren().addAll(todayPanel, otherPanel);
+        //VBox.setVgrow(todayPanel, Priority.SOMETIMES);
+        //VBox.setVgrow(otherPanel,Priority.ALWAYS);
     }
 
     private void updateSearchPanel(ArrayList<Task> results) {
@@ -294,10 +295,12 @@ public class DisplayController extends HiddenSidesPane {
         return header;
     }
 
-    private ListView<VBox> createListView(ArrayList<VBox> todayTasks) {
-        ObservableList<VBox> todayList = FXCollections.observableArrayList(todayTasks);
-        ListView<VBox> todayListView = new ListView<VBox>(todayList);
-        return todayListView;
+    private ListView<VBox> createListView(ArrayList<VBox> tasks) {
+        ObservableList<VBox> list = FXCollections.observableArrayList(tasks);
+        ListView<VBox> listView = new ListView<VBox>(list);
+        listView.prefHeightProperty().bind(Bindings.size(list).multiply(65));
+        VBox.setVgrow(listView, Priority.ALWAYS);
+        return listView;
     }
 
     private VBox createToday(Task task, LocalDateTime todayDate) {

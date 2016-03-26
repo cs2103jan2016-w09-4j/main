@@ -5,9 +5,6 @@
 <?import java.net.URL?>
 
 <fx:root xmlns:fx="http://javafx.com/fxml/1" type="HiddenSidesPane" >
-    <content>
-        <VBox fx:id="mainPanel" ></VBox>
-    </content>
     <stylesheets>
         <URL value="@display.css" />
     </stylesheets>
