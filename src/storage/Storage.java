@@ -50,6 +50,28 @@ public class Storage {
 		mainList = new ArrayList<Task>();
 		completedList = new ArrayList<String>();
 		storeFileNames = new ArrayList<String>();
+		
+		//Create default file for load recent feature
+		File file = new File(defaultFile);
+		boolean isCreated;
+		
+		try {
+			isCreated = file.createNewFile();
+			// created file, for first time use
+			if (isCreated) {
+				// Create default file
+				FileWriter out = new FileWriter(file);
+				out.write(fileName + "\r\n");
+				storeFileNames.add(fileName);
+
+				// create "MyTasks.txt"
+				FileWriter out2 = new FileWriter(fileName);
+
+				out.close();
+				out2.close();
+			}
+		} catch (IOException e) {
+		}
 	}
 
 	/*
@@ -67,15 +89,11 @@ public class Storage {
 			recentTaskList = getMostRecentList(fileNameList);
 
 		} catch (IOException e) {
-
 			// do nothing
 			// will end up returning empty arraylist
 		}
-
-		// if the loaded file is not empty, set it as the main list
-		if (!recentTaskList.isEmpty()) {
-			setMainList(recentTaskList);
-		}
+		
+		setMainList(recentTaskList);
 
 		return mainList;
 	}
@@ -87,30 +105,11 @@ public class Storage {
 
 	// get file names from default file
 	private ArrayList<String> getFileNameList() throws IOException {
-
+		
 		File file = new File(defaultFile);
-		boolean isCreated = file.createNewFile();
-
-		// created file, for first time use
-		if (isCreated) {
-			// Create default file
-			FileWriter out = new FileWriter(file);
-			out.write(fileName + "\r\n");
-			storeFileNames.add(fileName);
-
-			// create "MyTasks.txt"
-			FileWriter out2 = new FileWriter(fileName);
-
-			out.close();
-			out2.close();
-
-			// file already exist, read from file
-		} else {
-			Scanner scanner;
-			scanner = readFileNames(file);
-
-			scanner.close();
-		}
+		Scanner scanner;
+		scanner = readFileNames(file);
+		scanner.close();
 
 		return storeFileNames;
 	}
@@ -126,8 +125,7 @@ public class Storage {
 
 	// update most recent list
 	private ArrayList<Task> getMostRecentList(ArrayList<String> listOfFileNames) throws IOException {
-		String recentFileName;
-		String recentDirectory;
+		String recentFileName, recentDirectory;
 		String defaultFileName = DEFAULT_TEXTFILE;
 		ArrayList<Task> recentList = new ArrayList<Task>();
 
@@ -145,7 +143,6 @@ public class Storage {
 					recentList = loadFileWithFileName(recentFileName);
 
 				} catch (FileNotFoundException | ParseException e) {
-
 					// if file not found / deleted, load MyTasks.txt
 					try {
 						recentList = loadDefaultTextFile(defaultFileName);
@@ -247,16 +244,9 @@ public class Storage {
 			File accessFile = new File(savedDirectory + "/" + fileName);
 			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile());
 			
-			// Write heading for current tasks
 			writeCurrentHeader(writer);
-
-			// Write current tasks
 			writeTasksFromMainList(writer);
-
-			// Write heading for completed tasks
 			writeCompletedHeader(writer);
-
-			// Write completed tasks
 			writeTaskFromCompletedList(writer);
 
 			writer.close();
@@ -465,6 +455,10 @@ public class Storage {
 
 		return mainList;
 	}
+	
+	// ================================================================================
+	// 	Methods used to convert types
+	// ================================================================================
 
 	// This method converts String to Task to allow execution of other commands
 	public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList) throws ParseException {
@@ -651,6 +645,20 @@ public class Storage {
 
 		return lineWithoutDirectory;
 	}
+	
+	/*
+	 * This method adds the data from file to mainlist to update 
+	 * For load commands
+	 */
+	private void updateMainList(ArrayList<Task> dataFromFile) {
+		for (int j = 0; j < dataFromFile.size(); j++) {
+			mainList.add(dataFromFile.get(j));
+		}
+	}
+	
+	// ================================================================================
+	// 	Setter Methods
+	// ================================================================================
 
 	/*
 	 * This method is used when Logic make changes to the main list and pass the
@@ -663,16 +671,6 @@ public class Storage {
 
 	public void setCompletedList(ArrayList<String> completedList) {
 		Storage.completedList = completedList;
-	}
-
-	/*
-	 * This method adds the data from file to main list to update For load
-	 * commands
-	 */
-	private void updateMainList(ArrayList<Task> dataFromFile) {
-		for (int j = 0; j < dataFromFile.size(); j++) {
-			mainList.add(dataFromFile.get(j));
-		}
 	}
 
 }
