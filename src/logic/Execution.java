@@ -49,7 +49,7 @@ public class Execution {
         mainList.add(newTask);
         storage.setMainList(mainList);
         try {
-            storage.appendToFile(newTask);
+        	storage.writeToFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,7 +76,7 @@ public class Execution {
         mainList.add(newTask);
         storage.setMainList(mainList);
         try {
-            storage.appendToFile(newTask);
+        	storage.writeToFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
