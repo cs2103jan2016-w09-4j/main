@@ -177,11 +177,19 @@ public class DisplayController extends HiddenSidesPane {
         // place tasks in Today or Others section
         ArrayList<VBox> todayTasks = new ArrayList<VBox>();
         ArrayList<VBox> otherTasks = new ArrayList<VBox>();
+        int modifiedToday = -1;
+        int modifiedOther = -1;
         for (Task task : allTasks) {
             if (task.isSameDate(todayDate)) {
                 todayTasks.add(createToday(task, todayDateTime));
+                if (task.isModified()) {
+                    modifiedToday = todayTasks.size() - 1;
+                }
             } else {
                 otherTasks.add(createOther(task, todayDateTime));
+                if (task.isModified()) {
+                    modifiedOther = otherTasks.size() - 1;
+                }
             }
         }
         
@@ -195,6 +203,9 @@ public class DisplayController extends HiddenSidesPane {
             ListView<VBox> todayListView = createListView(todayTasks);
             todayContent.getChildren().add(todayListView);
             todayListView.setMaxHeight(primaryStage.getHeight()/2.1);
+            if (modifiedToday != -1) {
+                todayListView.scrollTo(modifiedToday);
+            }
         }
         
         VBox todayPanel = new VBox();
@@ -210,6 +221,9 @@ public class DisplayController extends HiddenSidesPane {
             ListView<VBox> otherListView = createListView(otherTasks);
             otherContent.getChildren().add(otherListView);
             otherListView.setMaxHeight(primaryStage.getHeight()/2.1);
+            if (modifiedOther != -1) {
+                otherListView.scrollTo(modifiedOther);
+            }
         }
         
         VBox otherPanel = new VBox();
