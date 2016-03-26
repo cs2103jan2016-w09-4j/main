@@ -155,13 +155,11 @@ public class DisplayController extends HiddenSidesPane {
         if (cmd == CommandType.SEARCH) {
             updateSearchPanel(result.getResults());
             this.setContent(searchPanel);
-        } else if (cmd == CommandType.SEARCHOLD) {
+        } else if (cmd == CommandType.SEARCHDONE) {
             updateCompletedPanel(result.getResults());
             this.setContent(completedPanel);
-        } else if (cmd == CommandType.COMPLETE) {
-            sidebar.update();
-            updateCompletedPanel(result.getResults());
-            this.setContent(completedPanel);
+        } else if (cmd == CommandType.INVALID) {
+            showFeedback(cmd, result.getMessage(), result.isSuccess());
         } else {
             sidebar.update();
             updateTaskPanel(result.getResults());
@@ -196,6 +194,7 @@ public class DisplayController extends HiddenSidesPane {
         } else {
             ListView<VBox> todayListView = createListView(todayTasks);
             todayContent.getChildren().add(todayListView);
+            todayListView.setMaxHeight(primaryStage.getHeight()/2.1);
         }
         
         VBox todayPanel = new VBox();
@@ -210,6 +209,7 @@ public class DisplayController extends HiddenSidesPane {
         } else {
             ListView<VBox> otherListView = createListView(otherTasks);
             otherContent.getChildren().add(otherListView);
+            otherListView.setMaxHeight(primaryStage.getHeight()/2.1);
         }
         
         VBox otherPanel = new VBox();
@@ -295,7 +295,6 @@ public class DisplayController extends HiddenSidesPane {
         ObservableList<VBox> list = FXCollections.observableArrayList(tasks);
         ListView<VBox> listView = new ListView<VBox>(list);
         listView.prefHeightProperty().bind(Bindings.size(list).multiply(65));
-        listView.setMaxHeight(primaryStage.getHeight()/2.1);
         return listView;
     }
     

@@ -1,3 +1,7 @@
+.text {
+    -fx-font-smoothing-type: gray;
+}
+
 .root {
     -fx-alignment: top-left;
     -fx-padding: 5;

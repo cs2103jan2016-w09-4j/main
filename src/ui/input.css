@@ -1,3 +1,7 @@
+.text {
+    -fx-font-smoothing-type: gray;
+}
+
 .label {
     -fx-font-size: 15;
     -fx-font-family: "Segoe UI", sans-serif;
