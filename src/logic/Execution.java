@@ -220,10 +220,6 @@ public class Execution {
     
     public void saveMainListForUndo() {
         previousCopyOfMainList.clear();
-        for (int i=0; i< mainList.size(); i++) {
-            previousCopyOfMainList.add(mainList.get(i));
-        }
-        previousCopyOfMainList.clear();
         previousCopyOfMainList.addAll(mainList);
     }
 
