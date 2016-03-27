@@ -9,6 +9,7 @@ import logic.Execution;
 import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.time.LocalDateTime;
 
 public class Logic {
 
@@ -19,6 +20,7 @@ public class Logic {
     private static Logic logic = new Logic();
     
     private ArrayList<Task> list;
+    private LocalDateTime current;
     private static final int MAX_PREDICTIONS = 5;
     
     public Logic() {
@@ -26,6 +28,7 @@ public class Logic {
         this.storage = new Storage();
         this.execution = new Execution();
         this.list = storage.getMainList();
+        this.current = LocalDateTime.now();
     }
 
     private Result execute(Command command){
@@ -34,16 +37,32 @@ public class Logic {
         String description = command.getDescription();
         int taskID = command.getId();       
         
+        LocalDateTime startDate = command.getStartDate();
+        LocalDateTime endDate = command.getEndDate();
+        
+        if (startDate != null){
+        	if(startDate.compareTo(current) < 0){;
+        		return new Result(CommandType.INVALID, false, "Invalid start date!", new ArrayList<Task>());
+        	}
+        }
+        
+        if (endDate != null) {
+        	if(endDate.compareTo(current) < 0){
+        		return new Result(CommandType.INVALID, false, "Invalid end date!", new ArrayList<Task>());
+        	}
+        }
+        
+        
         switch(commandType) {
         
             case ADD :
-                return execution.addTask(description, command.getStartDate(), command.getEndDate());
+                return execution.addTask(description, startDate, endDate);
             
             case DELETE :
                 return execution.deleteTask(taskID);
             
             case EDIT :
-                return execution.editTask(taskID, description, command.getStartDate(), command.getEndDate());
+                return execution.editTask(taskID, description, startDate, endDate);
                 
             case SEARCH :
                 return execution.searchTask(description);
