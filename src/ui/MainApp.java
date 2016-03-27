@@ -33,6 +33,7 @@ public class MainApp extends Application {
     private static final String RESOURCES_ICON_PROGRAM = "/icons/logo-smaller.png";
     private static final String RESOURCES_FONT_ROBOTO = "/fonts/Roboto-Regular.ttf";
     private static final String RESOURCES_FONT_ROBOTO_SLAB = "/fonts/RobotoSlab-Regular.ttf";
+    private static final String RESOURCES_FONT_ROBOTO_CONDENSED = "/fonts/RobotoCondensed-Regular.ttf";
     
     public static void main(String[] args) {
         launch(args);
@@ -62,6 +63,7 @@ public class MainApp extends Application {
     private void initializeUI(Stage primaryStage) {
         Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO).toExternalForm(), 20);
         Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO_SLAB).toExternalForm(), 20);
+        Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO_CONDENSED).toExternalForm(), 20);
         display = new DisplayController(this, primaryStage);
         input = new InputController(this);
         root.setCenter(display);

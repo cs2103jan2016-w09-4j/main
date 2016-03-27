@@ -76,6 +76,9 @@ public class Logic {
             case SEARCHDONE :
                 list = execution.getDoneList();
                 return new Result(commandType, true, "Showing completed tasks", list);
+
+            case HELP :
+                return new Result(commandType, true, "Help", null);
                 
             case EXIT :
                 System.exit(0);

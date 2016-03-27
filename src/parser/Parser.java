@@ -47,6 +47,8 @@ public class Parser {
                 return new Command(CommandType.REDO);
             } else if (command.startsWith("home")) {
                 return new Command(CommandType.HOME);
+            } else if (command.startsWith("help")) {
+                return new Command(CommandType.HELP);
             } else if (command.startsWith("exit")) {
                 return new Command(CommandType.EXIT);
             } else {

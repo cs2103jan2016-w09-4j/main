@@ -25,10 +25,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -41,7 +44,7 @@ public class DisplayController extends HiddenSidesPane {
     private MainApp main;
     private Stage primaryStage;
     
-    private VBox taskPanel, searchPanel, completedPanel;
+    private VBox taskPanel, searchPanel, completedPanel, helpPanel;
     private SidebarController sidebar;
     private Popup feedback;
     
@@ -66,6 +69,7 @@ public class DisplayController extends HiddenSidesPane {
         initializeTaskPanel();
         initializeSearchPanel();
         initializeCompletedPanel();
+        initializeHelpPanel();
         initializeSidebarContent();
         initializePopup();
         handleUserInteractions();
@@ -97,7 +101,7 @@ public class DisplayController extends HiddenSidesPane {
     
     private void initializeTaskPanel() {
         taskPanel = new VBox();
-        taskPanel.getStyleClass().add("panel-task");
+        taskPanel.getStyleClass().add("panel");
         this.setContent(taskPanel);
         
         ArrayList<Task> allTasks = main.getTasks();
@@ -106,12 +110,66 @@ public class DisplayController extends HiddenSidesPane {
 
     private void initializeSearchPanel() {
         searchPanel = new VBox();
-        searchPanel.getStyleClass().add("panel-search");
+        searchPanel.getStyleClass().add("panel");
     }
     
     private void initializeCompletedPanel() {
         completedPanel = new VBox();
-        completedPanel.getStyleClass().add("panel-task");
+        completedPanel.getStyleClass().add("panel");
+    }
+    
+    private void initializeHelpPanel() {
+        helpPanel = new VBox();
+        helpPanel.getStyleClass().add("panel");
+        
+        String[] commands = { "Add a task",
+                              "Edit a task",
+                              "Search tasks",
+                              "Mark as done",
+                              "Access done tasks",
+                              "Delete a task",
+                              "Undo",
+                              "Redo",
+                              "Show help guide",
+                              "Exit",
+                              "Save file",
+                              "Load file",
+                              "View sidebar" };
+        String[] formats = { "add <description>",
+                             "edit <task number> <new description> <new timing> #<new category>",
+                             "search <keyword / date / #category>",
+                             "done <task number>",
+                             "searchdone <keyword / date / #category>",
+                             "delete <task number>",
+                             "undo",
+                             "redo",
+                             "help",
+                             "exit",
+                             "save <directory> <filename>",
+                             "load <directory> <filename>",
+                             "CTRL+M" };
+        GridPane helpContent = new GridPane();
+        helpContent.getStyleClass().add("table");
+        ColumnConstraints commandCol = new ColumnConstraints();
+        commandCol.setPercentWidth(30);
+        ColumnConstraints formatCol = new ColumnConstraints();
+        formatCol.setPercentWidth(70);
+        helpContent.getColumnConstraints().addAll(commandCol, formatCol);
+        
+        for (int i = 0; i < commands.length; i++) {
+            Label cmd = new Label(commands[i]);
+            cmd.getStyleClass().add("command");
+            Label format = new Label(formats[i]);
+            format.getStyleClass().add("format");
+            helpContent.add(cmd, 0, i);
+            helpContent.add(format, 1, i);
+        }
+        
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(helpContent);
+        
+        Label helpHeader = createHeader("Commands");
+        helpPanel.getChildren().addAll(helpHeader, scrollPane);
     }
 
     private void initializeSidebarContent() {
@@ -141,9 +199,6 @@ public class DisplayController extends HiddenSidesPane {
                     } else {
                         display.setPinnedSide(Side.LEFT);
                     }
-                } else if (event.getCode()==KeyCode.HOME) {
-                    logger.log(Level.INFO, "user pressed home");
-                    display.setContent(taskPanel);
                 }
             }
             
@@ -160,6 +215,8 @@ public class DisplayController extends HiddenSidesPane {
             this.setContent(completedPanel);
         } else if (cmd == CommandType.INVALID) {
             showFeedback(cmd, result.getMessage(), result.isSuccess());
+        } else if (cmd == CommandType.HELP) {
+            this.setContent(helpPanel);
         } else {
             sidebar.update();
             updateTaskPanel(result.getResults());
