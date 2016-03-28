@@ -30,25 +30,20 @@ public class Storage {
 
 	private static ArrayList<Task> mainList;
 	private static ArrayList<Task> completedList;
+	
+	private String fileName;
+	private String savedDirectory;
+	private String defaultFile;
+	private String recentFileName;
 
-	private static String fileName;
-	private static String savedDirectory;
-
-	// for default file to store saved file names
-	private static String defaultFile;
-
-	// To store all file names
-	private static ArrayList<String> storeFileNames;
-
-	// default file name is "MyTasks.txt"
 	public Storage() {
 		fileName = DEFAULT_TEXTFILE;
 		defaultFile = DEFAULT_FILE;
 		savedDirectory = "";
+		recentFileName = "";
 
 		mainList = new ArrayList<Task>();
 		completedList = new ArrayList<Task>();
-		storeFileNames = new ArrayList<String>();
 
 		// Create default file for load recent feature
 		try {
@@ -60,7 +55,7 @@ public class Storage {
 				// Create default file
 				FileWriter out = new FileWriter(file);
 				out.write(fileName + "\r\n");
-				storeFileNames.add(fileName);
+				recentFileName = fileName;
 
 				// create "MyTasks.txt"
 				FileWriter out2 = new FileWriter(fileName);
@@ -79,12 +74,11 @@ public class Storage {
 	 * save to any file, it will return the list from the default file
 	 */
 	public ArrayList<Task> getMainList() {
-		ArrayList<String> fileNameList;
 		ArrayList<Task> recentTaskList = new ArrayList<Task>();
 
 		try {
-			fileNameList = getFileNameList();
-			recentTaskList = getMostRecentList(fileNameList);
+			recentFileName = getRecentFileName();
+			recentTaskList = getMostRecentList(recentFileName);
 
 		} catch (IOException e) {
 
@@ -98,34 +92,22 @@ public class Storage {
 	public ArrayList<Task> getCompletedList() {
 		return completedList;
 	}
-
-	// get file names from default file
-	private ArrayList<String> getFileNameList() throws IOException {
-
+	
+	private String getRecentFileName() throws FileNotFoundException {
 		File file = new File(defaultFile);
-		Scanner scanner;
-		scanner = readFileNames(file);
+		Scanner scanner = new Scanner(file);
+		String lineToAdd = scanner.nextLine();
 		scanner.close();
-
-		return storeFileNames;
-	}
-
-	private Scanner readFileNames(File file) throws FileNotFoundException {
-		Scanner scanner;
-		scanner = new Scanner(file);
-		while (scanner.hasNextLine()) {
-			storeFileNames.add(scanner.nextLine());
-		}
-		return scanner;
+		return lineToAdd;
 	}
 
 	// update most recent list
-	private ArrayList<Task> getMostRecentList(ArrayList<String> listOfFileNames) throws IOException {
+	private ArrayList<Task> getMostRecentList(String fileName) throws IOException {
 		String recentFileName, recentDirectory;
 		String defaultFileName = DEFAULT_TEXTFILE;
 		ArrayList<Task> recentList = new ArrayList<Task>();
 
-		String mostRecentFile = getMostRecentFileName(listOfFileNames);
+		String mostRecentFile = fileName;
 
 		// check if there is directory
 		String[] splitLine = mostRecentFile.split(" , ");
@@ -186,14 +168,6 @@ public class Storage {
 		fileName = defaultFileName; // change back file name to default
 		writeToDefaultFile(defaultFileName);
 		return recentList;
-
-	}
-
-	// This method obtains the most recent file name
-	private String getMostRecentFileName(ArrayList<String> listOfFileNames) {
-		int lastIndex = listOfFileNames.size() - 1;
-		String mostRecentFile = listOfFileNames.get(lastIndex);
-		return mostRecentFile;
 	}
 
 	// Obtain filename without directory
@@ -376,7 +350,6 @@ public class Storage {
 	 * will check if the directory and file exists. If the directory or file
 	 * does not exist, it will throw an exception
 	 */
-
 	public ArrayList<Task> loadFileWithDirectory(String directory, String userFileName)
 			throws IOException, FileNotFoundException, NotDirectoryException, ParseException {
 
@@ -606,5 +579,4 @@ public class Storage {
 	public void setCompletedList(ArrayList<Task> completedList) {
 		Storage.completedList = completedList;
 	}
-
 }
