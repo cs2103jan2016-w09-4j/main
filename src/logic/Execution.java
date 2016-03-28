@@ -7,9 +7,13 @@ import storage.Storage;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 
 public class Execution {
@@ -22,7 +26,7 @@ public class Execution {
     private static ArrayList<Task> previousCopyOfMainList;
     private static ArrayList<Task> copyOfMainListForRedo;
     private static ArrayList<Category> categories;
-    private TreeSet<String> dictionary;
+    private TreeSet<Entry<String, Integer>> dictionary;
     private TreeSet<String> fileDictionary;
     private TreeSet<String> wordDictionary;
     
@@ -40,7 +44,11 @@ public class Execution {
         categories = new ArrayList<Category>();
         categories.add(new Category("Priority"));
         categories.add(new Category("Today"));
-        dictionary = new TreeSet<String>();
+        dictionary = new TreeSet<Entry<String, Integer>>(new Comparator<Entry<String, Integer>>() {
+            public int compare(Entry<String, Integer> arg0, Entry<String, Integer> arg1) {
+                return arg0.getKey().compareTo(arg1.getKey());
+            }
+        });
         fileDictionary = new TreeSet<String>();
         wordDictionary = new TreeSet<String>();
     }
@@ -220,11 +228,24 @@ public class Execution {
     }
     
     private void updateDictionary(String text) {
-        dictionary.add(text.toLowerCase());
+        text = text.toLowerCase();
+        
+        Integer frequency = 0;
+        Iterator<Entry<String, Integer>> iterator = dictionary.iterator();
+        while (iterator.hasNext()) {
+            Entry<String, Integer> next = iterator.next();
+            if (next.getKey().equals(text)) {
+                frequency = next.getValue();
+                iterator.remove();
+                break;
+            }
+        }
+        dictionary.add(new AbstractMap.SimpleEntry<String, Integer>(text, ++frequency));
+        System.out.println("Dictionary: "+dictionary);
         String[] words = text.split("\\s+");
         for (int i = 0; i < words.length; i++) {
             if (!isSpecialWord(words[i])) {
-                wordDictionary.add(words[i].toLowerCase());
+                wordDictionary.add(words[i]);
             }
         }
     }
@@ -278,7 +299,7 @@ public class Execution {
         return previousCopyOfMainList;
     }
     
-    public TreeSet<String> getDictionary(){
+    public TreeSet<Entry<String, Integer>> getDictionary(){
         return dictionary;
     }
     
