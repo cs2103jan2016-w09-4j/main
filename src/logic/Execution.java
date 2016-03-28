@@ -21,37 +21,49 @@ public class Execution {
     private Storage storage;
     
     private static ArrayList<Task> mainList;
-    private static ArrayList<Task> searchResults;
     private static ArrayList<Task> doneList;
+    private static ArrayList<Category> categories;
+    private static ArrayList<Task> searchResults;
     private static ArrayList<Task> previousCopyOfMainList;
     private static ArrayList<Task> copyOfMainListForRedo;
-    private static ArrayList<Category> categories;
-    private TreeSet<Entry<String, Integer>> dictionary;
-    private TreeSet<String> fileDictionary;
-    private TreeSet<String> wordDictionary;
     
-    public static final String[] specialWords = { "a", "about", "an", "and", "as", "at",
+    // Store user input history for auto-completion
+    // TreeSet is used to avoid duplicate entries
+    // Integer is the frequency that the String is entered by the user
+    private static TreeSet<Entry<String, Integer>> taskDictionary;
+    private static TreeSet<String> fileDictionary;
+    private static TreeSet<String> wordDictionary;
+    
+    // Common English function words 
+    public static final String[] functionWords = { "a", "about", "an", "and", "as", "at",
                                                   "by", "for", "in", "of", "or",
                                                   "the", "to", "with" }; 
     
     public Execution() {
         storage = new Storage();
         mainList = storage.getMainList();
-        doneList = new ArrayList<Task>();
-        searchResults = new ArrayList<Task>();
-        previousCopyOfMainList = new ArrayList<Task>();
-        copyOfMainListForRedo = new ArrayList<Task>();
+        doneList = storage.getCompletedList();
         categories = new ArrayList<Category>();
         categories.add(new Category("Priority"));
         categories.add(new Category("Today"));
-        dictionary = new TreeSet<Entry<String, Integer>>(new Comparator<Entry<String, Integer>>() {
-            public int compare(Entry<String, Integer> arg0, Entry<String, Integer> arg1) {
-                return arg0.getKey().compareTo(arg1.getKey());
+        searchResults = new ArrayList<Task>();
+        previousCopyOfMainList = new ArrayList<Task>();
+        copyOfMainListForRedo = new ArrayList<Task>();
+
+        taskDictionary = new TreeSet<Entry<String, Integer>>(new Comparator<Entry<String, Integer>>() {
+            public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
+                // element uniqueness depends only on the entry's key
+                return entry1.getKey().compareTo(entry2.getKey());
             }
         });
-        fileDictionary = new TreeSet<String>();
+        // TODO: update type to Entry<String, Integer> 
         wordDictionary = new TreeSet<String>();
+        fileDictionary = new TreeSet<String>();
     }
+    
+    /********************************
+     * METHODS FOR COMAND EXECUTION *
+     ********************************/
     
     public Result addTask(String description, LocalDateTime start, LocalDateTime end) {
         // preprocessing
@@ -226,49 +238,6 @@ public class Execution {
             return new Result(CommandType.LOAD, false, "Failed to load " + description, temp);
         }
     }
-    
-    private void updateDictionary(String text) {
-        text = text.toLowerCase();
-        
-        Integer frequency = 0;
-        Iterator<Entry<String, Integer>> iterator = dictionary.iterator();
-        while (iterator.hasNext()) {
-            Entry<String, Integer> next = iterator.next();
-            if (next.getKey().equals(text)) {
-                frequency = next.getValue();
-                iterator.remove();
-                break;
-            }
-        }
-        dictionary.add(new AbstractMap.SimpleEntry<String, Integer>(text, ++frequency));
-        System.out.println("Dictionary: "+dictionary);
-        String[] words = text.split("\\s+");
-        for (int i = 0; i < words.length; i++) {
-            if (!isSpecialWord(words[i])) {
-                wordDictionary.add(words[i]);
-            }
-        }
-    }
-    
-    private boolean isSpecialWord(String word) {
-        if (word.matches("-?\\d+(\\.\\d+)?")) {
-            return true;
-        }
-        int index = Arrays.binarySearch(specialWords, word, String.CASE_INSENSITIVE_ORDER);
-        if (index < 0) {
-            return false;
-        }
-        return true;
-    }
-
-    private void updateFileDictionary(String text) {
-        fileDictionary.add(text);
-    }
-    
-    public void saveMainListForUndo() {
-        previousCopyOfMainList.clear();
-        previousCopyOfMainList.addAll(mainList);
-    }
 
     public ArrayList<Task> undoCommand() {
         // transfer content from previousCopyOfMainList to mainList
@@ -285,28 +254,94 @@ public class Execution {
         return mainList;
     }
     
-    public ArrayList<Task> getMainList() {
-        return mainList;
-    }
+    /******************
+     * HELPER METHODS *
+     ******************/
     
     public void setMainList(ArrayList<Task> mainList){
         Execution.mainList = mainList;
         sortList();
     }
+    
+    public void saveMainListForUndo() {
+        previousCopyOfMainList.clear();
+        previousCopyOfMainList.addAll(mainList);
+    }
+
+    // Sorts the list of tasks and updates task id
+    private void sortList() {
+        Collections.sort(mainList);
+        int id = 1;
+        for (Task task : mainList) {
+            task.setId(id);
+        }
+    }
+    
+    // Clears the status of all tasks to be unmodified
+    private void clearModifiedStatus() {
+        for (Task task : mainList) {
+            task.setModified(false);
+        }
+    }
+    
+    private void updateDictionary(String text) {
+        text = text.toLowerCase();
+        updateTaskDictionary(text);
+        updateWordDictionary(text);
+    }
+
+    private void updateTaskDictionary(String text) {
+        Integer frequency = 0;
         
-    // edition
-    public ArrayList<Task> getPreviousList(){
-        return previousCopyOfMainList;
+        // Check if the String exists in the task dictionary
+        Iterator<Entry<String, Integer>> iterator = taskDictionary.iterator();
+        while (iterator.hasNext()) {
+            Entry<String, Integer> next = iterator.next();
+            if (next.getKey().equals(text)) {
+                // Keep the frequency count and remove the entry
+                frequency = next.getValue();
+                iterator.remove();
+                break;
+            }
+        }
+        
+        // Update the frequency count of the String
+        taskDictionary.add(new AbstractMap.SimpleEntry<String, Integer>(text, ++frequency));
     }
+
+    private void updateWordDictionary(String text) {
+        String[] words = text.split("\\s+");
+        for (int i = 0; i < words.length; i++) {
+            if (!isNumberOrFunctionWord(words[i])) {
+                wordDictionary.add(words[i]);
+            }
+        }
+    }
+
+    private void updateFileDictionary(String text) {
+        fileDictionary.add(text);
+    }
+        
+    // Returns true if the specified word is a number or function word
+    private boolean isNumberOrFunctionWord(String word) {
+        // Check if word contains only numbers and the decimal separator
+        if (word.matches("-?\\d+(\\.\\d+)?")) {
+            return true;
+        }
+        // Check if word is a pre-defined function word
+        // index will be >= 0 if it is
+        int index = Arrays.binarySearch(functionWords, word, String.CASE_INSENSITIVE_ORDER);
+        return index >= 0 ? true : false;
+    }
+
+    /******************
+     * GETTER METHODS *
+     ******************/
     
-    public TreeSet<Entry<String, Integer>> getDictionary(){
-        return dictionary;
+    public ArrayList<Task> getMainList() {
+        return mainList;
     }
-    
-    public TreeSet<String> getWordDictionary(){
-        return wordDictionary;
-    }
-            
+
     public ArrayList<Task> getDoneList(){
         return doneList;
     }
@@ -314,20 +349,21 @@ public class Execution {
     public ArrayList<Category> getCategories() {
         return categories;
     }
-    
-    // sort and update task id
-    private void sortList() {
-        Collections.sort(mainList);
-        for (int i = 0; i < mainList.size(); i++) {
-            mainList.get(i).setId(i + 1);
-        }
+        
+    public ArrayList<Task> getPreviousList(){
+        return previousCopyOfMainList;
+    }
+
+    public TreeSet<Entry<String, Integer>> getTaskDictionary(){
+        return taskDictionary;
+    }
+
+    public TreeSet<String> getWordDictionary(){
+        return wordDictionary;
     }
     
-    // set all tasks status to be unmodified
-    private void clearModifiedStatus() {
-        for (Task task : mainList) {
-            task.setModified(false);
-        }
+    public TreeSet<String> getFileDictionary(){
+        return fileDictionary;
     }
-    
+
 }
