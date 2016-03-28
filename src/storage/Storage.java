@@ -87,10 +87,8 @@ public class Storage {
 			recentTaskList = getMostRecentList(fileNameList);
 
 		} catch (IOException e) {
-			// do nothing
-			// will end up returning empty arraylist
-		}
 
+		}
 		setMainList(recentTaskList);
 
 		return mainList;
@@ -158,7 +156,7 @@ public class Storage {
 
 			try {
 				recentList = loadFileWithDirectory(recentDirectory, recentFileName);
-
+				
 			} catch (NotDirectoryException | FileNotFoundException | ParseException e) {
 
 				try {
@@ -215,38 +213,21 @@ public class Storage {
 	 * the directory of the file changed
 	 */
 	public void writeToFile() throws IOException {
-
+		FileWriter writer;
 		if (savedDirectory.isEmpty()) {
-
-			FileWriter writer = new FileWriter(fileName);
-
-			// Write heading for current tasks
-			writeCurrentHeader(writer);
-
-			// Write current tasks
-			writeTasksFromMainList(writer);
-
-			// Write heading for completed tasks
-			writeCompletedHeader(writer);
-
-			// Write completed tasks
-			writeTaskFromCompletedList(writer);
-
-			writer.close();
-
+			writer = new FileWriter(fileName);
 		} else {
 			// if the most recent file is from another directory
 			// write to this directory and file
 			File accessFile = new File(savedDirectory + "/" + fileName);
-			FileWriter writer = new FileWriter(accessFile.getAbsoluteFile());
-
+			writer = new FileWriter(accessFile.getAbsoluteFile());
+		}
 			writeCurrentHeader(writer);
 			writeTasksFromMainList(writer);
 			writeCompletedHeader(writer);
 			writeTaskFromCompletedList(writer);
 
 			writer.close();
-		}
 	}
 
 	// This method writes the "Current Task" header into the file
@@ -278,7 +259,6 @@ public class Storage {
 		
 		for (int i = 0; i < completedTaskToString.size(); i++) {
 			String lineToWrite = completedTaskToString.get(i);
-			//System.out.println("line to write is " + lineToWrite);
 			writer.write(lineToWrite + "\r\n");
 		}
 	}
@@ -295,8 +275,6 @@ public class Storage {
 	public void saveToFile(String userFileName) throws IOException {
 		fileName = userFileName;
 		writeToFile();
-
-		// write to default file to load recent
 		writeToDefaultFile(userFileName);
 	}
 
@@ -359,20 +337,37 @@ public class Storage {
 			throw new FileNotFoundException();
 		}
 
-		ArrayList<Task> updatedMainList = convertStringToTask(listFromFile);
+		int startIndex = 0;
+		int completedStartIndex = 0;
+		completedStartIndex = getCompletedIndex(listFromFile, completedStartIndex);
+		
+		ArrayList<Task> updatedMainListFromLoad = convertStringToTask(listFromFile,startIndex);
+		ArrayList<Task> updatedCompletedListFromLoad = convertStringToTask(listFromFile,completedStartIndex);
 		mainList.clear();
-		updateMainList(updatedMainList);
+		completedList.clear();
+		// transfer contents from file to main list
+		updateList(updatedMainListFromLoad, mainList);
+		updateList(updatedCompletedListFromLoad, completedList);
+		setMainList(mainList);
+		setCompletedList(completedList);
 
 		return mainList;
 	}
 
+	private int getCompletedIndex(ArrayList<String> listFromFile, int completedStartIndex) {
+		for (int i=0; i<listFromFile.size(); i++) {
+			if (listFromFile.get(i).equals(HEADER_COMPLETED)) {
+				completedStartIndex = i + 2;
+			}
+		}
+		return completedStartIndex;
+	}
+
 	private void readFileWhenFileExists(File file, ArrayList<String> listFromFile) throws FileNotFoundException {
-		Scanner sc;
-		sc = new Scanner(file);
+		Scanner sc = new Scanner(file);
 		while (sc.hasNextLine()) {
 			listFromFile.add(sc.nextLine());
 		}
-
 		sc.close();
 	}
 
@@ -415,11 +410,19 @@ public class Storage {
 			}
 		}
 
-		ArrayList<Task> updatedMainListFromLoad = convertStringToTask(listFromLoadFile);
+		int startIndex = 0;
+		int completedStartIndex = 0;
+		completedStartIndex = getCompletedIndex(listFromLoadFile, completedStartIndex);
+		
+		ArrayList<Task> updatedMainListFromLoad = convertStringToTask(listFromLoadFile,startIndex);
+		ArrayList<Task> updatedCompletedListFromLoad = convertStringToTask(listFromLoadFile,completedStartIndex);
 		mainList.clear();
+		completedList.clear();
 		// transfer contents from file to main list
-		updateMainList(updatedMainListFromLoad);
+		updateList(updatedMainListFromLoad, mainList);
+		updateList(updatedCompletedListFromLoad, completedList);
 		setMainList(mainList);
+		setCompletedList(completedList);
 
 		return mainList;
 	}
@@ -429,28 +432,22 @@ public class Storage {
 	// ================================================================================
 
 	// This method converts String to Task to allow execution of other commands
-	public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList) throws ParseException {
+	public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList, int startIndex) throws ParseException {
 
 		Task currentTask = new Task("");
 		String description, start, end, category;
 		int countFields = 0;
-		int indexOfCompletedTask = 0;
 		ArrayList<Task> taskList = new ArrayList<Task>();
 
-		for (int i = 0; i < stringList.size(); i++) {
+		for (int i = startIndex; i < stringList.size(); i++) {
 			String line = stringList.get(i);
 
 			// break line, contains at least 10 "-";
 			if (line.contains("----------") || line.contains("==========") || line.isEmpty()) {
-				// System.out.println("Encountered break line, continue");
 				continue;
-
 			} else if (line.equalsIgnoreCase(HEADER_CURRENT)) {
 				continue;
-
 			} else if (line.equalsIgnoreCase(HEADER_COMPLETED)) {
-				// break as the current list all add to current ,main list
-				indexOfCompletedTask = i + 2;
 				break;
 			} else {
 				String[] splitLine = line.split(" ");
@@ -492,70 +489,12 @@ public class Storage {
 			}
 		}
 
-		addCompletedTask(stringList, indexOfCompletedTask);
-
 		return taskList;
-	}
-
-	// This method stores the completed tasks in arraylist
-	private static void addCompletedTask(ArrayList<String> stringList, int indexOfCompletedTask) throws ParseException {
-
-		int countFields = 0;
-		Task completedTask = new Task("");
-		
-		for (int j = indexOfCompletedTask; j < stringList.size(); j++) {
-			String line = stringList.get(j);
-			
-			// break line, contains at least 10 "-";
-			if (line.contains("----------") || line.contains("==========")) {
-				// System.out.println("Encountered break line, continue");
-				continue;
-
-			} else {
-				String[] splitLine = line.split(" ");
-				String field = splitLine[0];
-
-				// will always have description
-				if (field.equals(FIELDS_DESCRIPTION)) {
-					String description = getFields(line, field);
-					completedTask.setDescription(description);
-					countFields ++;
-
-				} else if (field.equals(FIELDS_START)) {
-					if (splitLine.length > 1) {
-						String start = getFields(line, field);
-						completedTask.setStart(start);
-					}
-					countFields++;
-
-				} else if (field.equals(FIELDS_END)) {
-					if (splitLine.length > 1) {
-						String end = getFields(line, field);
-						completedTask.setEnd(end);
-					}
-					countFields++;
-
-				} else if (field.equals(FIELDS_CATEGORY)) {
-					if (splitLine.length > 1) {
-						String category = getFields(line, field);
-						setMultipleCategories(completedTask, category);
-					}
-					countFields++;
-				}
-			}
-
-			if (countFields == NUMBER_OF_FIELDS) {
-				completedList.add(completedTask);
-				completedTask = new Task("");
-				countFields = 0;
-			}
-		}
 	}
 
 	private static void setMultipleCategories(Task task1, String category) {
 		// if there are multiple categories
-		String categoryName;
-		String name;
+		String categoryName, name;
 		String[] multipleCategories = category.split(" ");
 
 		for (int j = 0; j < multipleCategories.length; j++) {
@@ -584,38 +523,29 @@ public class Storage {
 			// get description from task
 			description = task1.getDescription();
 			descriptionLine = FIELDS_DESCRIPTION + " " + description;
-			// get: Description: meeting
 
 			// get start from task
-
 			if (task1.getStartDateString().isEmpty()) {
 				startLine = FIELDS_START + " ";
-
 			} else {
 				start = task1.getStartDateString();
 				startLine = FIELDS_START + " " + start;
-
 			}
 
 			if (task1.getEndDateString().isEmpty()) {
 				endLine = FIELDS_END + " ";
-
 			} else {
 				end = task1.getEndDateString();
 				endLine = FIELDS_END + " " + end;
 			}
 
 			ArrayList<String> categoryList = task1.getCategories();
-
 			if (categoryList.isEmpty()) {
 				categoryLine = FIELDS_CATEGORY + " ";
-
 			} else {
-
 				// only one category
 				if (categoryList.size() == 1) {
 					categoryLine = FIELDS_CATEGORY + " " + FIELDS_CATEGORY_INDICATOR + categoryList.get(0);
-
 				} else {
 					int countCategory = 0;
 					linesOfCategory = getMultipleCategories(linesOfCategory, categoryList, countCategory);
@@ -654,9 +584,9 @@ public class Storage {
 	 * This method adds the data from file to mainlist to update For load
 	 * commands
 	 */
-	private void updateMainList(ArrayList<Task> dataFromFile) {
+	private void updateList(ArrayList<Task> dataFromFile, ArrayList<Task> list) {
 		for (int j = 0; j < dataFromFile.size(); j++) {
-			mainList.add(dataFromFile.get(j));
+			list.add(dataFromFile.get(j));
 		}
 	}
 
