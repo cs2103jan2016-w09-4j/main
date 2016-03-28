@@ -1,3 +1,4 @@
+//@@author Gilbert
 package logic;
 
 import common.*;
@@ -295,6 +296,7 @@ public class Execution {
         updateWordDictionary(text);
     }
 
+    //@@author Ruoling
     private void updateTaskDictionary(String text) {
         int freqCount = removeFromDictionary(taskDictionary, text);
         addToDictionary(taskDictionary, text, ++freqCount);
@@ -348,6 +350,7 @@ public class Execution {
         return index >= 0 ? true : false;
     }
 
+    //@@author Gilbert
     /******************
      * GETTER METHODS *
      ******************/

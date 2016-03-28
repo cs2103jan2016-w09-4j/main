@@ -1,3 +1,4 @@
+//@@author Gilbert
 package logic;
 
 import common.*;
@@ -127,6 +128,21 @@ public class Logic {
         Command command = parser.parseCommand(input);
         return execute(command);
     }
+
+    public static Logic getInstance() {
+        if (logic == null){
+            return logic = new Logic();
+        }
+        return logic;
+    }
+
+    public ArrayList<Task> getMainList() {
+        return execution.getMainList();
+    }
+
+    public ArrayList<Category> getCategories() {
+        return execution.getCategories();
+    }
     
     public ArrayList<String> getPredictions(String input) {
         input = input.trim();
@@ -146,6 +162,7 @@ public class Logic {
         return null;
     }
 
+    //@@author Ruoling
     private ArrayList<String> getPredictionsForAdd(String[] params) {
         assert (params.length > 0);
         
@@ -280,20 +297,5 @@ public class Logic {
         String sentenceCase = text.substring(0,1).toUpperCase() + text.substring(1);
         return sentenceCase;
     }
-    
-    public ArrayList<Task> getMainList() {
-        return execution.getMainList();
-    }
-    
-    public static Logic getInstance() {
-        if (logic == null){
-            return logic = new Logic();
-        }
-        return logic;
-    }
-
-    public ArrayList<Category> getCategories() {
-        return execution.getCategories();
-    }
-    
+        
 }
