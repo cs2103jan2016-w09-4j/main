@@ -250,12 +250,30 @@ public class Execution {
         copyOfMainListForRedo.addAll(mainList);
         mainList.clear();
         mainList.addAll(previousCopyOfMainList);
+        
+     // save
+        storage.setMainList(mainList);
+        try {
+            storage.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         return previousCopyOfMainList;
     }
     
     public ArrayList<Task> redoCommand() {
         mainList.clear();
         mainList.addAll(copyOfMainListForRedo);
+        
+     // save
+        storage.setMainList(mainList);
+        try {
+            storage.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         return mainList;
     }
     
