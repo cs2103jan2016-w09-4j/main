@@ -238,20 +238,41 @@ public class Logic {
     }
 
     private ArrayList<String> getPredictionsForEdit(String[] params) {
-        HashSet<String> set = new HashSet<String>();
-        ArrayList<String> predictions = new ArrayList<String>();
-        String firstWord = params[0];
+        assert (params.length > 0);
+        
+        // Maintain a unique set of prediction strings
+        HashSet<String> hashSet = new HashSet<String>(); 
+        // Predictions based on task descriptions that the user previously entered
+        TreeSet<Entry<String, Integer>> dictionary = execution.getTaskDictionary();
+        // List of task descriptions sorted by frequency
+        ArrayList<Entry<String, Integer>> freqList;
+        
+        String command = params[0];
         if (params.length == 2) {
-            // retrieve task description
             try {
+                // retrieve task description
                 int id = Integer.parseInt(params[1]);
                 String desc = execution.getMainList().get(id-1).getDescription();
-                predictions.add(firstWord + " " + id + " " + desc);
+                hashSet.add(command + " " + id + " " + desc);
+                
+                // retrieve all entries, sorted by frequency
+                freqList = sortByFrequency(dictionary);
+                
+                // get maximum number of predictions
+                for (Entry<String, Integer> entry : freqList) {
+                    String prediction = toSentenceCase(entry.getKey());
+                    hashSet.add(command + " " + id + " " + prediction);
+                    if (hashSet.size() == MAX_PREDICTIONS) {
+                        break;
+                    }
+                }
             } catch (NumberFormatException | IndexOutOfBoundsException e) {
-                // no predictions
+                // wrong task index, no predictions given
             }
         }
-        predictions.addAll(set);
+
+        ArrayList<String> predictions = new ArrayList<String>();
+        predictions.addAll(hashSet);
         return predictions;
     }
 
