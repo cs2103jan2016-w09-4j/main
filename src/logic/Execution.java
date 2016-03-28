@@ -31,13 +31,22 @@ public class Execution {
     // TreeSet is used to avoid duplicate entries
     // Integer is the frequency that the String is entered by the user
     private static TreeSet<Entry<String, Integer>> taskDictionary;
+    private static TreeSet<Entry<String, Integer>> wordDictionary;
     private static TreeSet<String> fileDictionary;
-    private static TreeSet<String> wordDictionary;
     
     // Common English function words 
-    public static final String[] functionWords = { "a", "about", "an", "and", "as", "at",
+    private static final String[] functionWords = { "a", "about", "an", "and", "as", "at",
                                                   "by", "for", "in", "of", "or",
-                                                  "the", "to", "with" }; 
+                                                  "the", "to", "with" };
+
+    // Comparator for dictionaries, where element uniqueness depends only on the String
+    // and not the frequency count
+    private static final Comparator<Entry<String, Integer>> dictionaryComparator = new Comparator<Entry<String, Integer>>() {
+        public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
+            // element uniqueness depends only on the entry's key
+            return entry1.getKey().compareTo(entry2.getKey());
+        }
+    };
     
     public Execution() {
         storage = new Storage();
@@ -50,14 +59,9 @@ public class Execution {
         previousCopyOfMainList = new ArrayList<Task>();
         copyOfMainListForRedo = new ArrayList<Task>();
 
-        taskDictionary = new TreeSet<Entry<String, Integer>>(new Comparator<Entry<String, Integer>>() {
-            public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
-                // element uniqueness depends only on the entry's key
-                return entry1.getKey().compareTo(entry2.getKey());
-            }
-        });
+        taskDictionary = new TreeSet<Entry<String, Integer>>(dictionaryComparator);
         // TODO: update type to Entry<String, Integer> 
-        wordDictionary = new TreeSet<String>();
+        wordDictionary = new TreeSet<Entry<String, Integer>>(dictionaryComparator);
         fileDictionary = new TreeSet<String>();
     }
     
@@ -274,6 +278,7 @@ public class Execution {
         int id = 1;
         for (Task task : mainList) {
             task.setId(id);
+            id++;
         }
     }
     
@@ -291,31 +296,40 @@ public class Execution {
     }
 
     private void updateTaskDictionary(String text) {
-        Integer frequency = 0;
-        
-        // Check if the String exists in the task dictionary
-        Iterator<Entry<String, Integer>> iterator = taskDictionary.iterator();
-        while (iterator.hasNext()) {
-            Entry<String, Integer> next = iterator.next();
-            if (next.getKey().equals(text)) {
-                // Keep the frequency count and remove the entry
-                frequency = next.getValue();
-                iterator.remove();
-                break;
-            }
-        }
-        
-        // Update the frequency count of the String
-        taskDictionary.add(new AbstractMap.SimpleEntry<String, Integer>(text, ++frequency));
+        int freqCount = removeFromDictionary(taskDictionary, text);
+        addToDictionary(taskDictionary, text, ++freqCount);
     }
 
     private void updateWordDictionary(String text) {
         String[] words = text.split("\\s+");
         for (int i = 0; i < words.length; i++) {
             if (!isNumberOrFunctionWord(words[i])) {
-                wordDictionary.add(words[i]);
+                int freqCount = removeFromDictionary(wordDictionary, words[i]);
+                addToDictionary(wordDictionary, words[i], ++freqCount);
             }
         }
+    }
+    
+    // Remove the text from the dictionary if it exists and return its frequency count
+    // If it does not already exist in the dictionary, frequency count is 0
+    private int removeFromDictionary(TreeSet<Entry<String, Integer>> dictionary, String text) {
+        int freqCount = 0;
+        Iterator<Entry<String, Integer>> iterator = taskDictionary.iterator();
+        while (iterator.hasNext()) {
+            Entry<String, Integer> next = iterator.next();
+            if (next.getKey().equals(text)) {
+                // Keep the frequency count and remove the entry
+                freqCount = next.getValue();
+                iterator.remove();
+                break;
+            }
+        }
+        return freqCount;
+    }
+
+    // Add the text to the dictionary with its frequency count
+    private void addToDictionary(TreeSet<Entry<String, Integer>> dictionary, String text, int freqCount) {
+        dictionary.add(new AbstractMap.SimpleEntry<String, Integer>(text, freqCount));
     }
 
     private void updateFileDictionary(String text) {
@@ -358,7 +372,7 @@ public class Execution {
         return taskDictionary;
     }
 
-    public TreeSet<String> getWordDictionary(){
+    public TreeSet<Entry<String, Integer>> getWordDictionary(){
         return wordDictionary;
     }
     

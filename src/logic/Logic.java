@@ -161,11 +161,13 @@ public class Logic {
             // retrieve all entries, sorted by frequency
             freqList = sortByFrequency(dictionary);
         } else {
-            String argument = params[1];
-            char c = argument.charAt(argument.length()-1);
+            String minArg = params[1];
+            int lastIndex = minArg.length() - 1;
+            char c = minArg.charAt(lastIndex);
             c++;
-            Entry<String, Integer> min = new AbstractMap.SimpleEntry<String, Integer>(argument, 1);
-            Entry<String, Integer> max = new AbstractMap.SimpleEntry<String, Integer>(Character.toString(c), 1);
+            String maxArg = minArg.substring(0, lastIndex) + c;
+            Entry<String, Integer> min = new AbstractMap.SimpleEntry<String, Integer>(minArg, 1);
+            Entry<String, Integer> max = new AbstractMap.SimpleEntry<String, Integer>(maxArg, 1);
             
             // retrieve subset of entries matching user input, sorted by frequency
             SortedSet<Entry<String,Integer>> matches = dictionary.subSet(min, true, max, false);
@@ -185,7 +187,49 @@ public class Logic {
         predictions.addAll(hashSet);
         return predictions;
     }
-    
+
+    private ArrayList<String> getPredictionsForSearch(String[] params) {
+        assert (params.length > 0);
+
+        // Maintain a unique set of prediction strings
+        HashSet<String> hashSet = new HashSet<String>(); 
+        // Predictions based on task descriptions that the user previously entered
+        TreeSet<Entry<String, Integer>> dictionary = execution.getWordDictionary();
+        // List of task descriptions sorted by frequency
+        ArrayList<Entry<String, Integer>> freqList;
+        
+        String command = params[0];
+        if (params.length == 1) {
+            // retrieve all entries, sorted by frequency
+            freqList = sortByFrequency(dictionary);
+        } else {
+            String minArg = params[1];
+            int lastIndex = minArg.length() - 1;
+            char c = minArg.charAt(lastIndex);
+            c++;
+            String maxArg = minArg.substring(0, lastIndex) + c;
+            Entry<String, Integer> min = new AbstractMap.SimpleEntry<String, Integer>(minArg, 1);
+            Entry<String, Integer> max = new AbstractMap.SimpleEntry<String, Integer>(maxArg, 1);
+            
+            // retrieve subset of entries matching user input, sorted by frequency
+            SortedSet<Entry<String,Integer>> matches = dictionary.subSet(min, true, max, false);
+            freqList = sortByFrequency(matches);
+        }
+        
+        // get maximum number of predictions
+        for (Entry<String, Integer> entry : freqList) {
+            String prediction = entry.getKey();
+            hashSet.add(command + " " + prediction);
+            if (hashSet.size() == MAX_PREDICTIONS) {
+                break;
+            }
+        }
+        
+        ArrayList<String> predictions = new ArrayList<String>();
+        predictions.addAll(hashSet);
+        return predictions;
+    }
+
     private ArrayList<Entry<String, Integer>> sortByFrequency(Set<Entry<String, Integer>> dictionary) {
         ArrayList<Entry<String, Integer>> freq = new ArrayList<Entry<String, Integer>>();
         freq.addAll(dictionary);
@@ -205,32 +249,6 @@ public class Logic {
                 predictions.add(firstWord + " " + id + " " + desc);
             } catch (NumberFormatException | IndexOutOfBoundsException e) {
                 // no predictions
-            }
-        }
-        predictions.addAll(set);
-        return predictions;
-    }
-
-    private ArrayList<String> getPredictionsForSearch(String[] params) {
-        HashSet<String> set = new HashSet<String>();
-        ArrayList<String> predictions = new ArrayList<String>();
-        String firstWord = params[0];
-        TreeSet<String> dictionary = execution.getWordDictionary();
-        if (params.length == 1) {
-            if (dictionary.size() > 1) {
-                predictions.add(firstWord + " " + dictionary.first());
-                predictions.add(firstWord + " " + dictionary.last());
-            } if (dictionary.size() > 0) {
-                predictions.add(firstWord + " " + dictionary.first());
-            }
-        } else {
-            String argument = params[1];
-            SortedSet<String> matches = dictionary.tailSet(argument);
-            for (String entry : matches) {
-                predictions.add(firstWord + " " + entry);
-                if (predictions.size() >= MAX_PREDICTIONS) {
-                    break;
-                }
             }
         }
         predictions.addAll(set);
