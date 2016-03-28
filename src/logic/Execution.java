@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.TreeSet;
 
@@ -25,7 +26,9 @@ public class Execution {
     private TreeSet<String> fileDictionary;
     private TreeSet<String> wordDictionary;
     
-    public static final String[] specialWords = { "a", "an", "and", "at", "of", "or", "the", "to" }; 
+    public static final String[] specialWords = { "a", "about", "an", "and", "as", "at",
+                                                  "by", "for", "in", "of", "or",
+                                                  "the", "to", "with" }; 
     
     public Execution() {
         storage = new Storage();
@@ -156,7 +159,9 @@ public class Execution {
         updateDictionary(keyword);
         
         for (int i = 0; i < mainList.size(); i++) {
-            if (mainList.get(i).getDescription().contains(keyword)) {
+            String descriptionLowerCase = mainList.get(i).getDescription().toLowerCase();
+            String keywordLowerCase = keyword.toLowerCase();
+            if (descriptionLowerCase.contains(keywordLowerCase)) {
                 searchResults.add(mainList.get(i));
             }
         }
@@ -228,12 +233,11 @@ public class Execution {
         if (word.matches("-?\\d+(\\.\\d+)?")) {
             return true;
         }
-        for (int i = 0; i < specialWords.length; i++) {
-            if (word.equalsIgnoreCase(specialWords[i])) {
-                return true;
-            }
+        int index = Arrays.binarySearch(specialWords, word, String.CASE_INSENSITIVE_ORDER);
+        if (index < 0) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     private void updateFileDictionary(String text) {
