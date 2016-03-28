@@ -129,16 +129,21 @@ public class Logic {
             TreeSet<String> dictionary = execution.getDictionary();
             if (params.length == 1) {
                 if (dictionary.size() > 1) {
-                    predictions.add(firstWord + " " + dictionary.first());
-                    predictions.add(firstWord + " " + dictionary.last());
+                    String first = toSentenceCase(dictionary.first());
+                    String last = toSentenceCase(dictionary.last());
+                    predictions.add(firstWord + " " + first);
+                    predictions.add(firstWord + " " + last);
                 } else if (dictionary.size() > 0) {
-                    predictions.add(firstWord + " " + dictionary.first());
+                    String first = toSentenceCase(dictionary.first());
+                    predictions.add(firstWord + " " + dictionary.last());
                 }
             } else {
                 // retrieve entry matching user input
                 String argument = params[1];
-                SortedSet<String> matches = dictionary.tailSet(argument);
+                String max = String.valueOf(argument.charAt(0) + 1);
+                SortedSet<String> matches = dictionary.subSet(argument, true, max, false);
                 for (String entry : matches) {
+                    entry = toSentenceCase(entry);
                     predictions.add(firstWord + " " + entry);
                     if (predictions.size() >= MAX_PREDICTIONS) {
                         break;
@@ -146,25 +151,43 @@ public class Logic {
                 }
             }
         } else if (firstWord.equalsIgnoreCase("search")) {
-            TreeSet<String> dictionary = execution.getDictionary();
-            if (dictionary.size() > 1) {
-                predictions.add(firstWord + " " + dictionary.first());
-                predictions.add(firstWord + " " + dictionary.last());
-            } if (dictionary.size() > 0) {
-                predictions.add(firstWord + " " + dictionary.first());
+            TreeSet<String> dictionary = execution.getWordDictionary();
+            if (params.length == 1) {
+                if (dictionary.size() > 1) {
+                    predictions.add(firstWord + " " + dictionary.first());
+                    predictions.add(firstWord + " " + dictionary.last());
+                } if (dictionary.size() > 0) {
+                    predictions.add(firstWord + " " + dictionary.first());
+                }
+            } else {
+                String argument = params[1];
+                SortedSet<String> matches = dictionary.tailSet(argument);
+                for (String entry : matches) {
+                    entry = toSentenceCase(entry);
+                    predictions.add(firstWord + " " + entry);
+                    if (predictions.size() >= MAX_PREDICTIONS) {
+                        break;
+                    }
+                }
             }
         } else if (firstWord.equalsIgnoreCase("edit")) {
             if (params.length == 2) {
                 // retrieve task description
                 try {
                     int id = Integer.parseInt(params[1]);
-                    predictions.add(firstWord + " " + id + " " + execution.getMainList().get(id-1).getDescription());
+                    String desc = execution.getMainList().get(id-1).getDescription();
+                    predictions.add(firstWord + " " + id + " " + desc);
                 } catch (NumberFormatException | IndexOutOfBoundsException e) {
                     // no predictions
                 }
             }
         }
         return predictions;
+    }
+    
+    private String toSentenceCase(String text) {
+        String sentenceCase = text.substring(0,1).toUpperCase() + text.substring(1);
+        return sentenceCase;
     }
     
     public ArrayList<Task> getMainList() {

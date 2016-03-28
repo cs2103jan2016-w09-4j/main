@@ -23,6 +23,9 @@ public class Execution {
     private static ArrayList<Category> categories;
     private TreeSet<String> dictionary;
     private TreeSet<String> fileDictionary;
+    private TreeSet<String> wordDictionary;
+    
+    public static final String[] specialWords = { "a", "an", "and", "at", "of", "or", "the", "to" }; 
     
     public Execution() {
         storage = new Storage();
@@ -36,6 +39,7 @@ public class Execution {
         categories.add(new Category("Today"));
         dictionary = new TreeSet<String>();
         fileDictionary = new TreeSet<String>();
+        wordDictionary = new TreeSet<String>();
     }
     
     public Result addTask(String description, LocalDateTime start, LocalDateTime end) {
@@ -211,9 +215,27 @@ public class Execution {
     }
     
     private void updateDictionary(String text) {
-        dictionary.add(text);
+        dictionary.add(text.toLowerCase());
+        String[] words = text.split("\\s+");
+        for (int i = 0; i < words.length; i++) {
+            if (!isSpecialWord(words[i])) {
+                wordDictionary.add(words[i].toLowerCase());
+            }
+        }
     }
     
+    private boolean isSpecialWord(String word) {
+        if (word.matches("-?\\d+(\\.\\d+)?")) {
+            return true;
+        }
+        for (int i = 0; i < specialWords.length; i++) {
+            if (word.equalsIgnoreCase(specialWords[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void updateFileDictionary(String text) {
         fileDictionary.add(text);
     }
@@ -255,7 +277,11 @@ public class Execution {
     public TreeSet<String> getDictionary(){
         return dictionary;
     }
-        
+    
+    public TreeSet<String> getWordDictionary(){
+        return wordDictionary;
+    }
+            
     public ArrayList<Task> getDoneList(){
         return doneList;
     }
