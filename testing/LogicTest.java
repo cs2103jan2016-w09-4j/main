@@ -1,6 +1,7 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -39,10 +40,12 @@ public class LogicTest{
     @Test
     public void testUserSessionOne() {
         addTask_AllTaskTypes_AddedInOrder();
+        editTask_AllTaskTypes_EditedTheSelectedTask();
+        deleteTask_AllTaskTypes_DeletedTheSelectedTask();
         saveTasks_WithFileName_Success();
         loadTasks_WithFileName_Success();
     }
-
+    
     public void addTask_AllTaskTypes_AddedInOrder() {
         logic.processCommand("add Hello");
         logic.processCommand("add Goodbye");
@@ -59,13 +62,45 @@ public class LogicTest{
         compareList.add(new Task("Hello", null, null, 5));
         assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
+
+    public void editTask_AllTaskTypes_EditedTheSelectedTask() {
+    	mainList = logic.getMainList();
+    	logic.processCommand("edit 5 Hello World");
+    	mainList = logic.getMainList();
+    	
+    	compareList = new ArrayList<Task>();
+        compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 24, 14, 0), 1));
+        compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 25, 14, 0), 2));
+        compareList.add(new Task("Meeting", LocalDateTime.of(2016, 05, 24, 12, 0), LocalDateTime.of(2016, 05, 26, 14, 0), 3));
+        compareList.add(new Task("Goodbye", null, null, 4));
+        compareList.add(new Task("Hello", null, null, 5));
+        
+        compareList.get(4).setDescription("Hello World");
+        assertArrayEquals(compareList.toArray(), mainList.toArray());
+    }
     
+    public void deleteTask_AllTaskTypes_DeletedTheSelectedTask() {
+    	mainList = logic.getMainList();
+    	logic.processCommand("delete 5");
+    	mainList = logic.getMainList();
+    	
+    	compareList = new ArrayList<Task>();
+        compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 24, 14, 0), 1));
+        compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 25, 14, 0), 2));
+        compareList.add(new Task("Meeting", LocalDateTime.of(2016, 05, 24, 12, 0), LocalDateTime.of(2016, 05, 26, 14, 0), 3));
+        compareList.add(new Task("Goodbye", null, null, 4));
+        compareList.add(new Task("Hello World", null, null, 5));
+        
+        compareList.remove(4);
+        assertArrayEquals(compareList.toArray(), mainList.toArray());
+    }
+
     public void saveTasks_WithFileName_Success() {
         Result result = logic.processCommand("save logic_testFile1.txt");
         assertEquals(Command.CommandType.SAVE, result.getCommandType());
         assertEquals(true, result.isSuccess());
     }
-    
+
     public void loadTasks_WithFileName_Success() {
         logic.processCommand("load logic_testFile1.txt");
         mainList = logic.getMainList();
@@ -75,7 +110,7 @@ public class LogicTest{
         compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 25, 14, 0), 2));
         compareList.add(new Task("Meeting", LocalDateTime.of(2016, 05, 24, 12, 0), LocalDateTime.of(2016, 05, 26, 14, 0), 3));
         compareList.add(new Task("Goodbye", null, null, 4));
-        compareList.add(new Task("Hello", null, null, 5));
+        //compareList.add(new Task("Hello World", null, null, 5));
         assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
     
