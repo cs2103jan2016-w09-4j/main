@@ -9,5 +9,14 @@
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/controlsfx-8.40.10.jar"/>
 	<classpathentry kind="lib" path="lib/junit-addons-1.5.jar"/>
+	<classpathentry kind="lib" path="lib/natty/antlr-runtime-3.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/natty/antlr4-runtime-4.5.2-1.jar"/>
+	<classpathentry kind="lib" path="lib/natty/backport-util-concurrent-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/natty/commons-codec-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/natty/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="lib/natty/commons-logging-1.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/natty/ical4j-1.0.7.jar"/>
+	<classpathentry kind="lib" path="lib/natty/natty-0.12.jar"/>
+	<classpathentry kind="lib" path="lib/natty/slf4j-api-1.7.19.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
