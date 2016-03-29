@@ -295,6 +295,7 @@ public class Execution {
             e.printStackTrace();
         }
         
+        sortList(mainList);
         return mainList;
     }
     
@@ -305,23 +306,24 @@ public class Execution {
     	sortList(mainList);
     	int count = 0;
     	LocalDate currentDate = current.toLocalDate();  
-    	if(currentDate != null){
+    	try{
     		for(Task task : mainList){
     			LocalDateTime taskDeadline = task.getEndDate();
-    			try{
-    				LocalDate taskDeadlineDate = taskDeadline.toLocalDate();
-    				if(taskDeadlineDate != null){
+    			if(taskDeadline != null){
+    					LocalDate taskDeadlineDate = taskDeadline.toLocalDate();
     					if (currentDate.equals(taskDeadlineDate)){
     						count++;
+    						// modify the 'today' category
     						categories.get(1).setCount(count);
     					}
-    				}
-    			}	
-    			
-    			catch(NullPointerException e){
-    			
-    	    	}
-    		}
+    			}
+    		}	
+    	} catch(NullPointerException e){
+    	
+    	}
+    	
+    	if(mainList.size() == 0){
+    		categories.get(1).setCount(0);
     	}
     }
     
