@@ -40,11 +40,11 @@ public class Logic {
         this.storage = new Storage();
         this.execution = new Execution();
         this.list = storage.getMainList();
-        this.current = LocalDateTime.now();
     }
 
     private Result execute(Command command){
         
+        this.current = LocalDateTime.now();
         CommandType commandType = command.getType();
         String description = command.getDescription();
         int taskID = command.getId();       
