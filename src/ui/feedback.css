@@ -10,15 +10,12 @@
     -fx-background-color: #F4F4F4;
     -fx-padding: 5;
     -fx-spacing: 5;
+    -fx-alignment: center-left;
 }
 
 #popup-success-text {
     -fx-font-size: 18;
     -fx-fill: #000000;
-}
-
-#popup-success-icon {
-    -fx-alignment: center;
 }
 
 #popup-fail {

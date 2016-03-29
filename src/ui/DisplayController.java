@@ -55,9 +55,13 @@ public class DisplayController extends HiddenSidesPane {
     private static final String HEADER_SEARCH_PLURAL = " search results found";
     
     private static final String FXML_DISPLAY = "Display.fxml";
-    private static final String RESOURCES_ICON_SUCCESS = "/icons/success-smaller.png";
-    private static final String RESOURCES_ICONS_FAIL = "/icons/fail-smaller.png";
-    
+    private static final String RESOURCES_ICON_SUCCESS = "/icons/success-small.png";
+    private static final String RESOURCES_ICON_SUCCESS_DELETE = "/icons/delete-success-small.png";
+    private static final String RESOURCES_ICON_SUCCESS_SAVE = "/icons/save-success-small.png";
+    private static final String RESOURCES_ICON_FAIL = "/icons/fail-small.png";
+    private static final String RESOURCES_ICON_FAIL_DELETE = "/icons/delete-fail-small.png";
+    private static final String RESOURCES_ICON_FAIL_SAVE = "/icons/save-fail-small.png";
+
     private static final int TYPE_COMPLETED = 1;
     private static final int TYPE_OTHER = 2;
     private static final int TYPE_TODAY = 3;
@@ -227,6 +231,7 @@ public class DisplayController extends HiddenSidesPane {
         switch(cmdType) {
             case INVALID :
                 showFeedback(cmdType, result.getMessage(), result.isSuccess());
+                break;
 
             case SEARCH :
                 updateSearchPanel(result.getResults());
@@ -372,13 +377,35 @@ public class DisplayController extends HiddenSidesPane {
         if (isSuccess) {
             box.setId("popup-success");
             message.setId("popup-success-text");
-            icon = new ImageView(new Image(RESOURCES_ICON_SUCCESS));
-            icon.setId("popup-success-icon");
+            switch(commandType) {
+                case DELETE :
+                    icon = new ImageView(new Image(RESOURCES_ICON_SUCCESS_DELETE));
+                    break;
+                    
+                case SAVE :
+                    icon = new ImageView(new Image(RESOURCES_ICON_SUCCESS_SAVE));
+                    break;
+                    
+                default :
+                    icon = new ImageView(new Image(RESOURCES_ICON_SUCCESS));
+                    break;
+            }
         } else {
             box.setId("popup-fail");
             message.setId("popup-fail-text");
-            icon = new ImageView(new Image(RESOURCES_ICONS_FAIL));
-            icon.setId("popup-fail-icon");
+            switch(commandType) {
+                case DELETE :
+                icon = new ImageView(new Image(RESOURCES_ICON_FAIL_DELETE));
+                break;
+                
+                case SAVE :
+                icon = new ImageView(new Image(RESOURCES_ICON_FAIL_SAVE));
+                break;
+                
+                default :
+                icon = new ImageView(new Image(RESOURCES_ICON_FAIL));
+                break;
+            }
         }
         box.getChildren().addAll(icon, message);
         return box;

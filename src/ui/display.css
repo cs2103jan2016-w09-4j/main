@@ -105,12 +105,14 @@
 }
 
 .entry-task-overdue {
+    -fx-pref-width: 1;
     -fx-padding: 2;
     -fx-background-color: #FFAB8E;
     -fx-background-radius: 0;
 }
 
 .entry-task-modified {
+    -fx-pref-width: 1;
     -fx-padding: 2;
     -fx-background-color: #A1E7C6;
     -fx-background-radius: 0;
