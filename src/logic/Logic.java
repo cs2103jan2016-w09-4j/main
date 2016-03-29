@@ -44,13 +44,15 @@ public class Logic {
 
     private Result execute(Command command){
         
-        this.current = LocalDateTime.now();
+    	this.current = LocalDateTime.now();
         CommandType commandType = command.getType();
         String description = command.getDescription();
         int taskID = command.getId();       
         
         LocalDateTime startDate = command.getStartDate();
         LocalDateTime endDate = command.getEndDate();
+        
+        // if have time, then 
         
         if (startDate != null){
         	if(startDate.compareTo(current) < 0){;
@@ -63,6 +65,8 @@ public class Logic {
         		return new Result(CommandType.INVALID, false, "Invalid end date!", new ArrayList<Task>());
         	}
         }
+        //
+        execution.taskProgression();
         
         
         switch(commandType) {
@@ -86,9 +90,7 @@ public class Logic {
                 return new Result(commandType, true, "Return home", list);
                 
             case SAVE :
-                execution.savingTasks(description);
-                list = storage.getMainList();
-                return new Result(commandType, true, "Saved at " + description, list);
+                return execution.savingTasks(description);
                 
             case LOAD :
                 return execution.loadingTasks(description);
@@ -298,4 +300,3 @@ public class Logic {
         return sentenceCase;
     }
         
-}
