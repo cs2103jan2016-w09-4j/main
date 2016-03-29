@@ -59,8 +59,8 @@ public class LogicTest{
         logic.processCommand("add Goodbye");
         logic.processCommand("add Meeting end 25/05/2016 14:00");
         logic.processCommand("add Meeting end 24/05/2016 14:00");
-        logic.processCommand("add Meeting start 24/05/2016 12:00 end 26/05/2016 14:00");
-        mainList = logic.getMainList();
+        Result result = logic.processCommand("add Meeting start 24/05/2016 12:00 end 26/05/2016 14:00");
+        mainList = result.getResults();
         
         compareList = new ArrayList<Task>();
         compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 24, 14, 0), 1));
@@ -72,17 +72,17 @@ public class LogicTest{
     }
 
     public void editTask_AllTaskTypes_EditedTheSelectedTask() {
-    	logic.processCommand("edit 5 Hello World");
-    	mainList = logic.getMainList();
+        Result result = logic.processCommand("edit 5 Hello World");
+    	mainList = result.getResults();
 
     	compareList.get(4).setDescription("Hello World");
         assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
     
     public void deleteTask_AllTaskTypes_DeletedTheSelectedTask() {
-    	logic.processCommand("delete 5");
-    	mainList = logic.getMainList();
-
+        Result result = logic.processCommand("delete 5");
+        mainList = result.getResults();
+        
     	compareList.remove(4);
         assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
@@ -98,7 +98,7 @@ public class LogicTest{
 
     public void loadTasks_WithFileName_Success() {
         Result result = logic.processCommand("load logic_output1.txt");
-        mainList = logic.getMainList();
+        mainList = result.getResults();
         assertEquals(Command.CommandType.LOAD, result.getCommandType());
         assertEquals(true, result.isSuccess());
         assertArrayEquals(compareList.toArray(), mainList.toArray());
@@ -110,60 +110,81 @@ public class LogicTest{
         logic.processCommand("load logic_expected3.txt");
         logic.processCommand("save logic_output3.txt");
         compareList = new ArrayList<Task>();
-        undo_AfterAdd_ReturnToPreviousState();
-        redo_AfterAdd_ReturnToCurrentState();
+        compareList.add(new Task("Macademia Nut Cookie", 1));
+        compareList.add(new Task("New York Cheesecake", 2));
+        
         undo_AfterEdit_ReturnToPreviousState();
         redo_AfterEdit_ReturnToCurrentState();
         undo_AfterDelete_ReturnToPreviousState();
         redo_AfterDelete_ReturnToCurrentState();
+        undo_AfterAdd_ReturnToPreviousState();
+        redo_AfterAdd_ReturnToCurrentState();
         undo_AfterUnallowedCommand_NoChange();
         redo_AfterUnallowedCommand_NoChange();
+        
+        File expectedFile = new File("logic_expected3.txt");
+        File actualFile = new File("logic_output3.txt");
+        FileAssert.assertEquals(expectedFile, actualFile);
+    }
+
+    private void undo_AfterEdit_ReturnToPreviousState() {
+        logic.processCommand("edit 1 Marshmallow");
+        Result result = logic.processCommand("undo");
+        mainList = result.getResults();
+        
+        assertArrayEquals(compareList.toArray(), mainList.toArray());
+    }
+
+    private void redo_AfterEdit_ReturnToCurrentState() {
+        Result result = logic.processCommand("redo");
+        mainList = result.getResults();
+        
+        compareList.get(0).setDescription("Marshmallow");
+        assertArrayEquals(compareList.toArray(), mainList.toArray());
+    }
+
+    private void undo_AfterDelete_ReturnToPreviousState() {
+        logic.processCommand("delete 1");
+        Result result = logic.processCommand("undo");
+        mainList = result.getResults();
+        
+        assertArrayEquals(compareList.toArray(), mainList.toArray());
+    }
+
+    private void redo_AfterDelete_ReturnToCurrentState() {
+        Result result = logic.processCommand("redo");
+        mainList = result.getResults();
+        
+        compareList.get(1).setId(1);
+        compareList.remove(0);
+        assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
 
     private void undo_AfterAdd_ReturnToPreviousState() {
-        logic.processCommand("add New York Cheesecake");
         logic.processCommand("add Macademia Nut Cookie");
-        logic.processCommand("add Lollipop");
-        logic.processCommand("undo");
-        mainList = logic.getMainList();
-        
-        compareList.add(new Task("Macademia Nut Cookie", 1));
-        compareList.add(new Task("New York Cheesecake", 2));
+        Result result = logic.processCommand("undo");
+        mainList = result.getResults();
+
         assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
 
     private void redo_AfterAdd_ReturnToCurrentState() {
-        // TODO Auto-generated method stub
+        Result result = logic.processCommand("redo");
+        mainList = result.getResults();
         
-    }
-
-    private void undo_AfterEdit_ReturnToPreviousState() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    private void redo_AfterEdit_ReturnToCurrentState() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    private void undo_AfterDelete_ReturnToPreviousState() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    private void redo_AfterDelete_ReturnToCurrentState() {
-        // TODO Auto-generated method stub
-        
+        compareList.add(0, new Task("Macademia Nut Cookie", 1));
+        compareList.get(1).setId(2);
+        assertArrayEquals(compareList.toArray(), mainList.toArray());        
     }
 
     private void undo_AfterUnallowedCommand_NoChange() {
-        // TODO Auto-generated method stub
-        
+        Result result = logic.processCommand("undo");
+        assertEquals(Command.CommandType.INVALID, result.getCommandType());
     }
 
     private void redo_AfterUnallowedCommand_NoChange() {
-        // TODO Auto-generated method stub
-        
+        Result result = logic.processCommand("redo");
+        assertEquals(Command.CommandType.INVALID, result.getCommandType());
     }
+
 }

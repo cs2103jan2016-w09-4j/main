@@ -1,7 +1,16 @@
 =================
 CURRENT TASKS:
 =================
-
+Description: Macademia Nut Cookie
+Start: 
+End: 
+Category: 
+-----------------------------------
+Description: New York Cheesecake
+Start: 
+End: 
+Category: 
+-----------------------------------
 
 =================
 COMPLETED TASKS:
