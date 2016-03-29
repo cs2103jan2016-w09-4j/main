@@ -299,4 +299,5 @@ public class Logic {
         String sentenceCase = text.substring(0,1).toUpperCase() + text.substring(1);
         return sentenceCase;
     }
-        
+    
+}        

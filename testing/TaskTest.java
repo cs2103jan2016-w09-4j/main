@@ -116,9 +116,45 @@ public class TaskTest {
         LocalDateTime secondDate = LocalDateTime.parse(DATE_SECOND, formatter);
         LocalDateTime thirdDate = LocalDateTime.parse(DATE_THIRD, formatter);
         Task event = new Task(TASK_DESCRIPTION_SECOND);
-        event.setEnd(secondDate);
+        event.setStart(secondDate);
         event.setEnd(secondDate);
         
+        Task t2 = new Task(TASK_DESCRIPTION_SECOND);
+        assertTrue("t2 is floating", event.compareTo(t2) < 0);
+        
+        Task t3 = new Task(TASK_DESCRIPTION_SECOND);
+        t3.setEnd(secondDate);
+        assertTrue("t3 is deadline with same end date, same desc", event.compareTo(t3) == 0);
+        t3.setDescription(TASK_DESCRIPTION_FIRST);
+        assertTrue("t3 is deadline with same end date, diff desc", event.compareTo(t3) != 0);
+        
+        Task t4 = new Task(TASK_DESCRIPTION_SECOND);
+        t4.setStart(secondDate);
+        t4.setEnd(secondDate);
+        assertTrue("t4 is event with same start/end date, same desc", event.compareTo(t4) == 0);
+        t4.setDescription(TASK_DESCRIPTION_FIRST);
+        assertTrue("t4 is event with same start/end date, diff desc", event.compareTo(t4) != 0);
+        
+        Task t5 = new Task(TASK_DESCRIPTION_SECOND);
+        t5.setStart(firstDate);
+        t5.setEnd(secondDate);
+        assertTrue("t5 is event with smaller start, same end", event.compareTo(t5) > 0);
+        t5.setStart(secondDate);
+        t5.setEnd(thirdDate);
+        assertTrue("t5 is event with same start, greater end", event.compareTo(t5) < 0);
+        
+        Task t6 = new Task(TASK_DESCRIPTION_SECOND);
+        t6.setStart(firstDate);
+        t6.setEnd(firstDate);
+        assertTrue("t6 is event with smaller start/end", event.compareTo(t6) > 0);
+        t6.setStart(thirdDate);
+        t6.setEnd(thirdDate);
+        assertTrue("t6 is event with greater start/end", event.compareTo(t6) < 0);
+        
+        Task t7 = new Task(TASK_DESCRIPTION_SECOND);
+        t7.setStart(firstDate);
+        t7.setEnd(thirdDate);
+        assertTrue("t7 is event with smaller start, greater end", event.compareTo(t7) < 0);
+        assertTrue("t7 is event with smaller start, greater end", t7.compareTo(event) > 0);
     }
-    
 }

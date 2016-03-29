@@ -196,11 +196,18 @@ public class Task implements Comparable<Task> {
         if (t2.isFloating()) {
             return LESS_THAN;
         } else {
-            int compare = this.end.compareTo(t2.end);
-            if (compare == 0) {
-                return this.description.compareTo(t2.description);
+            int endComparison = this.end.compareTo(t2.end);
+            if (endComparison == 0) {
+                if (t2.isDeadline()) {
+                    return this.description.compareTo(t2.description);
+                }
+                int startComparison = this.start.compareTo(t2.start);
+                if (startComparison == 0) {
+                    return this.description.compareTo(t2.description);
+                }
+                return startComparison;
             }
-            return compare; 
+            return endComparison; 
         }
     }
 
