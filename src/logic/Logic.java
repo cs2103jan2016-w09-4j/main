@@ -173,6 +173,8 @@ public class Logic {
         // List of task descriptions sorted by frequency
         ArrayList<Entry<String, Integer>> freqList;
         
+        System.out.println("GOT DICT: " + dictionary);
+
         String command = params[0];
         if (params.length == 1) {
             // retrieve all entries, sorted by frequency
@@ -202,6 +204,7 @@ public class Logic {
         
         ArrayList<String> predictions = new ArrayList<String>();
         predictions.addAll(hashSet);
+        System.out.println("PREDICT: " + predictions);
         return predictions;
     }
 

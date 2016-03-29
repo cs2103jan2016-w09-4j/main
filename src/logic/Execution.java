@@ -334,7 +334,7 @@ public class Execution {
     // If it does not already exist in the dictionary, frequency count is 0
     private int removeFromDictionary(TreeSet<Entry<String, Integer>> dictionary, String text) {
         int freqCount = 0;
-        Iterator<Entry<String, Integer>> iterator = taskDictionary.iterator();
+        Iterator<Entry<String, Integer>> iterator = dictionary.iterator();
         while (iterator.hasNext()) {
             Entry<String, Integer> next = iterator.next();
             if (next.getKey().equals(text)) {
