@@ -107,6 +107,7 @@ public class Execution {
             e.printStackTrace();
         }
         
+        taskProgression();
         return new Result(CommandType.ADD, true, "Added task", mainList);
     }
 
@@ -119,6 +120,7 @@ public class Execution {
         doneList.add(doneTask);
         deleteTask(taskID);
         
+        taskProgression();
         return new Result(CommandType.DONE, true, "Marked as completed", mainList);
     }
     
@@ -133,7 +135,7 @@ public class Execution {
         } catch (IndexOutOfBoundsException e) {
             return new Result(CommandType.DELETE, false, "Wrong task number", mainList);
         }
-
+        
         sortList();
         
         // save
@@ -143,7 +145,7 @@ public class Execution {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+        taskProgression();
         return new Result(CommandType.DELETE, true, "Deleted", mainList);    
     }
     
@@ -187,6 +189,7 @@ public class Execution {
             e.printStackTrace();
         }
         
+        taskProgression();
         return new Result(CommandType.EDIT, true, "Edited", mainList);
     }
 
@@ -275,6 +278,7 @@ public class Execution {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
         Collections.sort(previousCopyOfMainList);
         return previousCopyOfMainList;
     }
@@ -297,8 +301,9 @@ public class Execution {
     public void taskProgression(){
     	current = LocalDateTime.now();
     	mainList = storage.getMainList();
+    	
+    	sortList();
     	int count = 0;
-    	// problem with localdate
     	LocalDate currentDate = current.toLocalDate();  
     	if(currentDate != null){
     		for(Task task : mainList){
@@ -309,19 +314,15 @@ public class Execution {
     					if (currentDate.equals(taskDeadlineDate)){
     						count++;
     						categories.get(1).setCount(count);
-    					}	
-    				}	
+    					}
+    				}
     			}	
     			
     			catch(NullPointerException e){
     			
-    	    		}
+    	    	}
     		}
     	}
-    	
-    	
-    	
-    	System.out.println(categories.get(1).getCount());
     }
     
     /******************
