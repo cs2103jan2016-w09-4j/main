@@ -7,6 +7,7 @@ import storage.Storage;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class Execution {
     private static TreeSet<Entry<String, Integer>> taskDictionary;
     private static TreeSet<Entry<String, Integer>> wordDictionary;
     private static TreeSet<String> fileDictionary;
+    private LocalDateTime current;
     
     // Common English function words 
     private static final String[] functionWords = { "a", "about", "an", "and", "as", "at",
@@ -74,6 +76,11 @@ public class Execution {
         // preprocessing
         clearModifiedStatus();
         saveMainListForUndo();
+        
+        if(description.isEmpty()){
+        	sortList();
+        	return new Result(CommandType.ADD, false, "No whitespace!", mainList);
+        }
         
         // create a new Task with specified details
         Task newTask = new Task(description);
@@ -144,6 +151,11 @@ public class Execution {
         clearModifiedStatus();
         saveMainListForUndo();
         
+        if(newDescription.isEmpty()){
+        	sortList();
+        	return new Result(CommandType.ADD, false, "No whitespace!", mainList);
+        }
+        
         // edit task with the specified details
         int index = taskID - 1;
        
@@ -194,8 +206,11 @@ public class Execution {
         return new Result(CommandType.SEARCH, true, "Searched", searchResults);
     }
     
-    public void savingTasks(String description){
-        try{
+    public Result savingTasks(String description){
+    	sortList();
+    	storage.setMainList(mainList);
+    	
+    	try{
             if(description.contains(" ")){
                 String[] split = description.split(" ");
                 String directory = split[0].toLowerCase();
@@ -206,13 +221,16 @@ public class Execution {
             } else{
                 storage.saveToFile(description);
                 updateFileDictionary(description);
-            }   
+            }  
+            return new Result(CommandType.SAVE, true, "Saved at " + description, mainList);
+            
         } catch (Exception e){
-            e.printStackTrace();
+        	return new Result(CommandType.SAVE, false, "Failed to save " + description, mainList);
         }
     }
     
     public Result loadingTasks(String description){
+    	
         description = description.trim();
         clearModifiedStatus();
         // store temp copy of original list in case loading of new list fails
@@ -239,7 +257,6 @@ public class Execution {
                 return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
             }   
         }  catch (IOException | ParseException e) {
-			e.printStackTrace();
             return new Result(CommandType.LOAD, false, "Failed to load " + description, temp);
         }
     }
@@ -251,14 +268,14 @@ public class Execution {
         mainList.clear();
         mainList.addAll(previousCopyOfMainList);
         
-        // save
+     // save
         storage.setMainList(mainList);
         try {
             storage.writeToFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+        Collections.sort(previousCopyOfMainList);
         return previousCopyOfMainList;
     }
     
@@ -275,6 +292,36 @@ public class Execution {
         }
         
         return mainList;
+    }
+    
+    public void taskProgression(){
+    	current = LocalDateTime.now();
+    	mainList = storage.getMainList();
+    	int count = 0;
+    	// problem with localdate
+    	LocalDate currentDate = current.toLocalDate();  
+    	if(currentDate != null){
+    		for(Task task : mainList){
+    			LocalDateTime taskDeadline = task.getEndDate();
+    			try{
+    				LocalDate taskDeadlineDate = taskDeadline.toLocalDate();
+    				if(taskDeadlineDate != null){
+    					if (currentDate.equals(taskDeadlineDate)){
+    						count++;
+    						categories.get(1).setCount(count);
+    					}	
+    				}	
+    			}	
+    			
+    			catch(NullPointerException e){
+    			
+    	    		}
+    		}
+    	}
+    	
+    	
+    	
+    	System.out.println(categories.get(1).getCount());
     }
     
     /******************
