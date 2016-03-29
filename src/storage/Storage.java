@@ -248,6 +248,7 @@ public class Storage {
 	 * specific file. The previous data in the file will be overwritten
 	 */
 	public void saveToFile(String userFileName) throws IOException {
+		assert (!userFileName.isEmpty());
 		fileName = userFileName;
 		writeToFile();
 		writeToDefaultFile(userFileName);
@@ -261,7 +262,10 @@ public class Storage {
 	 */
 	public void saveToFileWithDirectory(String directory, String userFileName)
 			throws IOException, NotDirectoryException {
-
+		
+		assert (!directory.isEmpty());
+		assert (!userFileName.isEmpty());
+		
 		// check if the directory is valid
 		File userDirectory = new File(directory);
 		boolean isValid = userDirectory.isDirectory();
@@ -296,7 +300,9 @@ public class Storage {
 	 */
 	public ArrayList<Task> loadFileWithFileName(String userFileName)
 			throws IOException, FileNotFoundException, ParseException {
-
+		
+		assert (!userFileName.isEmpty());
+		
 		File file = new File(userFileName);
 		ArrayList<String> listFromFile = new ArrayList<String>();
 		boolean isValid = file.exists();
@@ -353,7 +359,10 @@ public class Storage {
 	 */
 	public ArrayList<Task> loadFileWithDirectory(String directory, String userFileName)
 			throws IOException, FileNotFoundException, NotDirectoryException, ParseException {
-
+		
+		assert (!directory.isEmpty());
+		assert (!userFileName.isEmpty());
+		
 		ArrayList<String> listFromLoadFile = new ArrayList<String>();
 
 		// check if the directory is valid
