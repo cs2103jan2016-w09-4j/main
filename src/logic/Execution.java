@@ -251,7 +251,7 @@ public class Execution {
         mainList.clear();
         mainList.addAll(previousCopyOfMainList);
         
-     // save
+        // save
         storage.setMainList(mainList);
         try {
             storage.writeToFile();

@@ -172,8 +172,6 @@ public class Logic {
         TreeSet<Entry<String, Integer>> dictionary = execution.getTaskDictionary();
         // List of task descriptions sorted by frequency
         ArrayList<Entry<String, Integer>> freqList;
-        
-        System.out.println("GOT DICT: " + dictionary);
 
         String command = params[0];
         if (params.length == 1) {
@@ -204,7 +202,6 @@ public class Logic {
         
         ArrayList<String> predictions = new ArrayList<String>();
         predictions.addAll(hashSet);
-        System.out.println("PREDICT: " + predictions);
         return predictions;
     }
 
