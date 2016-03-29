@@ -78,7 +78,7 @@ public class Execution {
         saveMainListForUndo();
         
         if(description.isEmpty()){
-        	sortList();
+        	sortList(mainList);
         	return new Result(CommandType.ADD, false, "No whitespace!", mainList);
         }
         
@@ -96,7 +96,7 @@ public class Execution {
         mainList.add(newTask);
 
         // postprocessing
-        sortList();
+        sortList(mainList);
         updateDictionary(description);
         
         // save
@@ -136,7 +136,7 @@ public class Execution {
             return new Result(CommandType.DELETE, false, "Wrong task number", mainList);
         }
         
-        sortList();
+        sortList(mainList);
         
         // save
         storage.setMainList(mainList);
@@ -154,7 +154,7 @@ public class Execution {
         saveMainListForUndo();
         
         if(newDescription.isEmpty()){
-        	sortList();
+        	sortList(mainList);
         	return new Result(CommandType.ADD, false, "No whitespace!", mainList);
         }
         
@@ -178,7 +178,7 @@ public class Execution {
         task.setModified(true);
 
         mainList.add(task);
-        sortList();
+        sortList(mainList);
         updateDictionary(newDescription);
         
         // save
@@ -210,7 +210,7 @@ public class Execution {
     }
     
     public Result savingTasks(String description){
-    	sortList();
+    	sortList(mainList);
     	storage.setMainList(mainList);
     	
     	try{
@@ -248,14 +248,14 @@ public class Execution {
                 String userFileName = split[1];
                 loadBack = storage.loadFileWithDirectory(directory, userFileName);
                 setMainList(loadBack);
-                sortList();
+                sortList(mainList);
                 updateFileDictionary(directory);
                 updateFileDictionary(userFileName);
                 return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
             } else{
                 loadBack = storage.loadFileWithFileName(description);
                 setMainList(loadBack);
-                sortList();
+                sortList(mainList);
                 updateFileDictionary(description);
                 return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
             }   
@@ -279,7 +279,7 @@ public class Execution {
             e.printStackTrace();
         }
         
-        Collections.sort(previousCopyOfMainList);
+        sortList(previousCopyOfMainList);
         return previousCopyOfMainList;
     }
     
@@ -302,7 +302,7 @@ public class Execution {
     	current = LocalDateTime.now();
     	mainList = storage.getMainList();
     	
-    	sortList();
+    	sortList(mainList);
     	int count = 0;
     	LocalDate currentDate = current.toLocalDate();  
     	if(currentDate != null){
@@ -331,7 +331,7 @@ public class Execution {
     
     public void setMainList(ArrayList<Task> mainList){
         Execution.mainList = mainList;
-        sortList();
+        sortList(mainList);
     }
     
     public void saveMainListForUndo() {
@@ -340,10 +340,10 @@ public class Execution {
     }
 
     // Sorts the list of tasks and updates task id
-    private void sortList() {
-        Collections.sort(mainList);
+    private void sortList(ArrayList<Task> thisList) {
+        Collections.sort(thisList);
         int id = 1;
-        for (Task task : mainList) {
+        for (Task task : thisList) {
             task.setId(id);
             id++;
         }
