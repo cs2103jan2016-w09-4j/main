@@ -6,7 +6,7 @@
 <?import java.net.URL?>
 
 <fx:root xmlns:fx="http://javafx.com/fxml/1" type="VBox">
-	<TextField fx:id="commandBar" promptText="Enter command here!" >
+	<TextField fx:id="commandBar" promptText="Enter command here!" onAction="#readInput" >
     </TextField>
     
     <stylesheets>

@@ -11,7 +11,6 @@ import org.controlsfx.control.textfield.TextFields;
 
 import ui.MainApp;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
@@ -29,7 +28,7 @@ public class InputController extends VBox {
         this.main = main;
         //initializeLogger();
         loadFXML();
-        handleUserInteractions();
+        bindAutoCompletion();
     }
 
     private void initializeLogger() {
@@ -56,19 +55,18 @@ public class InputController extends VBox {
         }
     }
     
-    private void handleUserInteractions() {
-        commandBar.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                String input = commandBar.getText();
-                logger.info("user entered: " + input);
-                commandBar.clear();
-                main.handleCommand(input);
-            }
-        });
-        
+    private void bindAutoCompletion() {
         TextFields.bindAutoCompletion(commandBar, sr -> {
             return main.getPredictions(commandBar.getText());
         });
+    }
+    
+    @FXML
+    private void readInput(ActionEvent event) {
+        String input = commandBar.getText();
+        logger.info("user entered: " + input);
+        commandBar.clear();
+        main.handleCommand(input);
     }
 
 }

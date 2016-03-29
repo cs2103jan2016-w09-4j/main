@@ -65,13 +65,14 @@ public class DisplayController extends HiddenSidesPane {
     public DisplayController(MainApp main, Stage primaryStage) {
         this.main = main;
         this.primaryStage = primaryStage;
+        this.setFocusTraversable(false);
         //initializeLogger();
         loadFXML();
         initializeTaskPanel();
         initializeSearchPanel();
         initializeCompletedPanel();
         initializeHelpPanel();
-        initializeSidebarContent();
+        initializeSidebar();
         initializePopup();
         handleUserInteractions();
     }
@@ -103,10 +104,9 @@ public class DisplayController extends HiddenSidesPane {
     private void initializeTaskPanel() {
         taskPanel = new VBox();
         taskPanel.getStyleClass().add("panel");
-        this.setContent(taskPanel);
-        
         ArrayList<Task> allTasks = main.getTasks();
         updateTaskPanel(allTasks);
+        this.setContent(taskPanel);
     }
 
     private void initializeSearchPanel() {
@@ -122,7 +122,12 @@ public class DisplayController extends HiddenSidesPane {
     private void initializeHelpPanel() {
         helpPanel = new VBox();
         helpPanel.getStyleClass().add("panel");
-        
+        Label helpHeader = createHeader("Commands");
+        ScrollPane helpContent = createHelpContent();
+        helpPanel.getChildren().addAll(helpHeader, helpContent);
+    }
+
+    private ScrollPane createHelpContent() {
         String[] commands = { "Add a task",
                               "Edit a task",
                               "Search tasks",
@@ -136,6 +141,7 @@ public class DisplayController extends HiddenSidesPane {
                               "Save file",
                               "Load file",
                               "View sidebar" };
+        
         String[] formats = { "add <description>",
                              "edit <task number> <new description> <new timing> #<new category>",
                              "search <keyword / date / #category>",
@@ -149,31 +155,34 @@ public class DisplayController extends HiddenSidesPane {
                              "save <directory> <filename>",
                              "load <directory> <filename>",
                              "CTRL+M" };
-        GridPane helpContent = new GridPane();
-        helpContent.getStyleClass().add("table");
+
+        assert (commands.length == formats.length);
+        
+        GridPane table = new GridPane();
+        table.getStyleClass().add("table");
+        
+        // set column widths to 30% for first col and 70% for second col
         ColumnConstraints commandCol = new ColumnConstraints();
         commandCol.setPercentWidth(30);
         ColumnConstraints formatCol = new ColumnConstraints();
         formatCol.setPercentWidth(70);
-        helpContent.getColumnConstraints().addAll(commandCol, formatCol);
+        table.getColumnConstraints().addAll(commandCol, formatCol);
         
+        // add command and format row by row
         for (int i = 0; i < commands.length; i++) {
             Label cmd = new Label(commands[i]);
-            cmd.getStyleClass().add("command");
+            table.add(cmd, 0, i);
             Label format = new Label(formats[i]);
-            format.getStyleClass().add("format");
-            helpContent.add(cmd, 0, i);
-            helpContent.add(format, 1, i);
+            table.add(format, 1, i);
         }
         
+        // make table scrollable
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(helpContent);
-        
-        Label helpHeader = createHeader("Commands");
-        helpPanel.getChildren().addAll(helpHeader, scrollPane);
+        scrollPane.setContent(table);
+        return scrollPane;
     }
 
-    private void initializeSidebarContent() {
+    private void initializeSidebar() {
         sidebar = new SidebarController(main);
         this.setLeft(sidebar);
         this.setTriggerDistance(30);
@@ -181,6 +190,8 @@ public class DisplayController extends HiddenSidesPane {
     
     private void initializePopup() {
         feedback = new Popup();
+        feedback.setAutoHide(true);
+        // hide feedback popup on any key press
         feedback.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             public void handle(KeyEvent event) {
                 feedback.hide();
@@ -190,8 +201,8 @@ public class DisplayController extends HiddenSidesPane {
     
     private void handleUserInteractions() {
         DisplayController display = this;
+        // allow keyboard shortcuts
         display.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            
             public void handle(KeyEvent event) {
                 if (event.getCode()==KeyCode.M && event.isControlDown()) {
                     logger.log(Level.INFO, "user toggled sidebar");
@@ -202,51 +213,69 @@ public class DisplayController extends HiddenSidesPane {
                     }
                 }
             }
-            
         });
     }
     
+    /**
+     * Displays the result of the command to the user.
+     * 
+     * @param result    the result to be shown to the user
+     */
     public void displayResult(Result result) {
-        CommandType cmd = result.getCommandType();
-        if (cmd == CommandType.SEARCH) {
-            updateSearchPanel(result.getResults());
-            this.setContent(searchPanel);
-        } else if (cmd == CommandType.SEARCHDONE) {
-            updateCompletedPanel(result.getResults());
-            this.setContent(completedPanel);
-        } else if (cmd == CommandType.INVALID) {
-            showFeedback(cmd, result.getMessage(), result.isSuccess());
-        } else if (cmd == CommandType.HELP) {
-            this.setContent(helpPanel);
-        } else {
-            sidebar.update();
-            updateTaskPanel(result.getResults());
-            showFeedback(cmd, result.getMessage(), result.isSuccess());
-            this.setContent(taskPanel);
+        assert (result != null);
+        CommandType cmdType = result.getCommandType();
+        switch(cmdType) {
+            case INVALID :
+                showFeedback(cmdType, result.getMessage(), result.isSuccess());
+
+            case SEARCH :
+                updateSearchPanel(result.getResults());
+                this.setContent(searchPanel);
+                break;
+                
+            case SEARCHDONE :
+                updateCompletedPanel(result.getResults());
+                this.setContent(completedPanel);
+                break;
+            
+            case HELP :
+                this.setContent(helpPanel);
+                break;
+            
+            default :
+                sidebar.update();
+                updateTaskPanel(result.getResults());
+                showFeedback(cmdType, result.getMessage(), result.isSuccess());
+                this.setContent(taskPanel);
+                break;
         }
     }
+
+    /******************
+     * HELPER METHODS *
+     ******************/
     
     private void updateTaskPanel(ArrayList<Task> allTasks) {
-        assert (taskPanel != null);
+        assert (allTasks != null);
         
         LocalDateTime todayDateTime = LocalDateTime.now();
         LocalDate todayDate = todayDateTime.toLocalDate();
-        
-        // place tasks in Today or Others section
-        ArrayList<VBox> todayTasks = new ArrayList<VBox>();
-        ArrayList<VBox> otherTasks = new ArrayList<VBox>();
-        int modifiedToday = -1;
-        int modifiedOther = -1;
+        // group tasks in Today or Others section
+        ObservableList<VBox> todayTasks = FXCollections.observableArrayList();
+        ObservableList<VBox> otherTasks = FXCollections.observableArrayList();
+        // index of tasks to scroll to
+        int todayModified = -1;
+        int otherModified = -1;
         for (Task task : allTasks) {
             if (task.isSameDate(todayDate)) {
-                todayTasks.add(createToday(task, todayDateTime));
+                todayTasks.add(createTodayEntry(task, todayDateTime));
                 if (task.isModified()) {
-                    modifiedToday = todayTasks.size() - 1;
+                    todayModified = todayTasks.size() - 1;
                 }
             } else {
-                otherTasks.add(createOther(task, todayDateTime));
+                otherTasks.add(createOtherEntry(task, todayDateTime));
                 if (task.isModified()) {
-                    modifiedOther = otherTasks.size() - 1;
+                    otherModified = otherTasks.size() - 1;
                 }
             }
         }
@@ -261,8 +290,8 @@ public class DisplayController extends HiddenSidesPane {
             ListView<VBox> todayListView = createListView(todayTasks);
             todayContent.getChildren().add(todayListView);
             todayListView.setMaxHeight(primaryStage.getHeight()/2.1);
-            if (modifiedToday != -1) {
-                todayListView.scrollTo(modifiedToday);
+            if (todayModified != -1) {
+                todayListView.scrollTo(todayModified);
             }
         }
         
@@ -279,8 +308,8 @@ public class DisplayController extends HiddenSidesPane {
             ListView<VBox> otherListView = createListView(otherTasks);
             otherContent.getChildren().add(otherListView);
             otherListView.setMaxHeight(primaryStage.getHeight()/2.1);
-            if (modifiedOther != -1) {
-                otherListView.scrollTo(modifiedOther);
+            if (otherModified != -1) {
+                otherListView.scrollTo(otherModified);
             }
         }
         
@@ -297,9 +326,9 @@ public class DisplayController extends HiddenSidesPane {
         LocalDateTime todayDate = LocalDateTime.now();
         
         Label searchHeader = createHeader(results.size() + (results.size() == 1 ? HEADER_SEARCH_SINGLE : HEADER_SEARCH_PLURAL));
-        ArrayList<VBox> searchTasks = new ArrayList<VBox>();
+        ObservableList<VBox> searchTasks = FXCollections.observableArrayList();
         for (Task result : results) {
-            searchTasks.add(createOther(result, todayDate));
+            searchTasks.add(createOtherEntry(result, todayDate));
         }
         ListView<VBox> searchListView = createListView(searchTasks);
         
@@ -311,7 +340,7 @@ public class DisplayController extends HiddenSidesPane {
         assert (completedPanel != null);
 
         Label completedHeader = createHeader(results.size() + (results.size() == 1 ? HEADER_COMPLETED_SINGLE : HEADER_COMPLETED_PLURAL));
-        ArrayList<VBox> completedTasks = new ArrayList<VBox>();
+        ObservableList<VBox> completedTasks = FXCollections.observableArrayList();
         for (Task result : results) {
             completedTasks.add(createCompleted(result));
         }
@@ -363,21 +392,17 @@ public class DisplayController extends HiddenSidesPane {
         return header;
     }
 
-    private ListView<VBox> createListView(ArrayList<VBox> tasks) {
-        ObservableList<VBox> list = FXCollections.observableArrayList(tasks);
-        ListView<VBox> listView = new ListView<VBox>(list);
-        listView.prefHeightProperty().bind(Bindings.size(list).multiply(65));
+    private ListView<VBox> createListView(ObservableList<VBox> tasks) {
+        ListView<VBox> listView = new ListView<VBox>(tasks);
+        listView.prefHeightProperty().bind(Bindings.size(tasks).multiply(65));
         return listView;
     }
     
-    private VBox createToday(Task task, LocalDateTime todayDate) {
+    private VBox createTodayEntry(Task task, LocalDateTime todayDate) {
         Label desc = new Label(task.getId() + ". " + task.getDescription());
         HBox details = createTaskDetails(task, TYPE_TODAY);
         
         VBox entry = new VBox();
-        // prevent ListView from showing horizontal scrollbar
-        // when the text description is very long
-        entry.setPrefWidth(1);
         entry.getChildren().addAll(desc, details);
         if (task.isModified()) {
             entry.getStyleClass().add("entry-task-modified");
@@ -389,14 +414,11 @@ public class DisplayController extends HiddenSidesPane {
         return entry;
     }
     
-    private VBox createOther(Task task, LocalDateTime todayDate) {
+    private VBox createOtherEntry(Task task, LocalDateTime todayDate) {
         Label desc = new Label(task.getId() + ". " + task.getDescription());
         HBox details = createTaskDetails(task, TYPE_OTHER);
 
         VBox entry = new VBox();
-        // prevent ListView from showing horizontal scrollbar
-        // when the text description is very long
-        entry.setPrefWidth(1);
         entry.getChildren().addAll(desc, details);
         if (task.isModified()) {
             entry.getStyleClass().add("entry-task-modified");
@@ -413,9 +435,6 @@ public class DisplayController extends HiddenSidesPane {
         HBox details = createTaskDetails(task, TYPE_COMPLETED);
         
         VBox entry = new VBox();
-        // prevent ListView from showing horizontal scroll bar
-        // when the text description is very long
-        entry.setPrefWidth(1);
         entry.getChildren().addAll(desc, details);
         entry.getStyleClass().add("entry-task");
         return entry;

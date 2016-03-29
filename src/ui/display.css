@@ -1,7 +1,10 @@
 /* @@author Ruoling */
 
-/* default style classes */
+/*************************
+ * DEFAULT STYLE CLASSES *
+ *************************/
 
+/* reduce font aliasing  */
 .text {
     -fx-font-smoothing-type: gray;
 }
@@ -29,7 +32,7 @@
 }
 
 .list-cell:selected .label {
-    -fx-font-weight: bold;
+    -fx-font-family: "Roboto Bold", "Segoe UI", sans-serif;
     -fx-text-fill: #000000;
 }
 
@@ -75,7 +78,9 @@
     -fx-padding: 0;
 }
 
-/* custom style classes */
+/************************
+ * CUSTOM STYLE CLASSES *
+ ************************/
 
 .header {
     -fx-font-size: 20;
@@ -91,6 +96,9 @@
 }
 
 .entry-task {
+    /* prevents ListView from creating a horizontal scroll bar
+     * when task description is wider than width of ListView*/
+    -fx-pref-width: 1;
     -fx-padding: 2;
     -fx-background-color: #F2F2F2;
     -fx-background-radius: 0;
@@ -125,13 +133,7 @@
     -fx-background-color: #F2F2F2;
 }
 
-.command {
-    -fx-font-size: 15;
-    -fx-wrap-text: true;
-    -fx-font-family: "Roboto Regular", "Segoe UI", sans-serif;
-}
-
-.format {
+.table .label {
     -fx-font-size: 15;
     -fx-wrap-text: true;
     -fx-font-family: "Roboto Condensed Regular", "Segoe UI", sans-serif;
