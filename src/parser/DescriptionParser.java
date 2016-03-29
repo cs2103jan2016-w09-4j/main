@@ -1,90 +1,48 @@
 //@@author Khanh
 package parser;
 
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import com.joestelmach.natty.*;
 
 public class DescriptionParser {
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String description;
 
     public DescriptionParser(String input) {
-        DateTimeFormatter[] formatters = {
-                DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"),
-                DateTimeFormatter.ofPattern("H:m d-M-yy"),
-                DateTimeFormatter.ofPattern("H:m d-M-yyyy"),
-                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"),
-                DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
-        };
-
         input = input.trim();
 
-        int startIndex = input.indexOf(" start");
-        if (startIndex!=-1) {
-            int cutIndex = input.length();
-            for (int i = startIndex + 7; i<input.length(); i++) {
-                if (Character.isLetter(input.charAt(i))){
-                    cutIndex = i-1;
-                    break;
-                }
-            }
+        int startTimeIndex = input.indexOf("start");
+        int endTimeIndex = input.indexOf("end");
 
-            boolean parsed = false;
-            for (DateTimeFormatter formatter: formatters){
-                if (parsed) break;
-                try {
-                    String timeString = input.substring(startIndex+7, cutIndex).trim();
-                    start =  LocalDateTime.parse(timeString, formatter);
-                    parsed = true;
-                }
-                catch (DateTimeParseException exc){
-                }
-            }
-
-            if (!parsed) startIndex = input.length();
-        }
-        else {
-            startIndex = input.length();
+        if (startTimeIndex!=-1) {
+            int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
+            Parser parser = new Parser();
+            List<DateGroup> groups = parser.parse(input.substring(startTimeIndex + 5, startTimeCutIndex));
+            Date date = groups.get(0).getDates().get(0);
+            startTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         }
 
-        int endIndex = input.indexOf(" end");
-        if (endIndex!=-1){
-            int cutIndex = input.length();
-            for (int i = endIndex + 5; i<input.length(); i++) {
-                if (Character.isLetter(input.charAt(i))){
-                    cutIndex = i-1;
-                    break;
-                }
-            }
-
-            boolean parsed = false;
-            for (DateTimeFormatter formatter: formatters){
-                if (parsed) break;
-                try {
-                    end =  LocalDateTime.parse(input.substring(endIndex+5, cutIndex).trim(), formatter);
-                    parsed = true;
-                }
-                catch (DateTimeParseException exc){
-                }
-            }
-
-            if (!parsed) endIndex = input.length();
-        }
-        else {
-            endIndex = input.length();
+        if (endTimeIndex!=-1){
+            int endTimeCutIndex = (startTimeIndex > endTimeIndex) ? startTimeIndex : input.length();
+            Parser parser = new Parser();
+            List<DateGroup> groups = parser.parse(input.substring(endTimeIndex + 3, endTimeCutIndex));
+            Date date = groups.get(0).getDates().get(0);
+            endTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         }
 
-        description = input.substring(0, Math.min(startIndex, endIndex)).trim();
+        description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
     }
 
     public LocalDateTime getStartTime(){
-        return start;
+        return startTime;
     }
 
     public LocalDateTime getEndTime(){
-        return end;
+        return endTime;
     }
 
     public String getDescription(){

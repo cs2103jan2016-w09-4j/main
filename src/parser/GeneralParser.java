@@ -4,14 +4,14 @@ package parser;
 import common.*;
 import common.Command.CommandType;
 
-public class Parser {
+public class GeneralParser {
 
-    public Parser() {
+    public GeneralParser() {
 
     }
 
-    private static String getFirstWord(String s) {
-        String result = s.trim().split("\\s+")[0];
+    private static String getFirstWord(String command) {
+        String result = command.trim().split("\\s+", 2)[0];
         return result;
     }
 
