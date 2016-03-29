@@ -2,10 +2,6 @@
 package parser;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import com.joestelmach.natty.*;
 
 public class DescriptionParser {
     private LocalDateTime startTime;
@@ -18,26 +14,24 @@ public class DescriptionParser {
         int startTimeIndex = input.indexOf("start");
         int endTimeIndex = input.indexOf("end");
 
+        DateTimeParser dateTimeParser= new DateTimeParser();
+
         if (startTimeIndex!=-1) {
             int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
-            Parser parser = new Parser();
-            List<DateGroup> groups = parser.parse(input.substring(startTimeIndex + 5, startTimeCutIndex));
-            Date date = groups.get(0).getDates().get(0);
-            startTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            String startTimeString = input.substring(startTimeIndex + 5, startTimeCutIndex);
+            startTime = dateTimeParser.parse(startTimeString, false);
         }
 
-        if (endTimeIndex!=-1){
+        if (endTimeIndex!=-1) {
             int endTimeCutIndex = (startTimeIndex > endTimeIndex) ? startTimeIndex : input.length();
-            Parser parser = new Parser();
-            List<DateGroup> groups = parser.parse(input.substring(endTimeIndex + 3, endTimeCutIndex));
-            Date date = groups.get(0).getDates().get(0);
-            endTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            String endTimeString = input.substring(endTimeIndex + 3, endTimeCutIndex);
+            endTime = dateTimeParser.parse(endTimeString, true);
         }
 
         description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
     }
 
-    public LocalDateTime getStartTime(){
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
