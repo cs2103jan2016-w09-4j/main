@@ -301,7 +301,6 @@ public class Execution {
     
     public void taskProgression(){
     	current = LocalDateTime.now();
-    	mainList = storage.getMainList();
     	
     	sortList(mainList);
     	int count = 0;
