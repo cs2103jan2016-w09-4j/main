@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- @@author Ruoling -->
+<?import javafx.scene.layout.VBox?>
+<?import org.controlsfx.control.HiddenSidesPane?>
+<?import java.net.URL?>
+
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="HiddenSidesPane" >
+    <stylesheets>
+        <URL value="@display.css" />
+    </stylesheets>
+</fx:root>

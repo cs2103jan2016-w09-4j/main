@@ -1,0 +1,19 @@
+/* @@author Ruoling */
+.text {
+    -fx-font-smoothing-type: gray;
+}
+
+.label {
+    -fx-font-size: 15;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-alignment: center-left;
+    -fx-label-padding: 5;
+}
+
+.text-field {
+    -fx-background-color: #FFFFFF;
+    -fx-font-size: 15;
+    -fx-font-family: "Roboto Regular", "Segoe UI", sans-serif;
+    -fx-highlight-fill: #A1E7C6;
+    -fx-highlight-text-fill: #FFFFFF;
+}
