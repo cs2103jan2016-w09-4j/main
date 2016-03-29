@@ -146,16 +146,15 @@ public class Execution {
         
         // edit task with the specified details
         int index = taskID - 1;
-        Task task = null;
+       
         try {
-            task = mainList.get(index);
+            mainList.remove(index);
         } catch (IndexOutOfBoundsException e) {
             return new Result(CommandType.EDIT, false, "Wrong task number", mainList);
         }
-        if (task == null) { // will task ever be null?
-            return new Result(CommandType.EDIT, false, "Couldn't edit that task", mainList);
-        }
-        task.setDescription(newDescription);
+        
+        Task task = new Task(newDescription);
+        
         if (start != null) {
             task.setStart(start);
         }
@@ -164,6 +163,7 @@ public class Execution {
         }
         task.setModified(true);
 
+        mainList.add(task);
         sortList();
         updateDictionary(newDescription);
         
