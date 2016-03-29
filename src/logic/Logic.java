@@ -55,6 +55,9 @@ public class Logic {
         // if have time, then 
         
         if (startDate != null){
+        	if(startDate.compareTo(endDate) > 0){
+              	return new Result(CommandType.INVALID, false, "Cannot have a later start date!", new ArrayList<Task>());	
+            }
         	if(startDate.compareTo(current) < 0){;
         		return new Result(CommandType.INVALID, false, "Invalid start date!", new ArrayList<Task>());
         	}
@@ -65,9 +68,8 @@ public class Logic {
         		return new Result(CommandType.INVALID, false, "Invalid end date!", new ArrayList<Task>());
         	}
         }
-        //
-        execution.taskProgression();
         
+        execution.taskProgression();
         
         switch(commandType) {
         
@@ -86,7 +88,7 @@ public class Logic {
             case HOME :
                 list = storage.getMainList();
                 execution.setMainList(list);
-                
+                execution.taskProgression();
                 return new Result(commandType, true, "Return home", list);
                 
             case SAVE :
@@ -299,5 +301,5 @@ public class Logic {
         String sentenceCase = text.substring(0,1).toUpperCase() + text.substring(1);
         return sentenceCase;
     }
-    
-}        
+        
+}
