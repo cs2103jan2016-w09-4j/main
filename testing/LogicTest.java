@@ -20,22 +20,26 @@ public class LogicTest{
     /*
     @Test
     public void addTask_MissingDescription_InvalidCommand() {
-        Result result1 = logic.processCommand("add");
-        assertEquals(Command.CommandType.INVALID, result1.getCommandType());
+        Result noSpace = logic.processCommand("add");
+        assertEquals(Command.CommandType.INVALID, noSpace.getCommandType());
         
-        Result result2 = logic.processCommand("add ");
-        assertEquals(Command.CommandType.INVALID, result2.getCommandType());
+        Result noDescAfterSpace = logic.processCommand("add ");
+        assertEquals(Command.CommandType.INVALID, noDescAfterSpace.getCommandType());
         
-        Result result3 = logic.processCommand("add end 31/12/2016 12:00");
-        assertEquals(Command.CommandType.INVALID, result3.getCommandType());
-    }
-    
-    @Test
-    public void addTask_HaveStartButNoEnd_InvalidCommand() {
-        Result result1 = logic.processCommand("add 111 start 01/01/2016 12:00");
-        assertEquals(Command.CommandType.INVALID, result1.getCommandType());
+        Result noDescWithDate = logic.processCommand("add end 31/12/2016 12:00");
+        assertEquals(Command.CommandType.INVALID, noDescWithDate.getCommandType());
     }
     */
+    
+    @Test
+    public void addTask_InvalidDate_InvalidCommand() {
+        Result overdueStart = logic.processCommand("add 111 start 01/01/2015 12:00 end 31/12/2016 12:00");
+        assertEquals(Command.CommandType.INVALID, overdueStart.getCommandType());
+        Result overdueEnd = logic.processCommand("add 111 end 01/01/2015 12:00");
+        assertEquals(Command.CommandType.INVALID, overdueEnd.getCommandType());
+        Result overdueStartEnd = logic.processCommand("add 111 start 01/01/2015 12:00 end 31/12/2015 12:00");
+        assertEquals(Command.CommandType.INVALID, overdueEnd.getCommandType());
+    }
 
     @Test
     public void testUserSessionOne() {
@@ -67,14 +71,14 @@ public class LogicTest{
     	mainList = logic.getMainList();
     	logic.processCommand("edit 5 Hello World");
     	mainList = logic.getMainList();
-    	
+    	/*
     	compareList = new ArrayList<Task>();
         compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 24, 14, 0), 1));
         compareList.add(new Task("Meeting", null, LocalDateTime.of(2016, 05, 25, 14, 0), 2));
         compareList.add(new Task("Meeting", LocalDateTime.of(2016, 05, 24, 12, 0), LocalDateTime.of(2016, 05, 26, 14, 0), 3));
         compareList.add(new Task("Goodbye", null, null, 4));
         compareList.add(new Task("Hello", null, null, 5));
-        
+        */
         compareList.get(4).setDescription("Hello World");
         assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
