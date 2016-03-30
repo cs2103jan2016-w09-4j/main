@@ -91,7 +91,7 @@ public class DateTimeParser {
         boolean timeFound = false,
                 dateFound = false;
 
-        LocalDate date = LocalDate.now();
+        LocalDate date = LocalDate.MIN;
         LocalTime time = LocalTime.now();
 
         for (int i = 0; i < dateFormats.length; i++) {
@@ -137,30 +137,37 @@ public class DateTimeParser {
             }
         }
 
+        // init to avoid compile error
+        LocalDateTime noNattyResult = LocalDateTime.now(), nattyResult = LocalDateTime.now();
+
         if (dateFound) {
             if (timeFound) {
-                return LocalDateTime.of(date, time);
+                noNattyResult = LocalDateTime.of(date, time);
             }
             else {
                 if (defaultEndDay) {
-                    return LocalDateTime.of(date, LocalTime.of(23, 59));
+                    noNattyResult = LocalDateTime.of(date, LocalTime.of(23, 59));
                 }
                 else {
-                    return LocalDateTime.of(date, LocalTime.of(0, 0));
+                    noNattyResult = LocalDateTime.of(date, LocalTime.of(0, 0));
                 }
             }
         } else if (timeFound) {
-            return LocalDateTime.of(LocalDate.now(), time);
+            noNattyResult = LocalDateTime.of(date, time);
         }
 
         try {
             Parser parser = new Parser();
             List<DateGroup> groups = parser.parse(timeString);
             Date nattyDate = groups.get(0).getDates().get(0);
-            return LocalDateTime.ofInstant(nattyDate.toInstant(), ZoneId.systemDefault());
+            nattyResult = LocalDateTime.ofInstant(nattyDate.toInstant(), ZoneId.systemDefault());
         }
-        catch (Exception e) { // time string does not represent any valid time
-            return null;
+        catch (Exception e) { // natty does not find any result
         }
+
+        if (noNattyResult.toLocalDate().equals(LocalDate.MIN))
+            return nattyResult;
+
+        return noNattyResult;
     }
 }
