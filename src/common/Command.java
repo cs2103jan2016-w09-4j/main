@@ -9,7 +9,7 @@ public class Command {
         ADD, DELETE, EDIT, SEARCH, SAVE, LOAD, UNDO, REDO, HOME, DONE, SEARCHDONE, HELP, EXIT, INVALID;
     }
 
-    CommandType type;
+    private CommandType type;
 
     private String description;
     private int id;
@@ -33,17 +33,17 @@ public class Command {
         this.type = type;
         this.description = description;
     }
-    
+
     // search by date
     public Command(CommandType type, LocalDateTime date) {
     	this.type = type;
     	this.searchDate = date;
     }
-    
+
     // search by categories
     public Command(CommandType type, ArrayList<String> categories) {
     	this.type = type;
-    	this.categories = categories; 	
+    	this.categories = categories;
     }
 
     public Command(CommandType type, int id) { // delete
@@ -69,6 +69,22 @@ public class Command {
         this.description = description;
     }
 
+    @Override
+    public boolean equals(Object x) {
+        if (!(x instanceof Command))
+            return false;
+
+        Command xCommand = (Command) x;
+        if (type != xCommand.type) return false;
+        if (id != xCommand.id) return false;
+        if (!start.equals(xCommand.start)) return false;
+        if (!end.equals(xCommand.end)) return false;
+        if (!description.equals(xCommand.description)) return false;
+        if (!categories.equals(xCommand.categories)) return false;
+
+        return true;
+    }
+
     /******************
      * GETTER METHODS *
      ******************/
@@ -92,11 +108,11 @@ public class Command {
     public LocalDateTime getEndDate(){
         return end;
     }
-    
+
     public LocalDateTime getSearchDate() {
     	return searchDate;
     }
-    
+
     public ArrayList<String> getCategories() {
     	return categories;
     }

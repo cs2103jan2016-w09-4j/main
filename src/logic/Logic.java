@@ -3,7 +3,7 @@ package logic;
 
 import common.*;
 import common.Command.CommandType;
-import parser.Parser;
+import parser.GeneralParser;
 import storage.Storage;
 import logic.Execution;
 
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class Logic {
 
     // Objects to call into other classes
-    private Parser parser;
+    private GeneralParser parser;
     private Storage storage;
     private Execution execution;
     private static Logic logic = new Logic();
@@ -35,7 +35,7 @@ public class Logic {
     };
     
     public Logic() {
-        this.parser = new Parser();
+        this.parser = new GeneralParser();
         this.storage = new Storage();
         this.execution = new Execution();
         this.list = storage.getMainList();

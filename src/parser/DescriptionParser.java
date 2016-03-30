@@ -1,90 +1,44 @@
 //@@author Khanh
 package parser;
 
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.LocalDateTime;
 
 public class DescriptionParser {
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String description;
 
     public DescriptionParser(String input) {
-        DateTimeFormatter[] formatters = {
-                DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"),
-                DateTimeFormatter.ofPattern("H:m d-M-yy"),
-                DateTimeFormatter.ofPattern("H:m d-M-yyyy"),
-                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"),
-                DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
-        };
-
         input = input.trim();
 
-        int startIndex = input.indexOf(" start");
-        if (startIndex!=-1) {
-            int cutIndex = input.length();
-            for (int i = startIndex + 7; i<input.length(); i++) {
-                if (Character.isLetter(input.charAt(i))){
-                    cutIndex = i-1;
-                    break;
-                }
-            }
+        int startTimeIndex = input.indexOf("start");
+        int endTimeIndex = input.indexOf("end");
 
-            boolean parsed = false;
-            for (DateTimeFormatter formatter: formatters){
-                if (parsed) break;
-                try {
-                    String timeString = input.substring(startIndex+7, cutIndex).trim();
-                    start =  LocalDateTime.parse(timeString, formatter);
-                    parsed = true;
-                }
-                catch (DateTimeParseException exc){
-                }
-            }
+        DateTimeParser dateTimeParser= new DateTimeParser();
 
-            if (!parsed) startIndex = input.length();
-        }
-        else {
-            startIndex = input.length();
+        if (startTimeIndex!=-1) {
+            int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
+            String startTimeString = input.substring(startTimeIndex + 5, startTimeCutIndex);
+            startTime = dateTimeParser.parse(startTimeString, false);
         }
 
-        int endIndex = input.indexOf(" end");
-        if (endIndex!=-1){
-            int cutIndex = input.length();
-            for (int i = endIndex + 5; i<input.length(); i++) {
-                if (Character.isLetter(input.charAt(i))){
-                    cutIndex = i-1;
-                    break;
-                }
-            }
-
-            boolean parsed = false;
-            for (DateTimeFormatter formatter: formatters){
-                if (parsed) break;
-                try {
-                    end =  LocalDateTime.parse(input.substring(endIndex+5, cutIndex).trim(), formatter);
-                    parsed = true;
-                }
-                catch (DateTimeParseException exc){
-                }
-            }
-
-            if (!parsed) endIndex = input.length();
-        }
-        else {
-            endIndex = input.length();
+        if (endTimeIndex!=-1) {
+            int endTimeCutIndex = (startTimeIndex > endTimeIndex) ? startTimeIndex : input.length();
+            String endTimeString = input.substring(endTimeIndex + 3, endTimeCutIndex);
+            endTime = dateTimeParser.parse(endTimeString, true);
         }
 
-        description = input.substring(0, Math.min(startIndex, endIndex)).trim();
+        if (startTimeIndex ==-1) startTimeIndex = input.length();
+        if (endTimeIndex == -1) endTimeIndex = input.length();
+        description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
     }
 
-    public LocalDateTime getStartTime(){
-        return start;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
     public LocalDateTime getEndTime(){
-        return end;
+        return endTime;
     }
 
     public String getDescription(){
