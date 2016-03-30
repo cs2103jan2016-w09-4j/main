@@ -26,7 +26,6 @@ public class Logic {
     private static Logic logic = new Logic();
     
     private ArrayList<Task> list;
-    private LocalDateTime current;
     
     private static final int MAX_PREDICTIONS = 5;
     private static final Comparator<Entry<String, Integer>> freqComparator = new Comparator<Entry<String, Integer>>() {
@@ -44,7 +43,6 @@ public class Logic {
 
     private Result execute(Command command){
         
-    	this.current = LocalDateTime.now();
         CommandType commandType = command.getType();
         String description = command.getDescription();
         int taskID = command.getId();       
@@ -54,6 +52,7 @@ public class Logic {
         
         // verify that start date is before end date
         if (startDate != null && endDate != null) {
+            if (endDate.isBefore(startDate)) {
                 return new Result(CommandType.INVALID, false, "Cannot have a later start date!", new ArrayList<Task>());                
             }
         }

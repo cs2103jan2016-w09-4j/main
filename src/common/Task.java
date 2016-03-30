@@ -141,31 +141,33 @@ public class Task implements Comparable<Task> {
      */
     public boolean isOverdue(LocalDateTime dateTime) {
         if (isEvent() || isDeadline()) {
-            return end.compareTo(dateTime) < 0;
+            return end.isBefore(dateTime);
         }
         return false;
     }
     
     /**
-     * Returns true if this task starts or ends on the given date.
+     * Returns true if this task occurs on the given date.
      * 
      * @param date      date for comparison
-     * @return          true if start or end fall on the given date
+     * @return          true if given date falls between start or end
      */
-    public boolean isSameDate(LocalDate date) {
+    public boolean isOccurringOn(LocalDate date) {
         if (isFloating()) {
             return false;
         } else if (isEvent()) {
             LocalDate startDate = start.toLocalDate();
             LocalDate endDate = end.toLocalDate();
-            return startDate.equals(date) || endDate.equals(date);
+            boolean isBefore = date.isBefore(startDate);
+            boolean isAfter = date.isAfter(endDate);
+            return !isBefore && !isAfter;
         } else if (isDeadline()) {
             LocalDate endDate = end.toLocalDate();
-            return endDate.equals(date);
+            return endDate.isEqual(date);
         }
         return false;
     }
-
+    
     /**
      * Compares this task to another task.
      * Comparison is mainly based on the start and end date/time. If the

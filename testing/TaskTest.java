@@ -32,33 +32,33 @@ public class TaskTest {
         LocalDate date = LocalDateTime.parse("01/01/2016 12:00", formatter).toLocalDate();
 
         Task floating = new Task(TASK_DESCRIPTION_SECOND);
-        assertFalse(floating.isSameDate(date));
+        assertFalse(floating.isOccurringOn(date));
         
         Task deadlineSameEnd0000 = new Task(TASK_DESCRIPTION_SECOND);
         deadlineSameEnd0000.setEnd("01/01/2016 00:00");
-        assertTrue(deadlineSameEnd0000.isSameDate(date));
+        assertTrue(deadlineSameEnd0000.isOccurringOn(date));
         
         Task deadlineSameEnd2359 = new Task(TASK_DESCRIPTION_SECOND);
         deadlineSameEnd2359.setEnd("01/01/2016 23:59");
-        assertTrue(deadlineSameEnd2359.isSameDate(date));
+        assertTrue(deadlineSameEnd2359.isOccurringOn(date));
         
         Task deadlineDiffEnd0000 = new Task(TASK_DESCRIPTION_SECOND);
         deadlineDiffEnd0000.setEnd("02/01/2016 00:00");
-        assertFalse(deadlineDiffEnd0000.isSameDate(date));
+        assertFalse(deadlineDiffEnd0000.isOccurringOn(date));
         
         Task deadlineDiffEnd2359 = new Task(TASK_DESCRIPTION_SECOND);
         deadlineDiffEnd2359.setEnd("31/12/2015 23:59");
-        assertFalse(deadlineDiffEnd2359.isSameDate(date));
+        assertFalse(deadlineDiffEnd2359.isOccurringOn(date));
 
         Task eventSameStart = new Task(TASK_DESCRIPTION_SECOND);
         eventSameStart.setStart("01/01/2016 00:00");
         eventSameStart.setEnd("31/12/2016 00:00");
-        assertTrue(eventSameStart.isSameDate(date));
+        assertTrue(eventSameStart.isOccurringOn(date));
         
         Task eventSameEnd = new Task(TASK_DESCRIPTION_SECOND);
         eventSameEnd.setStart("31/12/2015 23:59");
         eventSameEnd.setEnd("01/01/2016 23:59");
-        assertTrue(eventSameStart.isSameDate(date));
+        assertTrue(eventSameStart.isOccurringOn(date));
     }
     
     @Test

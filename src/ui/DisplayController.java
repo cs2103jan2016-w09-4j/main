@@ -272,7 +272,7 @@ public class DisplayController extends HiddenSidesPane {
         int todayModified = -1;
         int otherModified = -1;
         for (Task task : allTasks) {
-            if (task.isSameDate(todayDate)) {
+            if (task.isOccurringOn(todayDate)) {
                 todayTasks.add(createTodayEntry(task, todayDateTime));
                 if (task.isModified()) {
                     todayModified = todayTasks.size() - 1;
@@ -427,7 +427,7 @@ public class DisplayController extends HiddenSidesPane {
     
     private VBox createTodayEntry(Task task, LocalDateTime todayDate) {
         Label desc = new Label(task.getId() + ". " + task.getDescription());
-        HBox details = createTaskDetails(task, TYPE_TODAY);
+        HBox details = createTaskDetails(task, TYPE_TODAY, todayDate);
         
         VBox entry = new VBox();
         entry.getChildren().addAll(desc, details);
@@ -443,7 +443,7 @@ public class DisplayController extends HiddenSidesPane {
     
     private VBox createOtherEntry(Task task, LocalDateTime todayDate) {
         Label desc = new Label(task.getId() + ". " + task.getDescription());
-        HBox details = createTaskDetails(task, TYPE_OTHER);
+        HBox details = createTaskDetails(task, TYPE_OTHER, todayDate);
 
         VBox entry = new VBox();
         entry.getChildren().addAll(desc, details);
@@ -459,7 +459,7 @@ public class DisplayController extends HiddenSidesPane {
     
     private VBox createCompleted(Task task) {
         Label desc = new Label(task.getDescription());
-        HBox details = createTaskDetails(task, TYPE_COMPLETED);
+        HBox details = createTaskDetails(task, TYPE_COMPLETED, null);
         
         VBox entry = new VBox();
         entry.getChildren().addAll(desc, details);
@@ -467,53 +467,20 @@ public class DisplayController extends HiddenSidesPane {
         return entry;
     }
     
-    private HBox createTaskDetails(Task task, int type) {
+    private HBox createTaskDetails(Task task, int type, LocalDateTime date) {
         HBox details = new HBox();
         
         // add priority icon
         
         // add date details
         Label startEndDate = null;
-        if (type == TYPE_TODAY) {
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-            
-            if (task.isDeadline()) {
-                String endDate = timeFormatter.format(task.getEndDate());
-                startEndDate = new Label("By " + endDate);
-            } else if (task.isEvent()) {
-                LocalDateTime start = task.getStartDate();
-                LocalDateTime end = task.getEndDate();
-                LocalDate now = LocalDate.now();
-                if (start.toLocalDate().equals(now) && end.toLocalDate().equals(now)) {
-                    String startDate = timeFormatter.format(start);
-                    String endDate = timeFormatter.format(end);
-                    startEndDate = new Label("From " + startDate + " to " + endDate);
-                } else if (start.toLocalDate().equals(now)) {
-                    String startDate = timeFormatter.format(start);
-                    String endDate = dateFormatter.format(end);
-                    startEndDate = new Label("From " + startDate + " to " + endDate);
-                } else if (end.toLocalDate().equals(now)) {
-                    String startDate = dateFormatter.format(start);
-                    String endDate = timeFormatter.format(end);
-                    startEndDate = new Label("From " + startDate + " to " + endDate);
-                }
-            }
+        
+        if (type == TYPE_COMPLETED) {
+            startEndDate = createCompletedTaskDetails(task);
         } else {
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-            if (task.isDeadline()) {
-                String endDate = dateFormatter.format(task.getEndDate());
-                startEndDate = new Label("By " + endDate);
-            } else if (task.isEvent()) {
-                LocalDateTime start = task.getStartDate();
-                LocalDateTime end = task.getEndDate();
-                String startDate = dateFormatter.format(start);
-                String endDate = dateFormatter.format(end);
-                startEndDate = new Label("From " + startDate + " to " + endDate);
-            }
+            startEndDate = createOngoingTaskDetails(task, date);
         }
-
+        
         if (startEndDate != null) {
             startEndDate.getStyleClass().add("details");
             details.getChildren().add(startEndDate);
@@ -524,6 +491,56 @@ public class DisplayController extends HiddenSidesPane {
         // add categories
         
         return details;
+    }
+
+    private Label createOngoingTaskDetails(Task task, LocalDateTime date) {
+        Label startEndDate = null;
+        LocalDate now = date.toLocalDate();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        
+        if (task.isDeadline()) {
+            LocalDateTime end = task.getEndDate();
+            String endDate;
+            if (end.toLocalDate().isEqual(now)) {
+                endDate = timeFormatter.format(end);
+            } else {
+                endDate = dateFormatter.format(end); 
+            }
+            startEndDate = new Label("By " + endDate);
+        } else if (task.isEvent()) {
+            LocalDateTime start = task.getStartDate();
+            LocalDateTime end = task.getEndDate();
+            String startDate, endDate;
+            if (start.toLocalDate().isEqual(now)) {
+                startDate = timeFormatter.format(start);
+            } else {
+                startDate = dateFormatter.format(start);
+            }
+            if (end.toLocalDate().isEqual(now)) {
+                endDate = timeFormatter.format(end);
+            } else {
+                endDate = dateFormatter.format(end);
+            }
+            startEndDate = new Label("From " + startDate + " to " + endDate);
+        }
+        return startEndDate;
+    }
+
+    private Label createCompletedTaskDetails(Task task) {
+        Label startEndDate = null;
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        if (task.isDeadline()) {
+            String endDate = dateFormatter.format(task.getEndDate());
+            startEndDate = new Label("By " + endDate);
+        } else if (task.isEvent()) {
+            LocalDateTime start = task.getStartDate();
+            LocalDateTime end = task.getEndDate();
+            String startDate = dateFormatter.format(start);
+            String endDate = dateFormatter.format(end);
+            startEndDate = new Label("From " + startDate + " to " + endDate);
+        }
+        return startEndDate;
     }
     
 }
