@@ -92,7 +92,7 @@ public class DateTimeParser {
                 dateFound = false;
 
         LocalDate date = LocalDate.MIN;
-        LocalTime time = LocalTime.now();
+        LocalTime time = defaultEndDay ? LocalTime.of(23, 59) : LocalTime.of(0, 0);
 
         for (int i = 0; i < dateFormats.length; i++) {
             for (int sIndex = 0; sIndex<timeString.length(); sIndex++) {
@@ -137,24 +137,7 @@ public class DateTimeParser {
             }
         }
 
-        // init to avoid compile error
-        LocalDateTime noNattyResult = LocalDateTime.now(), nattyResult = LocalDateTime.now();
-
-        if (dateFound) {
-            if (timeFound) {
-                noNattyResult = LocalDateTime.of(date, time);
-            }
-            else {
-                if (defaultEndDay) {
-                    noNattyResult = LocalDateTime.of(date, LocalTime.of(23, 59));
-                }
-                else {
-                    noNattyResult = LocalDateTime.of(date, LocalTime.of(0, 0));
-                }
-            }
-        } else if (timeFound) {
-            noNattyResult = LocalDateTime.of(date, time);
-        }
+        LocalDateTime nattyResult = null;
 
         try {
             Parser parser = new Parser();
@@ -165,9 +148,9 @@ public class DateTimeParser {
         catch (Exception e) { // natty does not find any result
         }
 
-        if (noNattyResult.toLocalDate().equals(LocalDate.MIN))
-            return nattyResult;
+        if (!dateFound && !timeFound && nattyResult == null) return null;
 
-        return noNattyResult;
+        if (!dateFound) date = nattyResult.toLocalDate();
+        return LocalDateTime.of(date, time);
     }
 }
