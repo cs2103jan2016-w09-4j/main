@@ -28,6 +28,8 @@ public class DescriptionParser {
             endTime = dateTimeParser.parse(endTimeString, true);
         }
 
+        if (startTimeIndex ==-1) startTimeIndex = input.length();
+        if (endTimeIndex == -1) endTimeIndex = input.length();
         description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
     }
 

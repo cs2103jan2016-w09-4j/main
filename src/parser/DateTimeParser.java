@@ -22,18 +22,6 @@ public class DateTimeParser {
             "dd MMM yyyy",
             "dd MMMM yyyy",
 
-            "dd-MM-yy",
-            "dd-MMM-yy",
-            "dd-MMMM-yy",
-            "dd MMM yy",
-            "dd MMMM yy",
-
-            "d-M-yy",
-            "d-MMM-yy",
-            "d-MMMM-yy",
-            "d MMM yy",
-            "d MMMM yy",
-
             "d-M-yyyy",
             "d-MMM-yyyy",
             "d-MMMM-yyyy",
@@ -53,11 +41,24 @@ public class DateTimeParser {
             "yyyy MMMM d",
 
             "dd/MM/yyyy",
-            "dd/MM/yy",
-            "d/M/yy",
             "d/M/yyyy",
             "yyyy/mm/dd",
             "yyyy/m/d",
+
+            "dd-MM-yy",
+            "dd-MMM-yy",
+            "dd-MMMM-yy",
+            "dd MMM yy",
+            "dd MMMM yy",
+
+            "d-M-yy",
+            "d-MMM-yy",
+            "d-MMMM-yy",
+            "d MMM yy",
+            "d MMMM yy",
+
+            "dd/MM/yy",
+            "d/M/yy",
 
             "dd/MM",
             "dd/MMM",
@@ -77,11 +78,11 @@ public class DateTimeParser {
     };
 
 
-    DateTimeParser() {
+    public DateTimeParser() {
 
     }
 
-    LocalDateTime parse(String timeString, boolean defaultEndDay) {
+    public LocalDateTime parse(String timeString, boolean defaultEndDay) {
         timeString = timeString.trim();
         timeString = timeString.replace("am", "AM").replace("pm", "PM");
 
@@ -93,7 +94,7 @@ public class DateTimeParser {
 
         for (int i = 0; i < dateFormats.length; i++) {
             for (int sIndex = 0; sIndex<timeString.length(); sIndex++) {
-                for (int eIndex = sIndex + 3; eIndex<=timeString.length(); eIndex++) {
+                for (int eIndex=timeString.length(); eIndex>sIndex; eIndex--) {
                     if (dateFound) break;
 
                     try {
@@ -102,11 +103,14 @@ public class DateTimeParser {
                                 .parseDefaulting(ChronoField.YEAR, LocalDateTime.now().getYear())
                                 .toFormatter();
 
-                        date = LocalDate.parse(timeString.substring(sIndex, eIndex), formatter);
+                        formatter = DateTimeFormatter.ofPattern(dateFormats[i]);
+
+                        String tryString = timeString.substring(sIndex, eIndex);
+                        System.out.println(tryString + " " + dateFormats[i]);
+                        date = LocalDate.parse(tryString, formatter);
                         dateFound = true;
                     }
                     catch (DateTimeParseException exc) {
-
                     }
                 }
             }
@@ -114,13 +118,13 @@ public class DateTimeParser {
 
         for (int i = 0; i < timeFormats.length; i++) {
             for (int sIndex = 0; sIndex<timeString.length(); sIndex++) {
-                for (int eIndex = sIndex + 3; eIndex<=timeString.length(); eIndex++) {
+                for (int eIndex = timeString.length(); eIndex>sIndex; eIndex--) {
                     if (timeFound) break;
 
                     try {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(timeFormats[i]);
-                        date = LocalDate.parse(timeString.substring(sIndex, eIndex), formatter);
-                        dateFound = true;
+                        time = LocalTime.parse(timeString.substring(sIndex, eIndex), formatter);
+                        timeFound = true;
                     }
                     catch (DateTimeParseException exc) {
 
