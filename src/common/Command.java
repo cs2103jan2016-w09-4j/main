@@ -9,7 +9,7 @@ public class Command {
         ADD, DELETE, EDIT, SEARCH, SAVE, LOAD, UNDO, REDO, HOME, DONE, SEARCHDONE, HELP, EXIT, INVALID;
     }
 
-    CommandType type;
+    private CommandType type;
 
     private String description;
     private int id;
@@ -56,6 +56,22 @@ public class Command {
         this.description = description;
     }
 
+    @Override
+    public boolean equals(Object x) {
+        if (!(x instanceof Command))
+            return false;
+
+        Command xCommand = (Command) x;
+        if (type != xCommand.type) return false;
+        if (id != xCommand.id) return false;
+        if (!start.equals(xCommand.start)) return false;
+        if (!end.equals(xCommand.end)) return false;
+        if (!description.equals(xCommand.description)) return false;
+        if (!categories.equals(xCommand.categories)) return false;
+
+        return true;
+    }
+
     /******************
      * GETTER METHODS *
      ******************/
@@ -79,5 +95,4 @@ public class Command {
     public LocalDateTime getEndDate(){
         return end;
     }
-
 }

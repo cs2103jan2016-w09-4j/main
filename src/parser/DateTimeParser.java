@@ -60,6 +60,8 @@ public class DateTimeParser {
             "dd/MM/yy",
             "d/M/yy",
 
+            "d/M",
+            "d-M",
             "dd/MM",
             "dd/MMM",
             "dd/MMMM",
@@ -98,17 +100,19 @@ public class DateTimeParser {
                     if (dateFound) break;
 
                     try {
-                        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                        // if the date format does not contain year info, get current year as default
+
+                        DateTimeFormatter formatter = (dateFormats[i].contains("y")) ?
+                            DateTimeFormatter.ofPattern(dateFormats[i]) :
+                                new DateTimeFormatterBuilder()
                                 .appendPattern(dateFormats[i])
                                 .parseDefaulting(ChronoField.YEAR, LocalDateTime.now().getYear())
                                 .toFormatter();
 
-                        formatter = DateTimeFormatter.ofPattern(dateFormats[i]);
-
                         String tryString = timeString.substring(sIndex, eIndex);
-                        System.out.println(tryString + " " + dateFormats[i]);
                         date = LocalDate.parse(tryString, formatter);
                         dateFound = true;
+                        System.out.println(tryString + " " + dateFormats[i]);
                     }
                     catch (DateTimeParseException exc) {
                     }
@@ -132,7 +136,6 @@ public class DateTimeParser {
                 }
             }
         }
-
 
         if (dateFound) {
             if (timeFound) {
