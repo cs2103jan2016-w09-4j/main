@@ -95,7 +95,11 @@ public class Logic {
                 
             case REDO : 
                 list = execution.redoCommand();
-                return new Result(commandType, true, "Last command redone", list);
+                if(list.isEmpty()){
+                	return new Result(CommandType.INVALID, false, "Cannot redo!", list);
+                } else{
+                	return new Result(commandType, true, "Last command redone", list);
+                }
                 
             case DONE :
                 return execution.completeCommand(taskID);
