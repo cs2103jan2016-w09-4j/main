@@ -22,7 +22,7 @@ public class StorageTest {
 	private ArrayList<Task> testList;
 	private ArrayList<Task> getDataFromFile;
 	private Task taskToAdd;
-	private String fileName1 = "mytextfile.txt";
+	private String fileName1 = "MyTasks.txt";
 	private String fileName2 = "newFile";
 
 	private String outputException = "";
