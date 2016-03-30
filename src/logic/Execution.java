@@ -36,6 +36,7 @@ public class Execution {
     private static TreeSet<Entry<String, Integer>> wordDictionary;
     private static TreeSet<String> fileDictionary;
     private LocalDateTime current;
+    private boolean canRedo = false;
     
     // Common English function words 
     private static final String[] functionWords = { "a", "about", "an", "and", "as", "at",
@@ -278,25 +279,31 @@ public class Execution {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+        canRedo = true;
         sortList(previousCopyOfMainList);
         return previousCopyOfMainList;
     }
     
     public ArrayList<Task> redoCommand() {
-        mainList.clear();
-        mainList.addAll(copyOfMainListForRedo);
+    	
+    	if(canRedo == false){
+    		return new ArrayList<Task>();
+    	} else{
+    		mainList.clear();
+    		mainList.addAll(copyOfMainListForRedo);
         
-     // save
-        storage.setMainList(mainList);
-        try {
-            storage.writeToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    		// save
+    		storage.setMainList(mainList);
+    		try {
+    			storage.writeToFile();
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
         
-        sortList(mainList);
-        return mainList;
+    		sortList(mainList);
+    		canRedo = false;
+    		return mainList;
+    	}	
     }
     
     public void taskProgression(){
