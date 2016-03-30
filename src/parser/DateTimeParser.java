@@ -112,7 +112,6 @@ public class DateTimeParser {
                         String tryString = timeString.substring(sIndex, eIndex);
                         date = LocalDate.parse(tryString, formatter);
                         dateFound = true;
-                        System.out.println(tryString + " " + dateFormats[i]);
                     }
                     catch (DateTimeParseException exc) {
                     }
