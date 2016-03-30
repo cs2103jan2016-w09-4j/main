@@ -18,6 +18,7 @@ public class Storage {
 	private static final String HEADER_COMPLETED = "COMPLETED TASKS:";
 	private static final String DEFAULT_FILE = "DefaultFile.txt";
 	private static final String DEFAULT_TEXTFILE = "MyTasks.txt";
+	private static final String DEFAULT_AUTOCOMPLETION_FILE = "AutoCompletion.txt";
 
 	private static final int NUMBER_OF_FIELDS = 4;
 
@@ -31,20 +32,24 @@ public class Storage {
 
 	private static ArrayList<Task> mainList;
 	private static ArrayList<Task> completedList;
+	private static ArrayList<String> autoCompletionList;
 	
 	private String fileName;
 	private String savedDirectory;
 	private String defaultFile;
 	private String recentFileName;
+	private String autoCompletionFileName;
 
 	public Storage() {
 		fileName = DEFAULT_TEXTFILE;
 		defaultFile = DEFAULT_FILE;
+		autoCompletionFileName = DEFAULT_AUTOCOMPLETION_FILE;
 		savedDirectory = "";
 		recentFileName = "";
 
 		mainList = new ArrayList<Task>();
 		completedList = new ArrayList<Task>();
+		autoCompletionList = new ArrayList<String>();
 
 		// Create default file for load recent feature
 		try {
@@ -60,9 +65,13 @@ public class Storage {
 
 				// create "MyTasks.txt"
 				FileWriter out2 = new FileWriter(fileName);
+				
+				// create "AutoCompletion.txt"
+				FileWriter out3 = new FileWriter(autoCompletionFileName);
 
 				out.close();
 				out2.close();
+				out3.close();
 			}
 		} catch (IOException e) {
 		}
@@ -88,10 +97,16 @@ public class Storage {
 
 		return mainList;
 	}
-
-	// Returns completed list to Logic
+	
+	// For Logic to get completed list
 	public ArrayList<Task> getCompletedList() {
 		return completedList;
+	}
+	
+	// For Logic to get autocompletion list
+	public ArrayList<String> getAutoCompletionList() {
+		autoCompletionList = loadAutoCompletionFile();
+		return autoCompletionList;
 	}
 	
 	private String getRecentFileName() throws FileNotFoundException {
@@ -102,7 +117,7 @@ public class Storage {
 		return lineToAdd;
 	}
 
-	// update most recent list
+	// laod most recent list
 	private ArrayList<Task> getMostRecentList(String fileName) throws IOException {
 		String recentFileName, recentDirectory;
 		String defaultFileName = DEFAULT_TEXTFILE;
@@ -146,7 +161,6 @@ public class Storage {
 					// load list from default text file ("MyTasks.txt")
 					recentList = loadDefaultTextFile(defaultFileName);
 					writeToDefaultFile(defaultFileName);
-					// write "MyTasks.txt" into default file
 
 				} catch (FileNotFoundException | ParseException e1) {
 					// if default file does no exist, return empty list
@@ -159,7 +173,7 @@ public class Storage {
 	}
 
 	/*
-	 * In cases where the most recent file is not found or does not exist It
+	 * In cases where the most recent file is not found or does not exist.It
 	 * will return the list from the default file - 'mytextfile.txt'
 	 */
 	private ArrayList<Task> loadDefaultTextFile(String defaultFileName)
@@ -169,6 +183,20 @@ public class Storage {
 		fileName = defaultFileName; // change back file name to default
 		writeToDefaultFile(defaultFileName);
 		return recentList;
+	}
+
+	// This method reads the data from autocompletion file
+	private ArrayList<String> loadAutoCompletionFile() {
+		ArrayList<String> recentAutoCompletionList = new ArrayList<String>();
+		File file = new File(autoCompletionFileName);
+		try {
+			readFileWhenFileExists(file,recentAutoCompletionList);
+		} catch (FileNotFoundException e) {
+			// Returns empty list if file not found
+			return recentAutoCompletionList;
+		}
+		
+		return recentAutoCompletionList;
 	}
 
 	// Obtain filename without directory
@@ -204,6 +232,13 @@ public class Storage {
 
 			writer.close();
 	}
+	
+	public void writeAutoCompletionData() throws IOException {
+		System.out.println("writing to auto completion file");
+		FileWriter writer = new FileWriter(autoCompletionFileName);
+		writeStringFromAutoCompletedList(writer);
+		writer.close();
+	}
 
 	// This method writes the "Current Task" header into the file
 	private void writeCurrentHeader(FileWriter writer) throws IOException {
@@ -234,6 +269,13 @@ public class Storage {
 		
 		for (int i = 0; i < completedTaskToString.size(); i++) {
 			String lineToWrite = completedTaskToString.get(i);
+			writer.write(lineToWrite + "\r\n");
+		}
+	}
+	
+	private void writeStringFromAutoCompletedList(FileWriter writer) throws IOException {
+		for (int i = 0; i < autoCompletionList.size(); i++) {
+			String lineToWrite = autoCompletionList.get(i);
 			writer.write(lineToWrite + "\r\n");
 		}
 	}
@@ -326,9 +368,11 @@ public class Storage {
 		ArrayList<Task> updatedCompletedListFromLoad = convertStringToTask(listFromFile,completedStartIndex);
 		mainList.clear();
 		completedList.clear();
+		
 		// transfer contents from file to main list
 		updateList(updatedMainListFromLoad, mainList);
 		updateList(updatedCompletedListFromLoad, completedList);
+		
 		setMainList(mainList);
 		setCompletedList(completedList);
 
@@ -401,9 +445,11 @@ public class Storage {
 		ArrayList<Task> updatedCompletedListFromLoad = convertStringToTask(listFromLoadFile,completedStartIndex);
 		mainList.clear();
 		completedList.clear();
+		
 		// transfer contents from file to main list
 		updateList(updatedMainListFromLoad, mainList);
 		updateList(updatedCompletedListFromLoad, completedList);
+		
 		setMainList(mainList);
 		setCompletedList(completedList);
 
@@ -563,10 +609,7 @@ public class Storage {
 		return lineWithoutDirectory;
 	}
 
-	/*
-	 * This method adds the data from file to mainlist to update For load
-	 * commands
-	 */
+	//This method adds the data from file to mainlist 
 	private void updateList(ArrayList<Task> dataFromFile, ArrayList<Task> list) {
 		for (int j = 0; j < dataFromFile.size(); j++) {
 			list.add(dataFromFile.get(j));
@@ -577,16 +620,15 @@ public class Storage {
 	// Setter Methods
 	// ================================================================================
 
-	/*
-	 * This method is used when Logic make changes to the main list and pass the
-	 * updated list to Storage This method is also used for load commands to
-	 * give Logic the new main list
-	 */
 	public void setMainList(ArrayList<Task> mainList) {
 		Storage.mainList = mainList;
 	}
 
 	public void setCompletedList(ArrayList<Task> completedList) {
 		Storage.completedList = completedList;
+	}
+	
+	public void setAutoCompletionList(ArrayList<String> autoCompletionList) {
+		Storage.autoCompletionList = autoCompletionList;
 	}
 }
