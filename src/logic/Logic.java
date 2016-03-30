@@ -52,21 +52,14 @@ public class Logic {
         LocalDateTime startDate = command.getStartDate();
         LocalDateTime endDate = command.getEndDate();
         
-        // if have time, then 
-        
-        if (startDate != null){
-        	if(startDate.compareTo(endDate) > 0){
-              	return new Result(CommandType.INVALID, false, "Cannot have a later start date!", new ArrayList<Task>());	
+        // verify that start date is before end date
+        if (startDate != null && endDate != null) {
+                return new Result(CommandType.INVALID, false, "Cannot have a later start date!", new ArrayList<Task>());                
             }
-        	if(startDate.compareTo(current) < 0){;
-        		return new Result(CommandType.INVALID, false, "Invalid start date!", new ArrayList<Task>());
-        	}
         }
-        
-        if (endDate != null) {
-        	if(endDate.compareTo(current) < 0){
-        		return new Result(CommandType.INVALID, false, "Invalid end date!", new ArrayList<Task>());
-        	}
+        // verify that start date is followed by end date
+        if (startDate != null && endDate == null) {
+            return new Result(CommandType.INVALID, false, "Must specify an end date", new ArrayList<Task>());
         }
         
         execution.taskProgression();
