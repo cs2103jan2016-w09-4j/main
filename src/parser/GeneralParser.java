@@ -1,6 +1,11 @@
 //@@author Khanh
 package parser;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+
 import common.*;
 import common.Command.CommandType;
 
@@ -36,7 +41,32 @@ public class GeneralParser {
         } else if (command.startsWith("searchdone")) {
             return new Command (CommandType.SEARCHDONE);
         } else if (command.startsWith("search")) {
-            return new Command(CommandType.SEARCH, commandString.substring(6).trim());
+            String userInput = getUserInput(command,"search");
+            String firstCharacter = String.valueOf(userInput.charAt(0));
+            ArrayList<String> categories = new ArrayList<String>();
+            // search by category
+            if (firstCharacter.equals("#")) {
+                String[] categoryLine = userInput.split(" ");
+                String categoryName;
+                if (categoryLine.length == 1) {                 // only one category
+                    categoryName = getUserInput(userInput,"#");
+                    categories.add(categoryName);
+                } else {                                        // multiple categories
+                    for (int i=0; i<categoryLine.length; i++) {
+                        categoryName = getUserInput(categoryLine[i],"#");
+                        categories.add(categoryName);
+                    }
+                }
+                return new Command(CommandType.SEARCH,categories);
+            } else {
+                try{
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDateTime date = LocalDateTime.parse(userInput, formatter);
+                    return new Command(CommandType.SEARCH,date);
+                } catch (DateTimeParseException dtpe) {         //description
+                    return new Command(CommandType.SEARCH,userInput);
+                }
+            }
         } else if (command.startsWith("save")) {
             return new Command(CommandType.SAVE, commandString.substring(4).trim());
         } else if (command.startsWith("load")) {
@@ -56,4 +86,9 @@ public class GeneralParser {
         }
     }
 
+    private static String getUserInput(String line, String toReplace) {
+        String userInput = line.replace(toReplace, "").trim();
+
+        return userInput;
+    }
 }
