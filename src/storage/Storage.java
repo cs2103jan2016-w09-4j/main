@@ -317,7 +317,7 @@ public class Storage {
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			FileWriter writer = new FileWriter(userDirectoryAndName.getAbsoluteFile());
-			writeTasksFromMainList(writer);
+			//writeTasksFromMainList(writer);
 
 			// write to default file to load most recent
 			String toWrite = directory + " , " + userFileName;
@@ -326,6 +326,9 @@ public class Storage {
 			// set new file name and directory
 			fileName = userFileName;
 			savedDirectory = directory;
+			
+			writeToFile();
+			writer.close();
 		}
 	}
 
