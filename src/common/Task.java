@@ -154,6 +154,10 @@ public class Task implements Comparable<Task> {
      */
     public boolean isOccurringOn(LocalDate date) {
         if (isFloating()) {
+            if (start != null) {
+                LocalDate startDate = start.toLocalDate();
+                return startDate.isEqual(date);
+            }
             return false;
         } else if (isEvent()) {
             LocalDate startDate = start.toLocalDate();
@@ -241,9 +245,8 @@ public class Task implements Comparable<Task> {
      * @return          true if task is floating
      */
     public boolean isFloating() {
-        boolean hasStart = this.start != null;
         boolean hasEnd = this.end != null;
-        return !hasStart && !hasEnd;
+        return !hasEnd;
     }
     
     /**

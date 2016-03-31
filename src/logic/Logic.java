@@ -56,10 +56,6 @@ public class Logic {
                 return new Result(CommandType.INVALID, false, "Cannot have a later start date!", new ArrayList<Task>());                
             }
         }
-        // verify that start date is followed by end date
-        if (startDate != null && endDate == null) {
-            return new Result(CommandType.INVALID, false, "Must specify an end date", new ArrayList<Task>());
-        }
         
         execution.taskProgression();
         

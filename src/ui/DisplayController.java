@@ -499,7 +499,18 @@ public class DisplayController extends HiddenSidesPane {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         
-        if (task.isDeadline()) {
+        if (task.isFloating()) {
+            LocalDateTime start = task.getStartDate();
+            if (start != null) {
+                String startDate;
+                if (start.toLocalDate().isEqual(now)) {
+                    startDate = timeFormatter.format(start);
+                } else {
+                    startDate = dateFormatter.format(start);
+                }
+                startEndDate = new Label("From " + startDate);
+            }
+        } else if (task.isDeadline()) {
             LocalDateTime end = task.getEndDate();
             String endDate;
             if (end.toLocalDate().isEqual(now)) {
