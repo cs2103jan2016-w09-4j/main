@@ -528,11 +528,16 @@ public class Storage {
 		// if there are multiple categories
 		String categoryName, name;
 		String[] multipleCategories = category.split(" ");
-
+		ArrayList<String> categories = new ArrayList<String>();
+		
 		for (int j = 0; j < multipleCategories.length; j++) {
 			categoryName = multipleCategories[j];
 			name = categoryName.substring(1, categoryName.length());
-			task1.setCategory(name);
+			categories.add(name);
+		}
+		
+		if (!categories.isEmpty()) {
+		    task1.setCategories(categories);
 		}
 	}
 
