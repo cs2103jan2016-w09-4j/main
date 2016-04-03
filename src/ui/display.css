@@ -119,13 +119,16 @@
 }
 
 .desc {
-    -fx-font-size: 15;
     -fx-wrap-text: true;
     -fx-text-alignment: justify;
 }
 
 .details {
-    -fx-font-size: 12;
+    -fx-alignment: center-left;
+}
+
+.details-text {
+    -fx-font-size: 13;
     -fx-fill: #888888;
 }
 
