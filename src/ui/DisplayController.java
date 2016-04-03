@@ -29,7 +29,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -48,7 +47,8 @@ public class DisplayController extends HiddenSidesPane {
     private VBox taskPanel, searchPanel, completedPanel, helpPanel;
     private SidebarController sidebar;
     private Popup feedback;
-    
+
+    private static final int UNMODIFIED = -1;
     private static final String HEADER_COMPLETED_SINGLE = " completed task";
     private static final String HEADER_COMPLETED_PLURAL = " completed tasks";
     private static final String HEADER_SEARCH_SINGLE = " search result found";
@@ -56,7 +56,7 @@ public class DisplayController extends HiddenSidesPane {
     private static final String TASK_DETAILS_DATE_FLOATING = "From %1s";
     private static final String TASK_DETAILS_DATE_DEADLINE = "By %1s";
     private static final String TASK_DETAILS_DATE_EVENT = "From %1s to %2s";
-    
+
     private static final String FXML_DISPLAY = "Display.fxml";
     private static final String RESOURCES_ICON_SUCCESS = "/icons/success-small.png";
     private static final String RESOURCES_ICON_SUCCESS_DELETE = "/icons/delete-success-small.png";
@@ -78,7 +78,6 @@ public class DisplayController extends HiddenSidesPane {
         initializeHelpPanel();
         initializeSidebar();
         initializePopup();
-        handleUserInteractions();
     }
 
     private void initializeLogger() {
@@ -203,21 +202,12 @@ public class DisplayController extends HiddenSidesPane {
         });
     }
     
-    private void handleUserInteractions() {
-        DisplayController display = this;
-        // allow keyboard shortcuts
-        display.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent event) {
-                if (event.getCode()==KeyCode.M && event.isControlDown()) {
-                    logger.log(Level.INFO, "user toggled sidebar");
-                    if (display.getPinnedSide() == Side.LEFT) {
-                        display.setPinnedSide(null);
-                    } else {
-                        display.setPinnedSide(Side.LEFT);
-                    }
-                }
-            }
-        });
+    public void toggleSidebar() {
+        if (getPinnedSide() == Side.LEFT) {
+            setPinnedSide(null);
+        } else {
+            setPinnedSide(Side.LEFT);
+        }
     }
     
     /**
@@ -269,8 +259,8 @@ public class DisplayController extends HiddenSidesPane {
         ObservableList<VBox> todayTasks = FXCollections.observableArrayList();
         ObservableList<VBox> otherTasks = FXCollections.observableArrayList();
         // index of tasks to scroll to
-        int todayModified = -1;
-        int otherModified = -1;
+        int todayModified = UNMODIFIED;
+        int otherModified = UNMODIFIED;
         for (Task task : allTasks) {
             VBox entry = createOngoingEntry(task, todayDateTime);
             if (task.isOccurringOn(todayDate)) {
@@ -296,7 +286,7 @@ public class DisplayController extends HiddenSidesPane {
             ListView<VBox> todayListView = createListView(todayTasks);
             todayContent.getChildren().add(todayListView);
             todayListView.setMaxHeight(primaryStage.getHeight()/2.1);
-            if (todayModified != -1) {
+            if (todayModified != UNMODIFIED) {
                 todayListView.scrollTo(todayModified);
             }
         }
@@ -314,7 +304,7 @@ public class DisplayController extends HiddenSidesPane {
             ListView<VBox> otherListView = createListView(otherTasks);
             otherContent.getChildren().add(otherListView);
             otherListView.setMaxHeight(primaryStage.getHeight()/2.1);
-            if (otherModified != -1) {
+            if (otherModified != UNMODIFIED) {
                 otherListView.scrollTo(otherModified);
             }
         }
@@ -523,7 +513,6 @@ public class DisplayController extends HiddenSidesPane {
     private String formatDate(LocalDate now, LocalDateTime dateTime) {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        
         if (dateTime.toLocalDate().isEqual(now)) {
             return timeFormatter.format(dateTime);
         } else {

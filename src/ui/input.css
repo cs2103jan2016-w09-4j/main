@@ -5,7 +5,7 @@
 
 .label {
     -fx-font-size: 15;
-    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-family: "Roboto Regular", "Segoe UI", sans-serif;
     -fx-alignment: center-left;
     -fx-label-padding: 5;
 }

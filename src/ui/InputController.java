@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import org.controlsfx.control.textfield.TextFields;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
 
 import ui.MainApp;
 import javafx.event.ActionEvent;
@@ -26,6 +27,7 @@ public class InputController extends VBox {
 
     public InputController(MainApp main) {
         this.main = main;
+        this.getStylesheets().add(getClass().getResource("input.css").toExternalForm());
         //initializeLogger();
         loadFXML();
         bindAutoCompletion();
@@ -56,7 +58,7 @@ public class InputController extends VBox {
     }
     
     private void bindAutoCompletion() {
-        TextFields.bindAutoCompletion(commandBar, sr -> {
+        AutoCompletionBinding<String> binding = TextFields.bindAutoCompletion(commandBar, sr -> {
             return main.getPredictions(commandBar.getText());
         });
     }

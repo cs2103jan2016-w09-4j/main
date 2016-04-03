@@ -11,8 +11,11 @@ import common.Task;
 import ui.DisplayController;
 import ui.InputController;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -71,6 +74,14 @@ public class MainApp extends Application {
         input = new InputController(this);
         root.setCenter(display);
         root.setBottom(input);
+        root.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent event) {
+                if (event.getCode()==KeyCode.M && event.isControlDown()) {
+                    logger.log(Level.INFO, "user toggled sidebar");
+                    display.toggleSidebar();
+                }
+            }
+        });
     }
 
     /* ||||||||||||||||||||||||||||||||||||||||||
