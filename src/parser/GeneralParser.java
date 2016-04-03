@@ -24,7 +24,7 @@ public class GeneralParser {
         String command = commandString.trim().toLowerCase();
 
         if (command.startsWith("add")) {
-            DescriptionParser details = new DescriptionParser(commandString.substring(4).trim());
+            DescriptionParser details = new DescriptionParser(commandString.substring(4).trim(),"add");
             return new Command(CommandType.ADD, details.getDescription(), details.getStartTime(), details.getEndTime());
         } else if (command.startsWith("delete")) {
             return new Command(CommandType.DELETE, Integer.parseInt(commandString.substring(7).trim()));
@@ -33,40 +33,34 @@ public class GeneralParser {
             String firstWord = getFirstWord(content);
             String description = content.substring(firstWord.length()).trim();
 
-            DescriptionParser details = new DescriptionParser(description);
+            DescriptionParser details = new DescriptionParser(description,"edit");
             return new Command(CommandType.EDIT, Integer.parseInt(firstWord),
                     details.getDescription(), details.getStartTime(), details.getEndTime());
         } else if (command.startsWith("done")) {
             return new Command(CommandType.DONE, Integer.parseInt(commandString.substring(4).trim()));
         } else if (command.startsWith("searchdone")) {
-            return new Command (CommandType.SEARCHDONE);
+        	String content = getUserInput(command,"searchdone");  
+            DescriptionParser details = new DescriptionParser(content,"searchdone");
+            
+            if (details.getSearchTime() != null) {
+            	return new Command(CommandType.SEARCHDONE, details.getSearchTime());
+            } else if (details.getCategories() != null) {
+            	return new Command(CommandType.SEARCHDONE, details.getCategories());
+            }      
+            return new Command(CommandType.SEARCHDONE, details.getDescription());
+
         } else if (command.startsWith("search")) {
-            String userInput = getUserInput(command,"search");
-            String firstCharacter = String.valueOf(userInput.charAt(0));
-            ArrayList<String> categories = new ArrayList<String>();
-            // search by category
-            if (firstCharacter.equals("#")) {
-                String[] categoryLine = userInput.split(" ");
-                String categoryName;
-                if (categoryLine.length == 1) {                 // only one category
-                    categoryName = getUserInput(userInput,"#");
-                    categories.add(categoryName);
-                } else {                                        // multiple categories
-                    for (int i=0; i<categoryLine.length; i++) {
-                        categoryName = getUserInput(categoryLine[i],"#");
-                        categories.add(categoryName);
-                    }
-                }
-                return new Command(CommandType.SEARCH,categories);
-            } else {
-                try{
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    LocalDateTime date = LocalDateTime.parse(userInput, formatter);
-                    return new Command(CommandType.SEARCH,date);
-                } catch (DateTimeParseException dtpe) {         //description
-                    return new Command(CommandType.SEARCH,userInput);
-                }
+            String content = getUserInput(command,"search");  
+            DescriptionParser details = new DescriptionParser(content,"search");
+            
+            if (details.getSearchTime() != null) {
+            	return new Command(CommandType.SEARCH, details.getSearchTime());
+            } else if (details.getCategories() != null) {
+            	return new Command(CommandType.SEARCH, details.getCategories());
             }
+            
+            return new Command(CommandType.SEARCH, details.getDescription());
+   
         } else if (command.startsWith("save")) {
             return new Command(CommandType.SAVE, commandString.substring(4).trim());
         } else if (command.startsWith("load")) {
