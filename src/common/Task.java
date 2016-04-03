@@ -79,8 +79,8 @@ public class Task implements Comparable<Task> {
     		return formatter.format(end);
  	   } 
  	   
- 	   String start2 = "";
- 	   return start2;
+ 	   String end2 = "";
+ 	   return end2;
     }
 
     public ArrayList<String> getCategories() {
