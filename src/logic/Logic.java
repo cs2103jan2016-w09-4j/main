@@ -11,6 +11,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
@@ -49,6 +50,7 @@ public class Logic {
         
         LocalDateTime startDate = command.getStartDate();
         LocalDateTime endDate = command.getEndDate();
+        ArrayList<String> categories = command.getCategories();
         
         // verify that start date is before end date
         if (startDate != null && endDate != null) {
@@ -57,18 +59,18 @@ public class Logic {
             }
         }
         
-        execution.taskProgression();
+        execution.updateTaskProgress();
         
         switch(commandType) {
         
             case ADD :
-                return execution.addTask(description, startDate, endDate);
+                return execution.addTask(description, startDate, endDate, categories);
             
             case DELETE :
                 return execution.deleteTask(taskID);
             
             case EDIT :
-                return execution.editTask(taskID, description, startDate, endDate);
+                return execution.editTask(taskID, description, startDate, endDate, categories);
                 
             case SEARCH :
                 return execution.searchTask(description);
@@ -76,7 +78,7 @@ public class Logic {
             case HOME :
                 list = storage.getMainList();
                 execution.setMainList(list);
-                execution.taskProgression();
+                execution.updateTaskProgress();
                 return new Result(commandType, true, "Return home", list);
                 
             case SAVE :
@@ -86,16 +88,10 @@ public class Logic {
                 return execution.loadingTasks(description);
 
             case UNDO :
-                list = execution.undoCommand();
-                return new Result(commandType, true, "Last command undone", list);
+                return execution.undoCommand();
                 
             case REDO : 
-                list = execution.redoCommand();
-                if(list.isEmpty()){
-                	return new Result(CommandType.INVALID, false, "Cannot redo!", list);
-                } else{
-                	return new Result(commandType, true, "Last command redone", list);
-                }
+                return execution.redoCommand();
                 
             case DONE :
                 return execution.completeCommand(taskID);
@@ -137,7 +133,14 @@ public class Logic {
     }
 
     public ArrayList<Category> getCategories() {
-        return execution.getCategories();
+        TreeSet<Entry<String, Integer>> list = execution.getCategories();
+        ArrayList<Category> categories = new ArrayList<Category>();
+        Iterator<Entry<String, Integer>> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            Entry<String, Integer> next = iterator.next();
+            categories.add(new Category(next.getKey(), next.getValue()));
+        }
+        return categories;
     }
     
     public ArrayList<String> getPredictions(String input) {

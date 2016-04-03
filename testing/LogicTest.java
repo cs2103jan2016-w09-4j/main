@@ -1,52 +1,50 @@
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 
 import java.io.File;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.junit.Test;
 
 import common.*;
-import common.Command.CommandType;
 import junitx.framework.FileAssert;
 import logic.Logic;
 
-public class LogicTest{
+public class LogicTest {
     
     Logic logic = Logic.getInstance();
     ArrayList<Task> mainList = new ArrayList<Task>();
     ArrayList<Task> compareList = new ArrayList<Task>();
-    
-    /*
+
     @Test
     public void addTask_MissingDescription_InvalidCommand() {
         Result noSpace = logic.processCommand("add");
-        assertEquals(Command.CommandType.INVALID, noSpace.getCommandType());
+        assertEquals(Command.CommandType.ADD, noSpace.getCommandType());
+        assertEquals(false, noSpace.isSuccess());
+        assertTrue(noSpace.getResults().isEmpty());
         
-        Result noDescAfterSpace = logic.processCommand("add ");
-        assertEquals(Command.CommandType.INVALID, noDescAfterSpace.getCommandType());
+        Result noDescAfterSpace = logic.processCommand("add  ");
+        assertEquals(Command.CommandType.ADD, noDescAfterSpace.getCommandType());
+        assertEquals(false, noSpace.isSuccess());
+        assertTrue(noDescAfterSpace.getResults().isEmpty());
         
-        Result noDescWithDate = logic.processCommand("add end 31/12/2016 12:00");
-        assertEquals(Command.CommandType.INVALID, noDescWithDate.getCommandType());
+        Result noDescWithDate = logic.processCommand("add end today");
+        assertEquals(Command.CommandType.ADD, noDescWithDate.getCommandType());
+        assertEquals(false, noSpace.isSuccess());
+        assertTrue(noDescWithDate.getResults().isEmpty());
     }
-    */
     
     @Test
     public void addTask_InvalidDate_InvalidCommand() {
-        Result overdueStart = logic.processCommand("add 111 start 01/01/2015 12:00 end 31/12/2016 12:00");
-        assertEquals(Command.CommandType.INVALID, overdueStart.getCommandType());
-        Result overdueEnd = logic.processCommand("add 111 end 01/01/2015 12:00");
-        assertEquals(Command.CommandType.INVALID, overdueEnd.getCommandType());
-        Result overdueStartEnd = logic.processCommand("add 111 start 01/01/2015 12:00 end 31/12/2015 12:00");
-        assertEquals(Command.CommandType.INVALID, overdueEnd.getCommandType());
+        Result laterStart = logic.processCommand("add 111 start 01/01/2016 12:00 end 31/12/2015 12:00");
+        assertEquals(Command.CommandType.INVALID, laterStart.getCommandType());
     }
 
     // Test a single user session: simple CRUD commands, saving and loading 
     @Test
     public void testUserSessionOne() {
-        loadTasks_WithFileName_Success();
         addTask_AllTaskTypes_AddedInOrder();
         editTask_AllTaskTypes_EditedTheSelectedTask();
         deleteTask_AllTaskTypes_DeletedTheSelectedTask();
@@ -179,12 +177,14 @@ public class LogicTest{
 
     private void undo_AfterUnallowedCommand_NoChange() {
         Result result = logic.processCommand("undo");
-        assertEquals(Command.CommandType.INVALID, result.getCommandType());
+        assertEquals(Command.CommandType.UNDO, result.getCommandType());
+        assertEquals(false, result.isSuccess());
     }
 
     private void redo_AfterUnallowedCommand_NoChange() {
         Result result = logic.processCommand("redo");
-        assertEquals(Command.CommandType.INVALID, result.getCommandType());
+        assertEquals(Command.CommandType.REDO, result.getCommandType());
+        assertEquals(false, result.isSuccess());
     }
 
 }

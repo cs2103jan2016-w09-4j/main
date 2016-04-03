@@ -19,36 +19,42 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 
 public class Execution {
-    
+
     private Storage storage;
     
     private static ArrayList<Task> mainList;
     private static ArrayList<Task> doneList;
-    private static ArrayList<Category> categories;
     private static ArrayList<Task> searchResults;
     private static ArrayList<Task> previousCopyOfMainList;
     private static ArrayList<Task> copyOfMainListForRedo;
+    private boolean canUndo = false;
+    private boolean canRedo = false;
     
     // Store user input history for auto-completion
-    // TreeSet is used to avoid duplicate entries
+    // TreeSet is used to avoid duplicate entries and for faster lookup
     // Integer is the frequency that the String is entered by the user
     private static TreeSet<Entry<String, Integer>> taskDictionary;
     private static TreeSet<Entry<String, Integer>> wordDictionary;
-    private static TreeSet<String> fileDictionary;
-    private LocalDateTime current;
-    private boolean canRedo = false;
+    private static TreeSet<Entry<String, Integer>> fileDictionary;
+
+    // Store information about categories
+    // Integer is the number of tasks belonging to a category
+    private static TreeSet<Entry<String, Integer>> categories;
     
-    // Common English function words 
+    private static final String CATEGORY_PRIORITY = "Priority";
+    private static final String CATEGORY_TODAY = "Today";
+
+    // Common English function words, will not be stored in word dictionary
     private static final String[] functionWords = { "a", "about", "an", "and", "as", "at",
                                                   "by", "for", "in", "of", "or",
                                                   "the", "to", "with" };
 
-    // Comparator for dictionaries, where element uniqueness depends only on the String
-    // and not the frequency count
-    private static final Comparator<Entry<String, Integer>> dictionaryComparator = new Comparator<Entry<String, Integer>>() {
+    // Comparator where element uniqueness depends only on the
+    // String key and not the frequency count
+    private static final Comparator<Entry<String, Integer>> keyComparator = new Comparator<Entry<String, Integer>>() {
         public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
             // element uniqueness depends only on the entry's key
-            return entry1.getKey().compareTo(entry2.getKey());
+            return entry1.getKey().compareToIgnoreCase(entry2.getKey());
         }
     };
     
@@ -56,31 +62,31 @@ public class Execution {
         storage = new Storage();
         mainList = storage.getMainList();
         doneList = storage.getCompletedList();
-        categories = new ArrayList<Category>();
-        categories.add(new Category("Priority"));
-        categories.add(new Category("Today"));
         searchResults = new ArrayList<Task>();
         previousCopyOfMainList = new ArrayList<Task>();
-        copyOfMainListForRedo = new ArrayList<Task>();
+        copyOfMainListForRedo = new ArrayList<Task>();     
+        
+        categories = new TreeSet<Entry<String, Integer>>(keyComparator);
+        updateTaskProgress();
 
-        taskDictionary = new TreeSet<Entry<String, Integer>>(dictionaryComparator);
-        // TODO: update type to Entry<String, Integer> 
-        wordDictionary = new TreeSet<Entry<String, Integer>>(dictionaryComparator);
-        fileDictionary = new TreeSet<String>();
+        taskDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
+        wordDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
+        fileDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
     }
     
-    /********************************
-     * METHODS FOR COMAND EXECUTION *
-     ********************************/
+    /*********************************
+     * METHODS FOR COMMAND EXECUTION *
+     *********************************/
     
-    public Result addTask(String description, LocalDateTime start, LocalDateTime end) {
+    public Result addTask(String description, LocalDateTime start, LocalDateTime end, ArrayList<String> categories) {
         // preprocessing
         clearModifiedStatus();
         saveMainListForUndo();
         
+        // validate user input
         if(description.isEmpty()){
         	sortList(mainList);
-        	return new Result(CommandType.ADD, false, "No whitespace!", mainList);
+        	return new Result(CommandType.ADD, false, "No description!", mainList);
         }
         
         // create a new Task with specified details
@@ -91,6 +97,17 @@ public class Execution {
         if (end != null) {
             newTask.setEnd(end);
         }
+        if (categories != null) {
+            ArrayList<String> list = new ArrayList<String>();
+            for (String cat : categories) {
+                if (cat.equalsIgnoreCase(CATEGORY_PRIORITY)) {
+                    newTask.setImportance(true);
+                } else {
+                    list.add(toSentenceCase(cat));
+                }
+            }
+            newTask.setCategories(list);
+        }
         newTask.setModified(true);
         
         // add to list
@@ -99,33 +116,55 @@ public class Execution {
         // postprocessing
         sortList(mainList);
         updateDictionary(description);
-        
+        canUndo = true;
+        canRedo = false;
+        updateTaskProgress();
+
         // save
         storage.setMainList(mainList);
         try {
             storage.writeToFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            return new Result(CommandType.ADD, false, "Couldn't save", mainList);
         }
         
-        taskProgression();
         return new Result(CommandType.ADD, true, "Added task", mainList);
     }
 
     public Result completeCommand(int taskID){
+        // preprocessing
         clearModifiedStatus();
         saveMainListForUndo();
-        
+
+        // validate user input
         int index = taskID - 1;
-        Task doneTask = mainList.get(index);
-        doneList.add(doneTask);
-        deleteTask(taskID);
+        try {
+            Task doneTask = mainList.remove(index);
+            doneList.add(doneTask);
+            
+            // postprocessing
+            sortList(mainList);
+            canUndo = true;
+            canRedo = false;
+            updateTaskProgress();
+
+            // save
+            storage.setMainList(mainList);
+            storage.setCompletedList(doneList);
+            storage.writeToFile();
+        } catch (IndexOutOfBoundsException ie) {
+            canUndo = false;
+            canRedo = false;
+            return new Result(CommandType.DONE, false, "Wrong task number", mainList);
+        } catch (IOException ioe) {
+            return new Result(CommandType.DONE, false, "Couldn't save", mainList);
+        }
         
-        taskProgression();
         return new Result(CommandType.DONE, true, "Marked as completed", mainList);
     }
     
     public Result deleteTask(int taskID) {
+        // preprocessing
         clearModifiedStatus();
         saveMainListForUndo();
         
@@ -137,67 +176,90 @@ public class Execution {
             return new Result(CommandType.DELETE, false, "Wrong task number", mainList);
         }
         
+        // post-processing
         sortList(mainList);
+        canUndo = true;
+        canRedo = false;
+        updateTaskProgress();
         
         // save
         storage.setMainList(mainList);
         try {
             storage.writeToFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            return new Result(CommandType.DELETE, false, "Couldn't save", mainList);
         }
-        taskProgression();
+        
         return new Result(CommandType.DELETE, true, "Deleted", mainList);    
     }
     
-    public Result editTask(int taskID, String newDescription, LocalDateTime start, LocalDateTime end) {
+    public Result editTask(int taskID, String newDescription, LocalDateTime start, LocalDateTime end, ArrayList<String> categories) {
+        // preprocessing
         clearModifiedStatus();
         saveMainListForUndo();
-        
+
+        // validate user input
         if(newDescription.isEmpty()){
         	sortList(mainList);
-        	return new Result(CommandType.ADD, false, "No whitespace!", mainList);
+        	return new Result(CommandType.ADD, false, "No description!", mainList);
         }
         
-        // edit task with the specified details
+        // remove task with specified ID
         int index = taskID - 1;
-       
         try {
             mainList.remove(index);
         } catch (IndexOutOfBoundsException e) {
+            canUndo = false;
+            canRedo = false;
             return new Result(CommandType.EDIT, false, "Wrong task number", mainList);
         }
         
+        // create task with specified details 
         Task task = new Task(newDescription);
-        
         if (start != null) {
             task.setStart(start);
         }
         if (end != null) {
             task.setEnd(end);
         }
+        if (categories != null) {
+            ArrayList<String> list = new ArrayList<String>();
+            for (String cat : categories) {
+                if (cat.equalsIgnoreCase(CATEGORY_PRIORITY)) {
+                    task.setImportance(true);
+                } else {
+                    list.add(toSentenceCase(cat));
+                }
+            }
+            task.setCategories(list);
+        }
         task.setModified(true);
 
+        // add to list
         mainList.add(task);
+        
+        // post-processing
         sortList(mainList);
+        canUndo = true;
+        canRedo = false;
         updateDictionary(newDescription);
+        updateTaskProgress();
         
         // save
         storage.setMainList(mainList);
         try {
             storage.writeToFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            return new Result(CommandType.EDIT, false, "Couldn't save", mainList);
         }
         
-        taskProgression();
         return new Result(CommandType.EDIT, true, "Edited", mainList);
     }
 
     public Result searchTask(String keyword) {
+        // pre-processing
         clearModifiedStatus();
         searchResults.clear();
-        updateDictionary(keyword);
         
         for (int i = 0; i < mainList.size(); i++) {
             String descriptionLowerCase = mainList.get(i).getDescription().toLowerCase();
@@ -206,130 +268,164 @@ public class Execution {
                 searchResults.add(mainList.get(i));
             }
         }
+
+        // post-processing
+        updateDictionary(keyword);
+        canUndo = false;
+        canRedo = false;
         
         return new Result(CommandType.SEARCH, true, "Searched", searchResults);
     }
     
-    public Result savingTasks(String description){
+    public Result savingTasks(String description) {
     	sortList(mainList);
     	storage.setMainList(mainList);
+    	storage.setCompletedList(doneList);
     	
-    	try{
-            if(description.contains(" ")){
+    	try {
+            if (description.contains(" ")) {
                 String[] split = description.split(" ");
                 String directory = split[0].toLowerCase();
                 String userFileName = split[1];
                 storage.saveToFileWithDirectory(directory, userFileName);
                 updateFileDictionary(directory);
                 updateFileDictionary(userFileName);
-            } else{
+            } else {
                 storage.saveToFile(description);
                 updateFileDictionary(description);
-            }  
-            return new Result(CommandType.SAVE, true, "Saved at " + description, mainList);
+            }
             
+            /// post-processing
+            canUndo = false;
+            canRedo = false;
+            
+            return new Result(CommandType.SAVE, true, "Saved at " + description, mainList);
         } catch (Exception e){
-        	return new Result(CommandType.SAVE, false, "Failed to save " + description, mainList);
+            canUndo = false;
+            canRedo = false;
+            
+        	return new Result(CommandType.SAVE, false, "Couldn't save data at " + description, mainList);
         }
     }
     
-    public Result loadingTasks(String description){
-    	
+    public Result loadingTasks(String description) {
         description = description.trim();
         clearModifiedStatus();
         // store temp copy of original list in case loading of new list fails
-        ArrayList<Task> temp = new ArrayList<Task>();
-        temp.addAll(mainList);
+        ArrayList<Task> tempMainList = new ArrayList<Task>();
+        tempMainList.addAll(mainList);
+        ArrayList<Task> tempDoneList = new ArrayList<Task>();
+        tempDoneList.addAll(doneList);
         
         try {
             ArrayList<Task> loadBack = new ArrayList<Task>();
-            if(description.contains(" ")){
+            if (description.contains(" ")) {
                 String[] split = description.split(" ");
                 String directory = split[0].toLowerCase();
                 String userFileName = split[1];
                 loadBack = storage.loadFileWithDirectory(directory, userFileName);
                 setMainList(loadBack);
-                sortList(mainList);
+                doneList = storage.getCompletedList();
                 updateFileDictionary(directory);
                 updateFileDictionary(userFileName);
-                return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
-            } else{
+            } else {
                 loadBack = storage.loadFileWithFileName(description);
                 setMainList(loadBack);
-                sortList(mainList);
                 updateFileDictionary(description);
-                return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
             }   
+            
+            /// post-processing
+            canUndo = false;
+            canRedo = false;
+            
+            return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
         }  catch (IOException | ParseException e) {
-            return new Result(CommandType.LOAD, false, "Failed to load " + description, temp);
+            mainList = tempMainList;
+            doneList = tempDoneList;
+            canUndo = false;
+            canRedo = false;
+            
+            return new Result(CommandType.LOAD, false, "Failed to load " + description, mainList);
         }
     }
 
-    public ArrayList<Task> undoCommand() {
+    public Result undoCommand() {
+        if (!canUndo) {
+            canRedo = false;
+            return new Result(CommandType.UNDO, false, "Cannot undo previous command", mainList);
+        }
+        
         // transfer content from previousCopyOfMainList to mainList
         copyOfMainListForRedo.clear();
         copyOfMainListForRedo.addAll(mainList);
         mainList.clear();
         mainList.addAll(previousCopyOfMainList);
+
+        // post-processing
+        canUndo = false;
+        canRedo = true;
+        sortList(previousCopyOfMainList);
         
-     // save
+        // save
         storage.setMainList(mainList);
         try {
             storage.writeToFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            return new Result(CommandType.UNDO, false, "Couldn't save", previousCopyOfMainList);
         }
-        canRedo = true;
-        sortList(previousCopyOfMainList);
-        return previousCopyOfMainList;
+        
+        return new Result(CommandType.UNDO, true, "Last command undone", previousCopyOfMainList);
     }
     
-    public ArrayList<Task> redoCommand() {
-    	
-    	if(canRedo == false){
-    		return new ArrayList<Task>();
-    	} else{
-    		mainList.clear();
-    		mainList.addAll(copyOfMainListForRedo);
-        
-    		// save
-    		storage.setMainList(mainList);
-    		try {
-    			storage.writeToFile();
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}
-        
-    		sortList(mainList);
-    		canRedo = false;
-    		return mainList;
-    	}	
-    }
-    
-    public void taskProgression(){
-    	current = LocalDateTime.now();
-    	
-    	sortList(mainList);
-    	int count = 0;
-    	LocalDate currentDate = current.toLocalDate();  
-    	try{
-    		for(Task task : mainList){
-    			LocalDateTime taskDeadline = task.getEndDate();
-    			if(taskDeadline != null){
-    					LocalDate taskDeadlineDate = taskDeadline.toLocalDate();
-    					if (currentDate.equals(taskDeadlineDate)){
-    						count++;
-    						// modify the 'today' category
-    						categories.get(1).setCount(count);
-    					}
-    			}
-    		}	
-    	} catch(NullPointerException e){
-    	
+    public Result redoCommand() {
+    	if(!canRedo){
+            return new Result(CommandType.REDO, false, "Previous command was not undo", mainList);
     	}
     	
-    	if(mainList.size() == 0){
-    		categories.get(1).setCount(0);
+		mainList.clear();
+		mainList.addAll(copyOfMainListForRedo);
+	    
+        // post-processing
+        sortList(mainList);
+        canUndo = false;
+        canRedo = false;
+        
+		// save
+		storage.setMainList(mainList);
+		try {
+			storage.writeToFile();
+		} catch (IOException e) {
+            return new Result(CommandType.REDO, false, "Couldn't save", mainList);
+		}
+
+		return new Result(CommandType.REDO, true, "Redone", mainList);
+    }
+    
+    public void updateTaskProgress() {
+        categories.clear();
+        categories.add(new AbstractMap.SimpleEntry<String, Integer>(CATEGORY_PRIORITY, 0));
+        categories.add(new AbstractMap.SimpleEntry<String, Integer>(CATEGORY_TODAY, 0));
+        LocalDate currentDate = LocalDate.now();
+
+    	for (Task task : mainList) {
+    	    if (task.isImportant()) {
+    	        // update 'Priority' category count
+    	        int count = removeFromDictionary(categories, CATEGORY_PRIORITY);
+                addToDictionary(categories, CATEGORY_PRIORITY, ++count);
+    	    }
+
+    	    if (task.isOccurringOn(currentDate)) {
+    	        // update 'Today' category count
+    	        int count = removeFromDictionary(categories, CATEGORY_TODAY);
+    	        addToDictionary(categories, CATEGORY_TODAY, ++count);
+    	    }
+    	    
+    	    // Other categories
+    	    for (String cat : task.getCategories()) {
+                int count = removeFromDictionary(categories, cat);
+                addToDictionary(categories, cat, ++count);
+    	    }
+    	    
     	}
     }
     
@@ -363,7 +459,12 @@ public class Execution {
             task.setModified(false);
         }
     }
-    
+
+    private String toSentenceCase(String text) {
+        String sentenceCase = text.substring(0,1).toUpperCase() + text.substring(1).toLowerCase();
+        return sentenceCase;
+    }
+  
     private void updateDictionary(String text) {
         text = text.toLowerCase();
         updateTaskDictionary(text);
@@ -393,7 +494,7 @@ public class Execution {
         Iterator<Entry<String, Integer>> iterator = dictionary.iterator();
         while (iterator.hasNext()) {
             Entry<String, Integer> next = iterator.next();
-            if (next.getKey().equals(text)) {
+            if (next.getKey().equalsIgnoreCase(text)) {
                 // Keep the frequency count and remove the entry
                 freqCount = next.getValue();
                 iterator.remove();
@@ -409,7 +510,8 @@ public class Execution {
     }
 
     private void updateFileDictionary(String text) {
-        fileDictionary.add(text);
+        int freqCount = removeFromDictionary(fileDictionary, text);
+        addToDictionary(fileDictionary, text, ++freqCount);
     }
         
     // Returns true if the specified word is a number or function word
@@ -420,7 +522,8 @@ public class Execution {
         }
         // Check if word is a pre-defined function word
         // index will be >= 0 if it is
-        int index = Arrays.binarySearch(functionWords, word, String.CASE_INSENSITIVE_ORDER);
+        String wordLowerCase = word.toLowerCase();
+        int index = Arrays.binarySearch(functionWords, wordLowerCase, String.CASE_INSENSITIVE_ORDER);
         return index >= 0 ? true : false;
     }
 
@@ -437,7 +540,7 @@ public class Execution {
         return doneList;
     }
 
-    public ArrayList<Category> getCategories() {
+    public TreeSet<Entry<String, Integer>> getCategories() {
         return categories;
     }
         
@@ -453,7 +556,7 @@ public class Execution {
         return wordDictionary;
     }
     
-    public TreeSet<String> getFileDictionary(){
+    public TreeSet<Entry<String, Integer>> getFileDictionary(){
         return fileDictionary;
     }
 
