@@ -45,8 +45,9 @@ public class Execution {
 	private static final String CATEGORY_TODAY = "Today";
 
 	// Common English function words, will not be stored in word dictionary
-	private static final String[] functionWords = { "a", "about", "an", "and", "as", "at", "by", "for", "in", "of",
-			"or", "the", "to", "with" };
+	private static final String[] functionWords = { "a", "about", "an", "and", "as", "at",
+												  "by", "for", "in", "of","or", 
+												  "the", "to", "with" };
 
 	// Comparator where element uniqueness depends only on the
 	// String key and not the frequency count
@@ -104,35 +105,15 @@ public class Execution {
 					newTask.setImportance(true);
 
 					// update the number of task in priority category
-					int numOfTasks = 0;
 					Iterator<Entry<String, Integer>> iterator = categories.iterator();
-					while (iterator.hasNext()) {
-						Entry<String, Integer> next = iterator.next();
-						if (next.getKey().equalsIgnoreCase(CATEGORY_PRIORITY)) {
-							numOfTasks = next.getValue();
-							int updateNum = numOfTasks + 1;
-							next.setValue(updateNum);
-							break;
-						}
-					}
+					updateNumOfTaskForPriority(iterator);
 
 				} else {
 					list.add(toSentenceCase(cat));
 					// check if the category is previously added
 					boolean isAdded = false;
-					int numOfTasks = 0;
 					Iterator<Entry<String, Integer>> iterator = categories.iterator();
-
-					while (iterator.hasNext()) {
-						Entry<String, Integer> next = iterator.next();
-						if (next.getKey().equalsIgnoreCase(cat)) {
-							numOfTasks = next.getValue();
-							int updateNum = numOfTasks + 1;
-							next.setValue(updateNum);
-							isAdded = true;
-							break;
-						}
-					}
+					isAdded = updateNumOfTaskForCat(cat, isAdded, iterator);
 
 					// First time the user creates this category
 					if (!isAdded) {
@@ -163,6 +144,34 @@ public class Execution {
 		}
 
 		return new Result(CommandType.ADD, true, "Added task", mainList);
+	}
+
+	private boolean updateNumOfTaskForCat(String cat, boolean isAdded, Iterator<Entry<String, Integer>> iterator) {
+		int numOfTasks;
+		while (iterator.hasNext()) {
+			Entry<String, Integer> next = iterator.next();
+			if (next.getKey().equalsIgnoreCase(cat)) {
+				numOfTasks = next.getValue();
+				int updateNum = numOfTasks + 1;
+				next.setValue(updateNum);
+				isAdded = true;
+				break;
+			}
+		}
+		return isAdded;
+	}
+
+	private void updateNumOfTaskForPriority(Iterator<Entry<String, Integer>> iterator) {
+		int numOfTasks;
+		while (iterator.hasNext()) {
+			Entry<String, Integer> next = iterator.next();
+			if (next.getKey().equalsIgnoreCase(CATEGORY_PRIORITY)) {
+				numOfTasks = next.getValue();
+				int updateNum = numOfTasks + 1;
+				next.setValue(updateNum);
+				break;
+			}
+		}
 	}
 
 	public Result completeCommand(int taskID) {
@@ -228,7 +237,7 @@ public class Execution {
 	}
 
 	public Result editTask(int taskID, String newDescription, LocalDateTime start, LocalDateTime end,
-			ArrayList<String> categories) {
+			ArrayList<String> inputCategories) {
 		// preprocessing
 		clearModifiedStatus();
 		saveMainListForUndo();
@@ -257,13 +266,24 @@ public class Execution {
 		if (end != null) {
 			task.setEnd(end);
 		}
-		if (categories != null) {
+		if (inputCategories != null) {
 			ArrayList<String> list = new ArrayList<String>();
-			for (String cat : categories) {
+			for (String cat : inputCategories) {
 				if (cat.equalsIgnoreCase(CATEGORY_PRIORITY)) {
 					task.setImportance(true);
+					Iterator<Entry<String, Integer>> iterator = categories.iterator();
+					updateNumOfTaskForPriority(iterator);
 				} else {
 					list.add(toSentenceCase(cat));
+					boolean isAdded = false;
+					Iterator<Entry<String, Integer>> iterator = categories.iterator();
+
+					isAdded = updateNumOfTaskForCat(cat, isAdded, iterator);
+
+					// First time the user creates this category
+					if (!isAdded) {
+						categories.add(new AbstractMap.SimpleEntry<String, Integer>(cat, 1));
+					}
 				}
 			}
 			task.setCategories(list);
