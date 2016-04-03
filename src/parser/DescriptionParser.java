@@ -19,7 +19,8 @@ public class DescriptionParser {
 
 			int startTimeIndex = input.indexOf("start");
 			int endTimeIndex = input.indexOf("end");
-
+			int categoryIndex = input.indexOf("#");
+			
 			DateTimeParser dateTimeParser = new DateTimeParser();
 
 			if (startTimeIndex != -1) {
@@ -34,16 +35,36 @@ public class DescriptionParser {
 				endTime = dateTimeParser.parse(endTimeString, true);
 			}
 
-			if (startTimeIndex == -1)
+			if (startTimeIndex == -1) {
 				startTimeIndex = input.length();
-			if (endTimeIndex == -1)
+			}
+			if (endTimeIndex == -1) {
 				endTimeIndex = input.length();
+			}
 			description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
-
+			ArrayList<String> storeCategories = new ArrayList<String>();
+			
+			if (categoryIndex != -1) {
+				String categoryString = input.substring(categoryIndex,input.length());
+				String[] splitCategories = categoryString.split(" ");
+				String categoryName;
+				if (splitCategories.length == 1) {
+					categoryName = getUserInput(categoryString, "#");
+					storeCategories.add(categoryName);
+				} else {
+					for (int i = 0; i < splitCategories.length; i++) {
+						categoryName = getUserInput(splitCategories[i], "#");
+						storeCategories.add(categoryName);
+					}
+				}
+				
+				setCategories(storeCategories);
+			} 
+			
 		} else if (commandType.equals("search") || commandType.equals("searchdone")) {
 
 			String firstCharacter = String.valueOf(input.charAt(0));
-			categories = new ArrayList<String>();
+			ArrayList<String> storeCategories = new ArrayList<String>();
 			
 			// search by category
 			if (firstCharacter.equals("#")) {
@@ -51,13 +72,16 @@ public class DescriptionParser {
 				String categoryName;
 				if (categoryLine.length == 1) { // only one category
 					categoryName = getUserInput(input, "#");
-					categories.add(categoryName);
+					storeCategories.add(categoryName);
 				} else { // multiple categories
 					for (int i = 0; i < categoryLine.length; i++) {
 						categoryName = getUserInput(categoryLine[i], "#");
-						categories.add(categoryName);
+						storeCategories.add(categoryName);
 					}
 				}
+				
+				setCategories(storeCategories);
+			
 			} else {
 				try {
 					DateTimeParser dateTimeParser = new DateTimeParser();
@@ -93,5 +117,9 @@ public class DescriptionParser {
 	
 	public ArrayList<String> getCategories() {
 		return categories;
+	}
+	
+	public void setCategories(ArrayList<String> list) {
+		categories = list;
 	}
 }

@@ -22,11 +22,12 @@ public class Command {
         this.type = type;
     }
 
-    public Command(CommandType type, String description, LocalDateTime start, LocalDateTime end){ // add
+    public Command(CommandType type, String description, LocalDateTime start, LocalDateTime end, ArrayList<String> categories) { // add
         this.type = type;
         this.description = description;
         this.start = start;
         this.end = end;
+        this.categories = categories;
     }
 
     public Command(CommandType type, String description) {  // add, search
