@@ -72,6 +72,11 @@ public class Execution {
         taskDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
         wordDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
         fileDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
+        ArrayList<String> autocompletionList = storage.getAutoCompletionList();
+        for (String entry : autocompletionList) {
+            updateDictionary(entry);
+        }
+        
     }
     
     /*********************************
@@ -288,14 +293,12 @@ public class Execution {
                 String directory = split[0].toLowerCase();
                 String userFileName = split[1];
                 storage.saveToFileWithDirectory(directory, userFileName);
-                updateFileDictionary(directory);
-                updateFileDictionary(userFileName);
             } else {
                 storage.saveToFile(description);
-                updateFileDictionary(description);
             }
             
             /// post-processing
+            updateFileDictionary(description);
             canUndo = false;
             canRedo = false;
             
@@ -326,15 +329,13 @@ public class Execution {
                 loadBack = storage.loadFileWithDirectory(directory, userFileName);
                 setMainList(loadBack);
                 doneList = storage.getCompletedList();
-                updateFileDictionary(directory);
-                updateFileDictionary(userFileName);
             } else {
                 loadBack = storage.loadFileWithFileName(description);
                 setMainList(loadBack);
-                updateFileDictionary(description);
             }   
             
             /// post-processing
+            updateFileDictionary(description);
             canUndo = false;
             canRedo = false;
             
@@ -469,6 +470,20 @@ public class Execution {
         text = text.toLowerCase();
         updateTaskDictionary(text);
         updateWordDictionary(text);
+        saveAutoCompletionList();
+    }
+    
+    private void saveAutoCompletionList() {
+        ArrayList<String> autoCompletionList = new ArrayList<String>();
+        for (Entry<String, Integer> entry : taskDictionary) {
+            autoCompletionList.add(entry.getKey());
+        }
+        storage.setAutoCompletionList(autoCompletionList);
+        try {
+            storage.writeAutoCompletionData();
+        } catch (IOException ioe) {
+            // do nothing here
+        }
     }
 
     //@@author Ruoling
@@ -486,7 +501,12 @@ public class Execution {
             }
         }
     }
-    
+
+    private void updateFileDictionary(String text) {
+        int freqCount = removeFromDictionary(fileDictionary, text);
+        addToDictionary(fileDictionary, text, ++freqCount);
+    }
+     
     // Remove the text from the dictionary if it exists and return its frequency count
     // If it does not already exist in the dictionary, frequency count is 0
     private int removeFromDictionary(TreeSet<Entry<String, Integer>> dictionary, String text) {
@@ -508,12 +528,7 @@ public class Execution {
     private void addToDictionary(TreeSet<Entry<String, Integer>> dictionary, String text, int freqCount) {
         dictionary.add(new AbstractMap.SimpleEntry<String, Integer>(text, freqCount));
     }
-
-    private void updateFileDictionary(String text) {
-        int freqCount = removeFromDictionary(fileDictionary, text);
-        addToDictionary(fileDictionary, text, ++freqCount);
-    }
-        
+   
     // Returns true if the specified word is a number or function word
     private boolean isNumberOrFunctionWord(String word) {
         // Check if word contains only numbers and the decimal separator
