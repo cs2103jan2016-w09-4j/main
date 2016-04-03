@@ -156,6 +156,8 @@ public class Logic {
             return getPredictionsForSearch(params);
         } else if (firstWord.equalsIgnoreCase("edit")) {
             return getPredictionsForEdit(params);
+        } else if (firstWord.equalsIgnoreCase("save") || firstWord.equalsIgnoreCase("load")) {
+            return getPredictionsForSaveLoad(params);
         }
         
         return null;
@@ -163,6 +165,18 @@ public class Logic {
 
     //@@author Ruoling
     private ArrayList<String> getPredictionsForAdd(String[] params) {
+        // Predictions based on task descriptions that user previously entered
+        TreeSet<Entry<String, Integer>> dictionary = execution.getTaskDictionary();
+        return getPredictionsFromDictionary(dictionary, params);
+    }
+
+    private ArrayList<String> getPredictionsForSearch(String[] params) {
+        // Predictions based on task descriptions that user previously entered
+        TreeSet<Entry<String, Integer>> dictionary = execution.getWordDictionary();
+        return getPredictionsFromDictionary(dictionary, params);
+    }
+
+    private ArrayList<String> getPredictionsForEdit(String[] params) {
         assert (params.length > 0);
         
         // Maintain a unique set of prediction strings
@@ -171,49 +185,54 @@ public class Logic {
         TreeSet<Entry<String, Integer>> dictionary = execution.getTaskDictionary();
         // List of task descriptions sorted by frequency
         ArrayList<Entry<String, Integer>> freqList;
-
-        String command = params[0];
-        if (params.length == 1) {
-            // retrieve all entries, sorted by frequency
-            freqList = sortByFrequency(dictionary);
-        } else {
-            String minArg = params[1];
-            int lastIndex = minArg.length() - 1;
-            char c = minArg.charAt(lastIndex);
-            c++;
-            String maxArg = minArg.substring(0, lastIndex) + c;
-            Entry<String, Integer> min = new AbstractMap.SimpleEntry<String, Integer>(minArg, 1);
-            Entry<String, Integer> max = new AbstractMap.SimpleEntry<String, Integer>(maxArg, 1);
-            
-            // retrieve subset of entries matching user input, sorted by frequency
-            SortedSet<Entry<String,Integer>> matches = dictionary.subSet(min, true, max, false);
-            freqList = sortByFrequency(matches);
-        }
         
-        // get maximum number of predictions
-        for (Entry<String, Integer> entry : freqList) {
-            String prediction = toSentenceCase(entry.getKey());
-            hashSet.add(command + " " + prediction);
-            if (hashSet.size() == MAX_PREDICTIONS) {
-                break;
+        assert (dictionary != null);
+        
+        String command = params[0];
+        if (params.length == 2) {
+            try {
+                // retrieve task description
+                int id = Integer.parseInt(params[1]);
+                String desc = execution.getMainList().get(id-1).getDescription();
+                hashSet.add(command + " " + id + " " + desc);
+                
+                // retrieve all entries, sorted by frequency
+                freqList = sortByFrequency(dictionary);
+                
+                // get maximum number of predictions
+                for (Entry<String, Integer> entry : freqList) {
+                    String prediction = entry.getKey();
+                    hashSet.add(command + " " + id + " " + prediction);
+                    if (hashSet.size() == MAX_PREDICTIONS) {
+                        break;
+                    }
+                }
+            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                // wrong task index, no predictions given
             }
         }
-        
+
         ArrayList<String> predictions = new ArrayList<String>();
         predictions.addAll(hashSet);
         return predictions;
     }
-
-    private ArrayList<String> getPredictionsForSearch(String[] params) {
+    
+    private ArrayList<String> getPredictionsForSaveLoad(String[] params) {
+        // Predictions based on directories/file names the user previously entered
+        TreeSet<Entry<String, Integer>> dictionary = execution.getFileDictionary();
+        return getPredictionsFromDictionary(dictionary, params);
+    }
+    
+    private ArrayList<String> getPredictionsFromDictionary(
+            TreeSet<Entry<String, Integer>> dictionary, String[] params) {
+        assert (dictionary != null);
         assert (params.length > 0);
-
+        
         // Maintain a unique set of prediction strings
         HashSet<String> hashSet = new HashSet<String>(); 
-        // Predictions based on task descriptions that the user previously entered
-        TreeSet<Entry<String, Integer>> dictionary = execution.getWordDictionary();
         // List of task descriptions sorted by frequency
         ArrayList<Entry<String, Integer>> freqList;
-        
+
         String command = params[0];
         if (params.length == 1) {
             // retrieve all entries, sorted by frequency
@@ -245,7 +264,7 @@ public class Logic {
         predictions.addAll(hashSet);
         return predictions;
     }
-
+    
     private ArrayList<Entry<String, Integer>> sortByFrequency(Set<Entry<String, Integer>> dictionary) {
         ArrayList<Entry<String, Integer>> freq = new ArrayList<Entry<String, Integer>>();
         freq.addAll(dictionary);
@@ -253,48 +272,4 @@ public class Logic {
         return freq;
     }
 
-    private ArrayList<String> getPredictionsForEdit(String[] params) {
-        assert (params.length > 0);
-        
-        // Maintain a unique set of prediction strings
-        HashSet<String> hashSet = new HashSet<String>(); 
-        // Predictions based on task descriptions that the user previously entered
-        TreeSet<Entry<String, Integer>> dictionary = execution.getTaskDictionary();
-        // List of task descriptions sorted by frequency
-        ArrayList<Entry<String, Integer>> freqList;
-        
-        String command = params[0];
-        if (params.length == 2) {
-            try {
-                // retrieve task description
-                int id = Integer.parseInt(params[1]);
-                String desc = execution.getMainList().get(id-1).getDescription();
-                hashSet.add(command + " " + id + " " + desc);
-                
-                // retrieve all entries, sorted by frequency
-                freqList = sortByFrequency(dictionary);
-                
-                // get maximum number of predictions
-                for (Entry<String, Integer> entry : freqList) {
-                    String prediction = toSentenceCase(entry.getKey());
-                    hashSet.add(command + " " + id + " " + prediction);
-                    if (hashSet.size() == MAX_PREDICTIONS) {
-                        break;
-                    }
-                }
-            } catch (NumberFormatException | IndexOutOfBoundsException e) {
-                // wrong task index, no predictions given
-            }
-        }
-
-        ArrayList<String> predictions = new ArrayList<String>();
-        predictions.addAll(hashSet);
-        return predictions;
-    }
-
-    private String toSentenceCase(String text) {
-        String sentenceCase = text.substring(0,1).toUpperCase() + text.substring(1);
-        return sentenceCase;
-    }
-        
 }
