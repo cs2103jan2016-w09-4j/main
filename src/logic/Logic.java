@@ -135,6 +135,10 @@ public class Logic {
         return execution.getMainList();
     }
     
+    public ArrayList<Task> getDoneList() {
+        return execution.getDoneList();
+    }
+    
     public ArrayList<Task> getWeekList() {
     	return weekList;
     }

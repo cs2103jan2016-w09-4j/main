@@ -10,6 +10,7 @@ public class Task implements Comparable<Task> {
     
     private static final int LESS_THAN = -1;
     private static final int GREATER_THAN = 1;
+    private static final String TASK_STRING = "%s|%s|%s|%s|%s|%s";
     
     private String description;
     private int id;
@@ -21,7 +22,6 @@ public class Task implements Comparable<Task> {
     
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    
     public Task(String description) {
         this(description, null, null, 0);
     }
@@ -291,8 +291,21 @@ public class Task implements Comparable<Task> {
      * @return          a String representation of this task, not null
      */
     public String toString() {
-        String str = description + "/" + id + "/" + start + "/" + end;
-        return str;
+        String startStr = null;
+        if (start != null) {
+            startStr = formatter.format(start);
+        }
+        String endStr = null;
+        if (end != null) {
+            endStr = formatter.format(end);
+        }
+        String catStr = null;
+        for (String cat : categories) {
+            catStr += cat;
+        }
+        String task = String.format(TASK_STRING, description, id,
+                startStr, endStr, catStr, isImportant);
+        return task;
     }
     
     @Override

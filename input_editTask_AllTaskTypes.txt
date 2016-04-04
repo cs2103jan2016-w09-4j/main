@@ -1,0 +1,37 @@
+=================
+CURRENT TASKS:
+=================
+Description: Meeting
+Start: 
+End: 24/05/2016 14:00
+Category: 
+-----------------------------------
+Description: Meeting
+Start: 
+End: 25/05/2016 14:00
+Category: 
+-----------------------------------
+Description: Meeting
+Start: 24/05/2016 12:00
+End: 26/05/2016 14:00
+Category: 
+-----------------------------------
+Description: Goodbye
+Start: 
+End: 
+Category: 
+-----------------------------------
+Description: Hello
+Start: 
+End: 
+Category: 
+-----------------------------------
+Description: Meeting
+Start: 24/05/2016 14:00
+End: 
+Category: 
+-----------------------------------
+
+=================
+COMPLETED TASKS:
+=================

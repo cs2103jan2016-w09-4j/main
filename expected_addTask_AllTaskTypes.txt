@@ -21,6 +21,16 @@ Start:
 End: 
 Category: 
 -----------------------------------
+Description: Hello
+Start: 
+End: 
+Category: 
+-----------------------------------
+Description: Meeting
+Start: 24/05/2016 14:00
+End: 
+Category: 
+-----------------------------------
 
 =================
 COMPLETED TASKS:
