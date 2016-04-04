@@ -19,8 +19,9 @@ import storage.Storage;
 public class StorageTest {
 
 	private Storage testStorage;
-	private ArrayList<Task> testList;
+	private ArrayList<Task> mainList;
 	private ArrayList<Task> getDataFromFile;
+	private ArrayList<Task> completedList;
 	private ArrayList<String> autocompletionList;
 	private String fileName1 = "MyTasks.txt";
 	private String fileName2 = "newFile";
@@ -33,20 +34,21 @@ public class StorageTest {
 	public void init() throws IOException, ParseException {
 		System.out.println("initializing");
 		testStorage = new Storage();
-		testList = testStorage.getMainList();
+		mainList = testStorage.getMainList();
+		completedList = testStorage.getCompletedList();
 		autocompletionList = testStorage.getAutoCompletionList();
 		getDataFromFile = new ArrayList<Task>();
 
-		if (testList.isEmpty()) {
+		if (mainList.isEmpty()) {
 			System.out.println("main list is empty");
 		} else {
 			System.out.println("Printing main list");
-			printResult(testList);
+			printResult(mainList);
 			System.out.println("Clear mainlist");
-			testList.clear();
+			mainList.clear();
 		}
 		
-		if (autocompletionList .isEmpty()) {
+		if (autocompletionList.isEmpty()) {
 			System.out.println("autocompletion list is empty");
 		} else {
 			System.out.println("Printing autocompletion list");
@@ -54,8 +56,17 @@ public class StorageTest {
 			System.out.println("Clear autocompletion list");
 			autocompletionList.clear();
 		}
+		
+		if (completedList.isEmpty()) {
+			System.out.println("completedList is empty");
+		} else {
+			System.out.println("Printing completedList");
+			printResult(completedList);
+			System.out.println("Clear completedList");
+			completedList.clear();
+		}
 
-		// Add task into testList
+		// Add task into mainList
 		System.out.println("Adding tasks");
 		// first task have all 3 fields
 		Task task1 = new Task("meeting at night so late");
@@ -70,7 +81,11 @@ public class StorageTest {
 		// have 2 fields
 		Task task2 = new Task("gathering");
 		task2.setEnd("25/03/2016 14:00");
+
+		mainList.add(task1);
+		mainList.add(task2);
 		
+		// adding task into completed list
 		Task task3 = new Task("do tutorial");
 		ArrayList<String> categoryToAdd2 = new ArrayList<String>();
 		categoryToAdd2.add("homework");
@@ -78,11 +93,9 @@ public class StorageTest {
 		
 		// have 1 field
 		Task task4 = new Task("meet friends");
-
-		testList.add(task1);
-		testList.add(task2);
-		testList.add(task3);
-		testList.add(task4);
+		
+		completedList.add(task3);
+		completedList.add(task4);
 		
 		//add string as autocompletion
 		String line1 = "add meeting now";
@@ -91,7 +104,7 @@ public class StorageTest {
 		autocompletionList.add(line2);
 
 		System.out.println("Print main list");
-		printResult(testList);
+		printResult(mainList);
 	}
 
 	@Test
@@ -116,11 +129,11 @@ public class StorageTest {
 			e.printStackTrace();
 		}
 
-		assertEquals(testList.size(), getDataFromFile.size());
+		assertEquals(mainList.size(), getDataFromFile.size());
 
 		count = 0;
-		for (int i = 0; i < testList.size(); i++) {
-			Task task1 = testList.get(i);
+		for (int i = 0; i < mainList.size(); i++) {
+			Task task1 = mainList.get(i);
 			Task task2 = getDataFromFile.get(i);
 
 			if (task1.getDescription().equals(task2.getDescription())) {
@@ -128,7 +141,7 @@ public class StorageTest {
 			}
 		}
 		// test content
-		assertEquals(testList.size(), count);
+		assertEquals(mainList.size(), count);
 	}
 	
 	@Test
@@ -180,7 +193,7 @@ public class StorageTest {
 		getDataFromFile.clear();
 		File file1 = new File(fileName1);
 		getDataFromFile = testStorage.loadFileWithFileName(fileName1);
-		assertEquals(getDataFromFile, testList);
+		assertEquals(getDataFromFile, mainList);
 
 		file1.delete();
 	}
@@ -191,7 +204,7 @@ public class StorageTest {
 		getDataFromFile.clear();
 		testStorage.saveToFile(fileName1);
 		getDataFromFile = testStorage.loadFileWithFileName(fileName1);
-		assertEquals(getDataFromFile, testList);
+		assertEquals(getDataFromFile, mainList);
 
 		// @Test testInvalidFileForLoading()
 		// Equivalence partition:
