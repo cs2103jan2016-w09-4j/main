@@ -234,7 +234,7 @@ public class Storage {
 	}
 	
 	public void writeAutoCompletionData() throws IOException {
-		System.out.println("writing to auto completion file");
+		//System.out.println("writing to auto completion file");
 		FileWriter writer = new FileWriter(autoCompletionFileName);
 		writeStringFromAutoCompletedList(writer);
 		writer.close();
