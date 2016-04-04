@@ -30,7 +30,7 @@ public class StorageTest {
 	String expectedDirectory = "/Users/Documents/testDirectory";
 
 	@Before
-	public void init() throws IOException {
+	public void init() throws IOException, ParseException {
 		System.out.println("initializing");
 		testStorage = new Storage();
 		testList = testStorage.getMainList();
