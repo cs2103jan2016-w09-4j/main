@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Logic {
@@ -27,6 +28,7 @@ public class Logic {
     private static Logic logic = new Logic();
     
     private ArrayList<Task> list;
+    private ArrayList<Task> weekList;
     
     private static final int MAX_PREDICTIONS = 5;
     private static final Comparator<Entry<String, Integer>> freqComparator = new Comparator<Entry<String, Integer>>() {
@@ -40,6 +42,7 @@ public class Logic {
         this.storage = new Storage();
         this.execution = new Execution();
         this.list = storage.getMainList();
+        weekList = new ArrayList<Task>();
     }
 
     private Result execute(Command command){
