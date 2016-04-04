@@ -86,6 +86,8 @@ public class DescriptionParser {
 				try {
 					DateTimeParser dateTimeParser = new DateTimeParser();
 					searchTime = dateTimeParser.parse(input, true);
+					if (searchTime == null)
+					    description = input;
 				} catch (DateTimeParseException dtpe) { // description
 					description = input;
 				}

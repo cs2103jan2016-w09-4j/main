@@ -53,9 +53,9 @@ public class DisplayController extends HiddenSidesPane {
     private static final String HEADER_COMPLETED_PLURAL = " completed tasks";
     private static final String HEADER_SEARCH_SINGLE = " search result found";
     private static final String HEADER_SEARCH_PLURAL = " search results found";
-    private static final String TASK_DETAILS_DATE_FLOATING = "From %1s";
-    private static final String TASK_DETAILS_DATE_DEADLINE = "By %1s";
-    private static final String TASK_DETAILS_DATE_EVENT = "From %1s to %2s";
+    private static final String TASK_DETAILS_DATE_FLOATING = "From %s";
+    private static final String TASK_DETAILS_DATE_DEADLINE = "By %s";
+    private static final String TASK_DETAILS_DATE_EVENT = "From %s to %s";
 
     private static final String FXML_DISPLAY = "Display.fxml";
     private static final String RESOURCES_ICON_SUCCESS = "/icons/success-small.png";

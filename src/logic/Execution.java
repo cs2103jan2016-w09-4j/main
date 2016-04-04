@@ -72,10 +72,7 @@ public class Execution {
 		taskDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
 		wordDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
 		fileDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
-        ArrayList<String> autocompletionList = storage.getAutoCompletionList();
-        for (String entry : autocompletionList) {
-            updateDictionary(entry);
-        }
+		initializeDictionary();
 	}
 
 	/*********************************
@@ -525,7 +522,15 @@ public class Execution {
 		updateWordDictionary(text);
 		saveAutoCompletionList();
     }
-	
+
+	private void initializeDictionary() {
+	    ArrayList<String> autocompletionList = storage.getAutoCompletionList();
+        for (String entry : autocompletionList) {
+            entry = entry.toLowerCase();
+            updateTaskDictionary(entry);
+            updateWordDictionary(entry);
+        }
+	}
     // @@author Ruoling
     private void saveAutoCompletionList() {
         // convert TreeSet to ArrayList
