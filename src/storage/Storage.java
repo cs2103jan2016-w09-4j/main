@@ -117,7 +117,7 @@ public class Storage {
 		return lineToAdd;
 	}
 
-	// laod most recent list
+	// load most recent list
 	private ArrayList<Task> getMostRecentList(String fileName) throws IOException {
 		String recentFileName, recentDirectory;
 		String defaultFileName = DEFAULT_TEXTFILE;
@@ -200,7 +200,7 @@ public class Storage {
 	}
 
 	// Obtain filename without directory
-	private static String getFileName(String line, String directoryToReplace) {
+	private String getFileName(String line, String directoryToReplace) {
 		String toReplace = directoryToReplace + " , ";
 		String lineWithoutDirectory = line.replace(toReplace, "").trim();
 
@@ -464,7 +464,7 @@ public class Storage {
 	// ================================================================================
 
 	// This method converts String to Task to allow execution of other commands
-	public static ArrayList<Task> convertStringToTask(ArrayList<String> stringList, int startIndex) throws ParseException {
+	public ArrayList<Task> convertStringToTask(ArrayList<String> stringList, int startIndex) throws ParseException {
 
 		Task currentTask = new Task("");
 		String description, start, end, category;
@@ -524,7 +524,7 @@ public class Storage {
 		return taskList;
 	}
 
-	private static void setMultipleCategories(Task task1, String category) {
+	private void setMultipleCategories(Task task1, String category) {
 		// if there are multiple categories
 		String categoryName, name;
 		String[] multipleCategories = category.split(" ");
@@ -542,7 +542,7 @@ public class Storage {
 	}
 
 	// This method converts Task to String object for writing purpose
-	public static ArrayList<String> convertTaskToString(ArrayList<Task> taskList) {
+	public ArrayList<String> convertTaskToString(ArrayList<Task> taskList) {
 		String linesOfCategory = "";
 		String description, start = null, end = null;
 		String descriptionLine, startLine, endLine, categoryLine;
@@ -602,7 +602,7 @@ public class Storage {
 		return stringList;
 	}
 
-	private static String getMultipleCategories(String linesOfCategory, ArrayList<String> categoryList,
+	private String getMultipleCategories(String linesOfCategory, ArrayList<String> categoryList,
 			int countCategory) {
 		while (countCategory < categoryList.size()) {
 			linesOfCategory = linesOfCategory + " " + FIELDS_CATEGORY_INDICATOR + categoryList.get(countCategory);
@@ -611,7 +611,7 @@ public class Storage {
 		return linesOfCategory;
 	}
 
-	private static String getFields(String line, String toReplace) {
+	private String getFields(String line, String toReplace) {
 		String lineWithoutDirectory = line.replace(toReplace, "").trim();
 
 		return lineWithoutDirectory;
