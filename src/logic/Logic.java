@@ -62,6 +62,7 @@ public class Logic {
             }
         }
         
+        sortWeekList();
         execution.updateTaskProgress();
         
         switch(commandType) {
@@ -129,6 +130,13 @@ public class Logic {
             return logic = new Logic();
         }
         return logic;
+    }
+    
+    public Execution getExecutionInstance() {
+    	if (execution == null){
+    		return execution = new Execution();
+    	}
+    	return execution;
     }
 
     public ArrayList<Task> getMainList() {
