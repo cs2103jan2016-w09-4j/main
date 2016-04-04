@@ -131,6 +131,10 @@ public class Logic {
     public ArrayList<Task> getMainList() {
         return execution.getMainList();
     }
+    
+    public ArrayList<Task> getWeekList() {
+    	return weekList;
+    }
 
     public ArrayList<Category> getCategories() {
         TreeSet<Entry<String, Integer>> list = execution.getCategories();
@@ -161,6 +165,28 @@ public class Logic {
         }
         
         return null;
+    }
+    
+    private void sortWeekList(){
+    	
+    	weekList.clear();
+    	ArrayList<Task> list = execution.getMainList();
+    	
+    	LocalDate today = LocalDate.now();
+    	LocalDate weekToday = today.plusWeeks(1);
+    	
+		for (Task task : list){
+			LocalDateTime taskEnd = task.getEndDate();
+			if(taskEnd != null){
+				
+				LocalDate taskEndDate = taskEnd.toLocalDate();
+				if(taskEndDate != null){
+					if (today.compareTo(taskEndDate) <= 0 && taskEndDate.compareTo(weekToday) < 0){
+						weekList.add(task);
+					}		
+				}
+			}
+		}
     }
 
     //@@author Ruoling
