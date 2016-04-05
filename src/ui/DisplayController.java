@@ -237,6 +237,15 @@ public class DisplayController extends HiddenSidesPane {
                 this.setContent(helpPanel);
                 break;
             
+            case ADD :
+                // fallthrough
+                
+            case EDIT :
+                sidebar.update();
+                updateTaskPanel(result.getResults());
+                this.setContent(taskPanel);
+                break;
+            
             default :
                 sidebar.update();
                 updateTaskPanel(result.getResults());
@@ -280,7 +289,8 @@ public class DisplayController extends HiddenSidesPane {
         Label todayHeader = createHeader("Today");
         VBox todayContent = new VBox();
         if (todayTasks.isEmpty()) {
-            Label empty = new Label("No tasks today");
+            Label empty = new Label("No tasks due today!");
+            empty.getStyleClass().add("entry-empty");
             todayContent.getChildren().add(empty);
         } else {
             ListView<VBox> todayListView = createListView(todayTasks);
@@ -298,7 +308,8 @@ public class DisplayController extends HiddenSidesPane {
         Label otherHeader = createHeader("Others");
         VBox otherContent = new VBox();
         if (otherTasks.isEmpty()) {
-            Label empty = new Label("No tasks today");
+            Label empty = new Label("No other tasks pending this week! Type 'search' to view all tasks.");
+            empty.getStyleClass().add("entry-empty");
             otherContent.getChildren().add(empty);
         } else {
             ListView<VBox> otherListView = createListView(otherTasks);
@@ -412,7 +423,8 @@ public class DisplayController extends HiddenSidesPane {
 
     private ListView<VBox> createListView(ObservableList<VBox> tasks) {
         ListView<VBox> listView = new ListView<VBox>(tasks);
-        listView.prefHeightProperty().bind(Bindings.size(tasks).multiply(65));
+        // override ListView's default height value 400
+        listView.prefHeightProperty().bind(Bindings.size(tasks).multiply(66));
         return listView;
     }
     
