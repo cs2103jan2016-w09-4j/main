@@ -5,21 +5,25 @@ Description: Meeting
 Start: 
 End: 24/05/2016 14:00
 Category: 
+Priority: No
 -----------------------------------
 Description: Meeting
 Start: 24/05/2016 12:00
 End: 26/05/2016 14:00
 Category: 
+Priority: No
 -----------------------------------
 Description: Goodbye
 Start: 
 End: 
 Category: 
+Priority: No
 -----------------------------------
 Description: Meeting
 Start: 24/05/2016 14:00
 End: 
 Category: 
+Priority: No
 -----------------------------------
 
 =================
@@ -29,19 +33,23 @@ Description: Meeting
 Start: 24/05/2016 12:00
 End: 26/05/2016 14:00
 Category: 
+Priority: No
 -----------------------------------
 Description: Meeting
 Start: 
 End: 24/05/2016 14:00
 Category: 
+Priority: No
 -----------------------------------
 Description: Goodbye
 Start: 
 End: 
 Category: 
+Priority: No
 -----------------------------------
 Description: Meeting
 Start: 24/05/2016 14:00
 End: 
 Category: 
+Priority: No
 -----------------------------------

@@ -5,26 +5,31 @@ Description: Ice Cream Sandwich
 Start: 18/10/2011 00:00
 End: 
 Category: 
+Priority: No
 -----------------------------------
 Description: Jelly Bean
 Start: 09/07/2012 00:00
 End: 
 Category: 
+Priority: No
 -----------------------------------
 Description: KitKat
 Start: 31/10/2013 00:00
 End: 
 Category: 
+Priority: No
 -----------------------------------
 Description: Lollipop
 Start: 12/11/2014 00:00
 End: 
 Category: 
+Priority: No
 -----------------------------------
 Description: Marshmallow
 Start: 05/10/2015 00:00
 End: 
 Category: 
+Priority: No
 -----------------------------------
 
 =================
@@ -34,4 +39,5 @@ Description: Froyo
 Start: 20/05/2010 00:00
 End: 
 Category: 
+Priority: No
 -----------------------------------
