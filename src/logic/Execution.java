@@ -554,7 +554,7 @@ public class Execution {
 		}
 	}
 
-	private String toSentenceCase(String text) {
+	public String toSentenceCase(String text) {
 		String sentenceCase = text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
 		return sentenceCase;
 	}
