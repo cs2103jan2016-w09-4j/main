@@ -342,9 +342,17 @@ public class Execution {
 		searchResults.clear();
 		if (categories != null) {
 			for (Task task : mainList) {
-				if (categories.get(0).equalsIgnoreCase(task.getCategories().get(0))) {
-					System.out.println("I am here");
-					searchResults.add(task);
+				boolean put = true;
+				for (String category : categories) {
+					category = toSentenceCase(category);
+					System.out.println(category);
+					if (!task.getCategories().contains(category)) {
+						put = false;
+						break;						
+					}
+				}
+				if (put) {
+					searchResults.add(task);					
 				}
 			}
 		}
@@ -408,6 +416,8 @@ public class Execution {
 			updateFileDictionary(description);
 			canUndo = false;
 			canRedo = false;
+			
+			setMainList(storage.getMainList());
 
 			return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
 		} catch (IOException | ParseException e) {
