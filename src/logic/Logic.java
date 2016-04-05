@@ -69,7 +69,12 @@ public class Logic {
         switch(commandType) {
         
             case ADD :
-                return execution.addTask(description, startDate, endDate, categories);
+            	if (description == null) {
+            		return new Result(CommandType.ADD, false, "No description!", new ArrayList<Task>());
+            	}
+            	else {
+            		return execution.addTask(description, startDate, endDate, categories);
+            	}
             
             case DELETE :
                 return execution.deleteTask(taskID);
@@ -133,8 +138,10 @@ public class Logic {
             	} else {
             		ArrayList<Task> searchDoneResult = new ArrayList<Task>();
             		list = execution.getDoneList();
+            		description = description.toLowerCase();
             		for (Task task : list) {
-            			if (task.getDescription().contains(command.getDescription())) {
+            			String descriptionLowerCase = task.getDescription().toLowerCase();
+            			if (descriptionLowerCase.contains(description)) {
             				searchDoneResult.add(task);
             			}
             		}

@@ -38,7 +38,7 @@ public class ParserTest {
     @Test
     public void parseCommand_AddWithEnd_AddCommand() {
         GeneralParser parser = new GeneralParser();
-        Command expected = new Command(CommandType.ADD, "eat", LocalDateTime.of(LocalDate.of(2010, 10, 20), LocalTime.of(22, 30)), null);
+        Command expected = new Command(CommandType.ADD, "eat", LocalDateTime.of(LocalDate.of(2010, 10, 20), LocalTime.of(22, 30)), null, null);
         Command actual = parser.parseCommand("add eat start 22:30 20-10-2010");
         assertEquals(expected.getType(), actual.getType());
         assertEquals(expected.getDescription(), actual.getDescription());
@@ -51,7 +51,7 @@ public class ParserTest {
         GeneralParser parser = new GeneralParser();
         Command expected = new Command(CommandType.ADD, "eat more food to get fat",
                 LocalDateTime.of(LocalDate.of(2000, 10, 20), LocalTime.of(22, 30)),
-                LocalDateTime.of(LocalDate.of(2004, 8, 29), LocalTime.of(9, 10)));
+                LocalDateTime.of(LocalDate.of(2004, 8, 29), LocalTime.of(9, 10)), null);
         Command actual = parser.parseCommand("add eat more food to get fat start 22:30 20-10-2000 end 9:10 29-8-2004");
         assertEquals(expected.getType(), actual.getType());
         assertEquals(expected.getDescription(), actual.getDescription());

@@ -23,6 +23,9 @@ public class GeneralParser {
         String command = commandString.trim().toLowerCase();
 
         if (command.startsWith("add")) {
+        	if (commandString.length() <= 3) {
+        		return new Command(CommandType.ADD);
+        	}
             DescriptionParser details = new DescriptionParser(commandString.substring(4).trim());
             return new Command(CommandType.ADD, details.getDescription(), details.getStartTime(), details.getEndTime(),details.getCategories());
 
