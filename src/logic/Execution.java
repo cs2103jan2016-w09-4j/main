@@ -311,6 +311,7 @@ public class Execution {
 		return new Result(CommandType.EDIT, true, "Edited", mainList);
 	}
 	
+	// overloading method of searchTask to search priority category
 	public Result searchTask() {
 		
 		clearModifiedStatus();
@@ -347,7 +348,7 @@ public class Execution {
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
 	
-	// overloading method of searchTask
+	// overloading method of searchTask to search custom categories
 	public Result searchTask(ArrayList<String> categories) {
 		
 		// pre-processing
