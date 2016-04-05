@@ -27,7 +27,6 @@ public class InputController extends VBox {
 
     public InputController(MainApp main) {
         this.main = main;
-        this.getStylesheets().add(getClass().getResource("input.css").toExternalForm());
         //initializeLogger();
         loadFXML();
         bindAutoCompletion();
