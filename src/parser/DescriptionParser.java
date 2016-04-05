@@ -61,7 +61,7 @@ public class DescriptionParser {
 				setCategories(storeCategories);
 			} 
 			
-		} else if (commandType.equals("search") || commandType.equals("searchdone")) {
+		} else if (commandType.equals("search")) {
 
 			String firstCharacter = String.valueOf(input.charAt(0));
 			ArrayList<String> storeCategories = new ArrayList<String>();
