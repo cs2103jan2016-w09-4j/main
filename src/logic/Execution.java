@@ -310,6 +310,20 @@ public class Execution {
 
 		return new Result(CommandType.EDIT, true, "Edited", mainList);
 	}
+	
+	public Result searchTask() {
+		
+		clearModifiedStatus();
+		searchResults.clear();
+		
+		for (Task task : mainList) {
+			if (task.isImportant()) {
+				searchResults.add(task);
+			}
+		}
+		
+		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
+	}
 
 	public Result searchTask(String keyword) {
 		// pre-processing
@@ -339,6 +353,7 @@ public class Execution {
 		// pre-processing
 		clearModifiedStatus();
 		searchResults.clear();
+		
 		if (categories != null) {
 			for (Task task : mainList) {
 				boolean put = true;

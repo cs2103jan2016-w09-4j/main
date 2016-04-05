@@ -30,6 +30,7 @@ public class Logic {
     private ArrayList<Task> list;
     private ArrayList<Task> weekList;
     
+	private static final String CATEGORY_PRIORITY = "priority";
     private static final int MAX_PREDICTIONS = 5;
     private static final Comparator<Entry<String, Integer>> freqComparator = new Comparator<Entry<String, Integer>>() {
         public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
@@ -78,6 +79,9 @@ public class Logic {
                 
             case SEARCH :
             	if (categories != null) {
+            		if (categories.get(0).equals(CATEGORY_PRIORITY)) {
+            			return execution.searchTask();
+            		}
             		return execution.searchTask(categories);
             	}
             	else {
