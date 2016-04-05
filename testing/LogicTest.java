@@ -293,14 +293,46 @@ public class LogicTest {
     
     @Test
     public void redo_AfterUndo_ReturnToCurrentState() {
-        // TODO
+        createEmptyFile("output_redo_AfterUndo.txt");
+        logic.processCommand("load testing/input_redo.txt");
+        logic.processCommand("save output_redo_AfterUndo.txt");
+        
+        logic.processCommand("add Marshmallow start 05/10/2015");
+        logic.processCommand("undo");
+        logic.processCommand("redo");
+        logic.processCommand("edit 4 Key Lime Pie");
+        logic.processCommand("undo");
+        logic.processCommand("redo");
+        logic.processCommand("delete 2");
+        logic.processCommand("undo");
+        logic.processCommand("redo");
+        logic.processCommand("done 1");
+        logic.processCommand("undo");
+        logic.processCommand("redo");
+    
+        File expectedFile = new File("testing/expected_redo_AfterUndo.txt");
+        File actualFile = new File("output_redo_AfterUndo.txt");
+        FileAssert.assertEquals(expectedFile, actualFile);
     }
     
     @Test
     public void redo_AfterUnallowedCommand_NoChange() {
-        // TODO
-    }
+        createEmptyFile("output_redo_AfterUnallowedCommand.txt");
+        logic.processCommand("load testing/input_redo.txt");
+        logic.processCommand("save output_redo_AfterUnallowedCommand.txt");
         
+        logic.processCommand("add Donut");
+        logic.processCommand("add undo");
+        logic.processCommand("add Eclair");
+        Result result = logic.processCommand("redo");
+        assertEquals(Command.CommandType.REDO, result.getCommandType());
+        assertEquals(false, result.isSuccess());
+        
+        File expectedFile = new File("testing/expected_redo_AfterUnallowedCommand.txt");
+        File actualFile = new File("output_redo_AfterUnallowedCommand.txt");
+        FileAssert.assertEquals(expectedFile, actualFile);
+    }
+    
     private static File createEmptyFile(String fileName) {
         File file = new File(fileName);
         try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(file))) {
