@@ -329,7 +329,25 @@ public class Execution {
 		updateDictionary(keyword);
 		canUndo = false;
 		canRedo = false;
-
+		
+		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
+	}
+	
+	// overloading method of searchTask
+	public Result searchTask(ArrayList<String> categories) {
+		
+		// pre-processing
+		clearModifiedStatus();
+		searchResults.clear();
+		
+		if (categories != null) {
+			for (Task task : mainList) {
+				if (categories.contains(task.getCategories())) {
+					searchResults.add(task);
+				}
+			}
+		}
+		
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
 

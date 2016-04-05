@@ -77,8 +77,13 @@ public class Logic {
                 return execution.editTask(taskID, description, startDate, endDate, categories);
                 
             case SEARCH :
-                return execution.searchTask(description);
-            
+            	if (categories != null) {
+            		return execution.searchTask(categories);
+            	}
+            	else {
+            		return execution.searchTask(description);
+            	}
+            	
             case HOME :
                 list = storage.getMainList();
                 execution.setMainList(list);
