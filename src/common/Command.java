@@ -15,7 +15,6 @@ public class Command {
     private int id;
     private LocalDateTime start;
     private LocalDateTime end;
-    private LocalDateTime searchDate;
     private ArrayList<String> categories;
 
     public Command(CommandType type) {
@@ -33,18 +32,6 @@ public class Command {
     public Command(CommandType type, String description) {  // add, search
         this.type = type;
         this.description = description;
-    }
-
-    // search by date
-    public Command(CommandType type, LocalDateTime date) {
-    	this.type = type;
-    	this.searchDate = date;
-    }
-
-    // search by categories
-    public Command(CommandType type, ArrayList<String> categories) {
-    	this.type = type;
-    	this.categories = categories;
     }
 
     public Command(CommandType type, int id) { // delete
@@ -108,10 +95,6 @@ public class Command {
 
     public LocalDateTime getEndDate(){
         return end;
-    }
-
-    public LocalDateTime getSearchDate() {
-    	return searchDate;
     }
 
     public ArrayList<String> getCategories() {
