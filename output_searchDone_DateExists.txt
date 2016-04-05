@@ -1,0 +1,5 @@
+CCCCC|null|07/07/2016 12:00|null|false
+CCCCC BBBBB|01/01/2016 12:00|31/12/2016 12:00|null|false
+ccc111|07/07/2016 12:00|null|null|false
+ccccc|null|null|null|false
+bbbbb|null|null|null|false

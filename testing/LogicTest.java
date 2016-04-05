@@ -51,34 +51,48 @@ public class LogicTest {
         logic.processCommand("add Meeting end 24/05/2016 14:00");
         logic.processCommand("add Meeting start 24/05/2016 12:00 end 26/05/2016 14:00");
         
-        File expectedFile = new File("expected_addTask_AllTaskTypes.txt");
+        File expectedFile = new File("testing/expected_addTask_AllTaskTypes.txt");
         File actualFile = new File("output_addTask_AllTaskTypes.txt");
         FileAssert.assertEquals(expectedFile, actualFile);
     }
     
     @Test
     public void deleteTask_ValidTaskNumber_DeletedSelectedTask() {
-        logic.processCommand("load input_deleteTask_ValidTaskNumber.txt");
+        logic.processCommand("load testing/input_deleteTask_ValidTaskNumber.txt");
         logic.processCommand("save output_deleteTask_ValidTaskNumber.txt");
         
         logic.processCommand("delete 6");
         logic.processCommand("delete 1");
         logic.processCommand("delete 1");
         
-        File expectedFile = new File("expected_deleteTask_ValidTaskNumber.txt");
+        File expectedFile = new File("testing/expected_deleteTask_ValidTaskNumber.txt");
         File actualFile = new File("output_deleteTask_ValidTaskNumber.txt");
         FileAssert.assertEquals(expectedFile, actualFile);
     }
+    
+    @Test
+    public void doneTask_ValidTaskNumber_MarkAsDone() {
+        logic.processCommand("load testing/input_doneTask_ValidTaskNumber.txt");
+        logic.processCommand("save output_doneTask_ValidTaskNumber.txt");
         
+        logic.processCommand("done 6");
+        logic.processCommand("done 1");
+        logic.processCommand("done 1");
+        
+        File expectedFile = new File("testing/expected_doneTask_ValidTaskNumber.txt");
+        File actualFile = new File("output_doneTask_ValidTaskNumber.txt");
+        FileAssert.assertEquals(expectedFile, actualFile);
+    }
+    
     @Test
     public void editTask_ValidTaskNumber_EditedSelectedTask() {
-        logic.processCommand("load input_editTask_AllTaskTypes.txt");
+        logic.processCommand("load testing/input_editTask_AllTaskTypes.txt");
         logic.processCommand("save output_editTask_AllTaskTypes.txt");
         
         logic.processCommand("edit 6 Meeting start 24/05/2016 12:00 end 30/05/2016 14:00");
         logic.processCommand("edit 6 Hello world");
         
-        File expectedFile = new File("expected_editTask_AllTaskTypes.txt");
+        File expectedFile = new File("testing/expected_editTask_AllTaskTypes.txt");
         File actualFile = new File("output_editTask_AllTaskTypes.txt");
         FileAssert.assertEquals(expectedFile, actualFile);
     }
@@ -104,14 +118,14 @@ public class LogicTest {
         assertEquals(Command.CommandType.SAVE, result.getCommandType());
         assertEquals(true, result.isSuccess());
         
-        File expectedFile = new File("expected_saveTasks_WithFileName.txt");
+        File expectedFile = new File("testing/expected_saveTasks_WithFileName.txt");
         File actualFile = new File("output_saveTasks_WithFileName.txt");
         FileAssert.assertEquals(expectedFile, actualFile);
     }
 
     @Test
     public void loadTasks_WithFileName_Success() {
-        Result result = logic.processCommand("load input_loadTasks_WithFileName.txt");
+        Result result = logic.processCommand("load testing/input_loadTasks_WithFileName.txt");
         assertEquals(Command.CommandType.LOAD, result.getCommandType());
         assertEquals(true, result.isSuccess());
         
@@ -140,8 +154,8 @@ public class LogicTest {
     
     @Test
     public void search_NoParam_DisplayAll() {
-        logic.processCommand("load input_search.txt");
-        File expectedFile = new File("expected_search_NoParam.txt");
+        logic.processCommand("load testing/input_search.txt");
+        File expectedFile = new File("testing/expected_search_NoParam.txt");
         File actualFile;
         
         Result noSpace = logic.processCommand("search");
@@ -157,8 +171,8 @@ public class LogicTest {
     
     @Test
     public void search_KeywordExists_DisplayMatching() {
-        logic.processCommand("load input_search.txt");
-        File expectedFile = new File("expected_search_KeywordExists.txt");
+        logic.processCommand("load testing/input_search.txt");
+        File expectedFile = new File("testing/expected_search_KeywordExists.txt");
         File actualFile;
         
         Result word = logic.processCommand("search aAA");
@@ -174,8 +188,8 @@ public class LogicTest {
     
     @Test
     public void search_DateExists_DisplayMatching() {
-        logic.processCommand("load input_search.txt");
-        File expectedFile = new File("expected_search_DateExists.txt");
+        logic.processCommand("load testing/input_searchDone.txt");
+        File expectedFile = new File("testing/expected_search_DateExists.txt");
         File actualFile;
         
         Result date = logic.processCommand("search 07/07/2016");
@@ -188,21 +202,105 @@ public class LogicTest {
                 dateWithWhitespace.getResults());
         FileAssert.assertEquals(expectedFile, actualFile);
     }
-    
+
     @Test
-    public void doneTask_ValidTaskNumber_MarkAsDone() {
-        logic.processCommand("load input_doneTask_ValidTaskNumber.txt");
-        logic.processCommand("save output_doneTask_ValidTaskNumber.txt");
+    public void searchDone_DateExists_DisplayMatching() {
+        logic.processCommand("load testing/input_searchDone.txt");
+        File expectedFile = new File("testing/expected_searchDone_DateExists.txt");
+        File actualFile;
         
-        logic.processCommand("done 6");
-        logic.processCommand("done 1");
-        logic.processCommand("done 1");
-        
-        File expectedFile = new File("expected_doneTask_ValidTaskNumber.txt");
-        File actualFile = new File("output_doneTask_ValidTaskNumber.txt");
+        Result date = logic.processCommand("searchdone 07/07/2016");
+        actualFile = saveSearchDoneResults("output_searchDone_DateExists.txt",
+                date.getResults());
+        FileAssert.assertEquals(expectedFile, actualFile);
+
+        Result dateWithWhitespace = logic.processCommand("searchdone 07/07/2016   ");
+        actualFile = saveSearchDoneResults("output_searchDone_DateExists.txt",
+                dateWithWhitespace.getResults());
         FileAssert.assertEquals(expectedFile, actualFile);
     }
     
+    @Test
+    public void searchDone_KeywordExists_DisplayMatching() {
+        logic.processCommand("load testing/input_searchDone.txt");
+        File expectedFile = new File("testing/expected_searchDone_KeywordExists.txt");
+        File actualFile;
+        
+        Result word = logic.processCommand("searchdone cCC");
+        actualFile = saveSearchDoneResults("output_searchDone_KeywordExists.txt",
+                word.getResults());
+        FileAssert.assertEquals(expectedFile, actualFile);
+
+        Result wordWithWhitespace = logic.processCommand("searchdone cCC   ");
+        actualFile = saveSearchDoneResults("output_searchDone_KeywordExists.txt",
+                wordWithWhitespace.getResults());
+        FileAssert.assertEquals(expectedFile, actualFile);
+    }
+    
+    @Test
+    public void undo_AfterAllowedCommand_ReturnToPreviousState() {
+        createEmptyFile("output_undo_AfterAllowedCommand.txt");
+        logic.processCommand("load testing/input_undo.txt");
+        logic.processCommand("save output_undo_AfterAllowedCommand.txt");
+        
+        logic.processCommand("add Marshmallow start 05/10/2015");
+        logic.processCommand("add N");
+        logic.processCommand("undo");
+        logic.processCommand("edit 3 Ice Cream Sandwich start 18/10/2011");
+        logic.processCommand("edit 5 Key Lime Pie");
+        logic.processCommand("undo");
+        logic.processCommand("delete 2");
+        logic.processCommand("delete 2");
+        logic.processCommand("undo");
+        logic.processCommand("done 1");
+        logic.processCommand("done 1");
+        logic.processCommand("undo");
+    
+        File expectedFile = new File("testing/expected_undo_AfterAllowedCommand.txt");
+        File actualFile = new File("output_undo_AfterAllowedCommand.txt");
+        FileAssert.assertEquals(expectedFile, actualFile);
+    }
+    
+    @Test
+    public void undo_AfterUnallowedCommand_NoChange() {
+        createEmptyFile("output_undo_AfterUnallowedCommand.txt");
+        logic.processCommand("load testing/input_undo.txt");
+        
+        Result undoAfterLoad = logic.processCommand("undo");
+        assertEquals(Command.CommandType.UNDO, undoAfterLoad.getCommandType());
+        assertEquals(false, undoAfterLoad.isSuccess());
+        
+        logic.processCommand("save output_undo_AfterUnallowedCommand.txt");
+
+        Result undoAfterSave = logic.processCommand("undo");
+        assertEquals(Command.CommandType.UNDO, undoAfterSave.getCommandType());
+        assertEquals(false, undoAfterSave.isSuccess());
+        
+        logic.processCommand("search e");
+        Result undoAfterSearch = logic.processCommand("undo");
+        assertEquals(Command.CommandType.UNDO, undoAfterSearch.getCommandType());
+        assertEquals(false, undoAfterSearch.isSuccess());
+        
+        logic.processCommand("home");
+        Result undoAfterHome = logic.processCommand("undo");
+        assertEquals(Command.CommandType.UNDO, undoAfterHome.getCommandType());
+        assertEquals(false, undoAfterHome.isSuccess());
+                
+        File expectedFile = new File("testing/expected_undo_AfterUnallowedCommand.txt");
+        File actualFile = new File("output_undo_AfterUnallowedCommand.txt");
+        FileAssert.assertEquals(expectedFile, actualFile);
+    }
+    
+    @Test
+    public void redo_AfterUndo_ReturnToCurrentState() {
+        // TODO
+    }
+    
+    @Test
+    public void redo_AfterUnallowedCommand_NoChange() {
+        // TODO
+    }
+        
     private static File createEmptyFile(String fileName) {
         File file = new File(fileName);
         try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(file))) {
@@ -218,6 +316,20 @@ public class LogicTest {
         try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(file))) {
             for (Task task : results) {
                 String str = task.toString();
+                buffWriter.append(str);
+                buffWriter.newLine();
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return file;
+    }
+    
+    private static File saveSearchDoneResults(String fileName, ArrayList<Task> results) {
+        File file = createEmptyFile(fileName);
+        try (BufferedWriter buffWriter = new BufferedWriter(new FileWriter(file))) {
+            for (Task task : results) {
+                String str = task.toStringIgnoreId();
                 buffWriter.append(str);
                 buffWriter.newLine();
             }

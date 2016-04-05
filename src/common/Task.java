@@ -11,6 +11,7 @@ public class Task implements Comparable<Task> {
     private static final int LESS_THAN = -1;
     private static final int GREATER_THAN = 1;
     private static final String TASK_STRING = "%s|%s|%s|%s|%s|%s";
+    private static final String TASK_STRING_NO_ID = "%s|%s|%s|%s|%s";
     
     private String description;
     private int id;
@@ -304,6 +305,24 @@ public class Task implements Comparable<Task> {
             catStr += cat;
         }
         String task = String.format(TASK_STRING, description, id,
+                startStr, endStr, catStr, isImportant);
+        return task;
+    }
+    
+    public String toStringIgnoreId() {
+        String startStr = null;
+        if (start != null) {
+            startStr = formatter.format(start);
+        }
+        String endStr = null;
+        if (end != null) {
+            endStr = formatter.format(end);
+        }
+        String catStr = null;
+        for (String cat : categories) {
+            catStr += cat;
+        }
+        String task = String.format(TASK_STRING_NO_ID, description,
                 startStr, endStr, catStr, isImportant);
         return task;
     }
