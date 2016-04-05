@@ -159,7 +159,7 @@ public class LogicTest {
         File actualFile;
         
         Result noSpace = logic.processCommand("search");
-        actualFile = saveSearchResults("output_search_NoParam", noSpace.getResults());
+        actualFile = saveSearchResults("output_search_NoParam.txt", noSpace.getResults());
         assertEquals(Command.CommandType.SEARCH, noSpace.getCommandType());
         FileAssert.assertEquals(expectedFile, actualFile);
 
@@ -188,33 +188,67 @@ public class LogicTest {
     
     @Test
     public void search_DateExists_DisplayMatching() {
-        logic.processCommand("load testing/input_searchDone.txt");
+        logic.processCommand("load testing/input_search.txt");
         File expectedFile = new File("testing/expected_search_DateExists.txt");
         File actualFile;
         
-        Result date = logic.processCommand("search 07/07/2016");
+        Result date = logic.processCommand("search start 07/07/2016");
         actualFile = saveSearchResults("output_search_DateExists.txt",
                 date.getResults());
         FileAssert.assertEquals(expectedFile, actualFile);
 
-        Result dateWithWhitespace = logic.processCommand("search 07/07/2016   ");
+        Result dateWithWhitespace = logic.processCommand("search start 07/07/2016   ");
         actualFile = saveSearchResults("output_search_DateExists.txt",
                 dateWithWhitespace.getResults());
         FileAssert.assertEquals(expectedFile, actualFile);
     }
+    
+    @Test
+    public void search_CategoryExists_DisplayMatching() {
+        logic.processCommand("load testing/input_search.txt");
+        File expectedFile = new File("testing/expected_search_CategoryExists.txt");
+        File actualFile;
+        
+        Result category = logic.processCommand("search #Zzzzz");
+        actualFile = saveSearchResults("output_search_CategoryExists.txt",
+                category.getResults());
+        FileAssert.assertEquals(expectedFile, actualFile);
 
+        Result categoryWithWhitespace = logic.processCommand("search #Zzzzz   ");
+        actualFile = saveSearchResults("output_search_CategoryExists.txt",
+                categoryWithWhitespace.getResults());
+        FileAssert.assertEquals(expectedFile, actualFile);
+    }
+
+    @Test
+    public void searchDone_NoParam_DisplayAll() {
+        logic.processCommand("load testing/input_search.txt");
+        File expectedFile = new File("testing/expected_searchDone_NoParam.txt");
+        File actualFile;
+        
+        Result noSpace = logic.processCommand("searchdone");
+        actualFile = saveSearchDoneResults("output_searchDone_NoParam.txt", noSpace.getResults());
+        assertEquals(Command.CommandType.SEARCHDONE, noSpace.getCommandType());
+        FileAssert.assertEquals(expectedFile, actualFile);
+
+        Result hasWhitespace = logic.processCommand("searchdone  ");
+        actualFile = saveSearchDoneResults("output_searchDone_NoParam.txt", hasWhitespace.getResults());
+        assertEquals(Command.CommandType.SEARCHDONE, hasWhitespace.getCommandType());
+        FileAssert.assertEquals(expectedFile, actualFile);
+    }
+    
     @Test
     public void searchDone_DateExists_DisplayMatching() {
         logic.processCommand("load testing/input_searchDone.txt");
         File expectedFile = new File("testing/expected_searchDone_DateExists.txt");
         File actualFile;
         
-        Result date = logic.processCommand("searchdone 07/07/2016");
+        Result date = logic.processCommand("searchdone start 07/07/2016");
         actualFile = saveSearchDoneResults("output_searchDone_DateExists.txt",
                 date.getResults());
         FileAssert.assertEquals(expectedFile, actualFile);
 
-        Result dateWithWhitespace = logic.processCommand("searchdone 07/07/2016   ");
+        Result dateWithWhitespace = logic.processCommand("searchdone start 07/07/2016   ");
         actualFile = saveSearchDoneResults("output_searchDone_DateExists.txt",
                 dateWithWhitespace.getResults());
         FileAssert.assertEquals(expectedFile, actualFile);

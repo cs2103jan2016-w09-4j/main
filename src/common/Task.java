@@ -300,12 +300,12 @@ public class Task implements Comparable<Task> {
         if (end != null) {
             endStr = formatter.format(end);
         }
-        String catStr = null;
+        String catStr = "";
         for (String cat : categories) {
-            catStr += cat;
+            catStr += "#" + cat;
         }
         String task = String.format(TASK_STRING, description, id,
-                startStr, endStr, catStr, isImportant);
+                startStr, endStr, catStr.isEmpty() ? null : catStr, isImportant);
         return task;
     }
     
@@ -318,12 +318,12 @@ public class Task implements Comparable<Task> {
         if (end != null) {
             endStr = formatter.format(end);
         }
-        String catStr = null;
+        String catStr = "";
         for (String cat : categories) {
-            catStr += cat;
+            catStr += "#" + cat;
         }
         String task = String.format(TASK_STRING_NO_ID, description,
-                startStr, endStr, catStr, isImportant);
+                startStr, endStr, catStr.isEmpty() ? null : catStr, isImportant);
         return task;
     }
     
