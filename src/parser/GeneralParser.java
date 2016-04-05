@@ -36,7 +36,7 @@ public class GeneralParser {
 
             DescriptionParser details = new DescriptionParser(description);
             return new Command(CommandType.EDIT, Integer.parseInt(firstWord),
-                    details.getDescription(), details.getStartTime(), details.getEndTime());
+                    details.getDescription(), details.getStartTime(), details.getEndTime(), details.getCategories());
         } else if (command.startsWith("done")) {
             return new Command(CommandType.DONE, Integer.parseInt(commandString.substring(4).trim()));
 

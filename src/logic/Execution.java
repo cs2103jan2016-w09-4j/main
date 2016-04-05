@@ -104,7 +104,6 @@ public class Execution {
 			for (String cat : inputCategories) {
 				if (cat.equalsIgnoreCase(CATEGORY_PRIORITY)) {
 					newTask.setImportance(true);
-
 					// update the number of task in priority category
 					Iterator<Entry<String, Integer>> iterator = categories.iterator();
 					updateNumOfTaskForPriority(iterator);
@@ -345,7 +344,6 @@ public class Execution {
 				boolean put = true;
 				for (String category : categories) {
 					category = toSentenceCase(category);
-					System.out.println(category);
 					if (!task.getCategories().contains(category)) {
 						put = false;
 						break;						
@@ -524,7 +522,7 @@ public class Execution {
 	}
 
 	// Sorts the list of tasks and updates task id
-	private void sortList(ArrayList<Task> thisList) {
+	public void sortList(ArrayList<Task> thisList) {
 		Collections.sort(thisList);
 		int id = 1;
 		for (Task task : thisList) {

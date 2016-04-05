@@ -1,6 +1,9 @@
 package common;
 
 import java.util.ArrayList;
+
+import common.Command.CommandType;
+
 import java.time.LocalDateTime;
 
 public class Command {
@@ -45,6 +48,16 @@ public class Command {
         this.description = description;
     }
 
+    public Command(CommandType type, int id, String description, LocalDateTime start, LocalDateTime end,  // edit
+			ArrayList<String> categories) {
+    	  this.type = type;
+          this.id = id;
+          this.description = description;
+          this.start = start;
+          this.end = end;
+          this.categories = categories;
+	}
+    
     public Command(CommandType type, int id, String description,  LocalDateTime start, LocalDateTime end) { // edit
         this.type = type;
         this.id = id;
@@ -57,7 +70,7 @@ public class Command {
         this.description = description;
     }
 
-    @Override
+	@Override
     public boolean equals(Object x) {
         if (!(x instanceof Command))
             return false;

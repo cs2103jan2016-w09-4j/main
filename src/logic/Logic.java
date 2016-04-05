@@ -85,8 +85,8 @@ public class Logic {
             	}
             	
             case HOME :
-                list = storage.getMainList();
-                execution.setMainList(list);
+                list = execution.getMainList();
+                execution.sortList(list);
                 execution.updateTaskProgress();
                 return new Result(commandType, true, "Return home", list);
                 
