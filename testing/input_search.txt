@@ -4,7 +4,7 @@ CURRENT TASKS:
 Description: AAAAA
 Start: 
 End: 07/07/2016 12:00
-Category: 
+Category: #Zzzzz
 -----------------------------------
 Description: AAAAA BBBBB
 Start: 01/01/2016 12:00
@@ -19,12 +19,12 @@ Category:
 Description: aaaaa
 Start: 
 End: 
-Category: 
+Category: #Zzzzz
 -----------------------------------
 Description: bbbbb
 Start: 
 End: 
-Category: 
+Category: #Zzzzz #Yyyyy
 -----------------------------------
 
 =================
@@ -33,7 +33,7 @@ COMPLETED TASKS:
 Description: CCCCC
 Start: 
 End: 07/07/2016 12:00
-Category: 
+Category: #Zzzzz
 -----------------------------------
 Description: CCCCC BBBBB
 Start: 01/01/2016 12:00
@@ -48,10 +48,10 @@ Category:
 Description: ccccc
 Start: 
 End: 
-Category: 
+Category: #Zzzzz
 -----------------------------------
 Description: bbbbb
 Start: 
 End: 
-Category: 
+Category: #Zzzzz #Yyyyy
 -----------------------------------

@@ -1,5 +1,3 @@
 AAAAA|1|null|07/07/2016 12:00|#Zzzzz|false
-AAAAA BBBBB|2|01/01/2016 12:00|31/12/2016 12:00|null|false
-aaa111|3|07/07/2016 12:00|null|null|false
 aaaaa|4|null|null|#Zzzzz|false
 bbbbb|5|null|null|#Zzzzz#Yyyyy|false
