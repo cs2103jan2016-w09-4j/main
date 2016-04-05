@@ -239,7 +239,7 @@ public class LogicTest {
     
     @Test
     public void searchDone_DateExists_DisplayMatching() {
-        logic.processCommand("load testing/input_searchDone.txt");
+        logic.processCommand("load testing/input_search.txt");
         File expectedFile = new File("testing/expected_searchDone_DateExists.txt");
         File actualFile;
         
@@ -256,7 +256,7 @@ public class LogicTest {
     
     @Test
     public void searchDone_KeywordExists_DisplayMatching() {
-        logic.processCommand("load testing/input_searchDone.txt");
+        logic.processCommand("load testing/input_search.txt");
         File expectedFile = new File("testing/expected_searchDone_KeywordExists.txt");
         File actualFile;
         
