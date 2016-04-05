@@ -19,7 +19,7 @@
 }
 
 .header {
-    -fx-font-size: 20;
+    -fx-font-size: 25;
     -fx-font-family: "Roboto Slab Regular", "Segoe UI", sans-serif;
     -fx-alignment: center-left;
     -fx-label-padding: 5;

@@ -10,10 +10,10 @@
 }
 
 .label {
-    -fx-font-size: 15;
+    -fx-font-size: 18;
     -fx-font-family: "Roboto Regular", "Segoe UI", sans-serif;
     -fx-alignment: center-left;
-    -fx-label-padding: 3;
+    -fx-label-padding: 3 4 3 4;
 }
 
 .list-view {
@@ -23,7 +23,7 @@
 }
 
 .list-cell {
-    -fx-padding: 2;
+    -fx-padding: 3 0 3 0;
     -fx-background-color: transparent;
 }
 
@@ -83,7 +83,7 @@
  ************************/
 
 .header {
-    -fx-font-size: 20;
+    -fx-font-size: 25;
     -fx-font-family: "Roboto Slab Regular", "Segoe UI", sans-serif;
     -fx-alignment: center-left;
     -fx-label-padding: 5;
@@ -91,31 +91,34 @@
 
 .panel {
     -fx-spacing: 5;
-    -fx-padding: 10;
+    -fx-padding: 5 15 5 15;
     -fx-background-color: #FFFFFF;
+}
+
+.entry-empty {
+    -fx-padding: 3 5 3 5;
+    -fx-background-color: #F2F2F2;
+    -fx-pref-width: infinity;
 }
 
 .entry-task {
     /* prevents ListView from creating a horizontal scroll bar
      * when task description is wider than width of ListView*/
     -fx-pref-width: 1;
-    -fx-padding: 2;
+    -fx-padding: 3 5 3 5;
     -fx-background-color: #F2F2F2;
-    -fx-background-radius: 0;
 }
 
 .entry-task-overdue {
     -fx-pref-width: 1;
-    -fx-padding: 2;
+    -fx-padding: 3 5 3 5;
     -fx-background-color: #FFAB8E;
-    -fx-background-radius: 0;
 }
 
 .entry-task-modified {
     -fx-pref-width: 1;
-    -fx-padding: 2;
+    -fx-padding: 3 5 3 5;
     -fx-background-color: #A1E7C6;
-    -fx-background-radius: 0;
 }
 
 .desc {
@@ -128,7 +131,7 @@
 }
 
 .details-text {
-    -fx-font-size: 13;
+    -fx-font-size: 15;
     -fx-fill: #888888;
 }
 

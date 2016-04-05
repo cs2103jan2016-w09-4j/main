@@ -62,7 +62,7 @@ public class SidebarController extends VBox {
         ArrayList<Category> categories = main.getCategories();
         updateCategories(categories);
         categoryPanel.getStyleClass().add("panel-cat");
-        categoryPanel.setMinWidth(150);
+        categoryPanel.setMinWidth(180);
         categoryPanel.setFocusTraversable(true);
     }
     

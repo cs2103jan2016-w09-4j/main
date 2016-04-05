@@ -31,7 +31,7 @@ public class MainApp extends Application {
     
     private static final int WINDOW_WIDTH_MIN = 400;
     private static final int WINDOW_HEIGHT_MIN = 300;
-    private static final int WINDOW_WIDTH_DEFAULT = 600;
+    private static final int WINDOW_WIDTH_DEFAULT = 650;
     private static final int WINDOW_HEIGHT_DEFAULT = 500;
     
     private static final String RESOURCES_ICON_PROGRAM = "/icons/logo-smaller.png";
