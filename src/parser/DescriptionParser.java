@@ -92,6 +92,15 @@ public class DescriptionParser {
 					description = input;
 				}
 			}
+		} else if (commandType.equals("searchdone")) {
+			if (!input.isEmpty()) {
+				/*if (input.charAt(0) == '#') {
+					
+				}*/
+				description = input;
+			} else { 
+				description = "";
+			}
 		}
 	}
 

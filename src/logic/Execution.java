@@ -317,14 +317,15 @@ public class Execution {
 		clearModifiedStatus();
 		searchResults.clear();
 
-		for (int i = 0; i < mainList.size(); i++) {
-			String descriptionLowerCase = mainList.get(i).getDescription().toLowerCase();
-			String keywordLowerCase = keyword.toLowerCase();
-			if (descriptionLowerCase.contains(keywordLowerCase)) {
-				searchResults.add(mainList.get(i));
-			}
+		if (keyword != null) {
+			for (int i = 0; i < mainList.size(); i++) {
+				String descriptionLowerCase = mainList.get(i).getDescription().toLowerCase();
+				String keywordLowerCase = keyword.toLowerCase();
+				if (descriptionLowerCase.contains(keywordLowerCase)) {
+					searchResults.add(mainList.get(i));
+				}
+			} 
 		}
-
 		// post-processing
 		updateDictionary(keyword);
 		canUndo = false;
@@ -339,10 +340,10 @@ public class Execution {
 		// pre-processing
 		clearModifiedStatus();
 		searchResults.clear();
-		
 		if (categories != null) {
 			for (Task task : mainList) {
-				if (categories.contains(task.getCategories())) {
+				if (categories.get(0).equalsIgnoreCase(task.getCategories().get(0))) {
+					System.out.println("I am here");
 					searchResults.add(task);
 				}
 			}
@@ -535,10 +536,12 @@ public class Execution {
 	}
 
 	private void updateDictionary(String text) {
-		text = text.toLowerCase();
-		updateTaskDictionary(text);
-		updateWordDictionary(text);
-		saveAutoCompletionList();
+		if (text != null) {
+			text = text.toLowerCase();
+			updateTaskDictionary(text);
+			updateWordDictionary(text);
+			saveAutoCompletionList();
+		}
     }
 
 	private void initializeDictionary() {

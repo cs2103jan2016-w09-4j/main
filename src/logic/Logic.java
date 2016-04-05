@@ -106,9 +106,20 @@ public class Logic {
                 return execution.completeCommand(taskID);
                 
             case SEARCHDONE :
-                list = execution.getDoneList();
-                return new Result(commandType, true, "Showing completed tasks", list);
-
+            	if (command.getDescription().length() == 0) {
+            		list = execution.getDoneList();
+            		return new Result(commandType, true, "Showing completed tasks", list);
+            	} else {
+            		ArrayList<Task> searchDoneResult = new ArrayList<Task>();
+            		list = execution.getDoneList();
+            		for (Task task : list) {
+            			if (task.getDescription().contains(command.getDescription())) {
+            				searchDoneResult.add(task);
+            			}
+            		}
+            		return new Result(commandType, true, "Showing completed tasks", searchDoneResult);
+            	}
+            	
             case HELP :
                 return new Result(commandType, true, "Help", null);
                 

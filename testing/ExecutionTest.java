@@ -27,7 +27,8 @@ public class ExecutionTest{
      //   loadTasks_WithFileName_Success();
         addTask_AllTaskTypes_AddedInOrder();
         editTask_AllTaskTypes_EditedTheSelectedTask();
-      //  deleteTask_AllTaskTypes_DeletedTheSelectedTask();
+        deleteTask_AllTaskTypes_DeletedTheSelectedTask();
+        doneTask_AllTaskTypes_DoneTheSelectedTask();
       //  saveTasks_WithFileName_Success();
       //  loadTasks_WithFileName_Success();
     }
