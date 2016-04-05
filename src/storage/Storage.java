@@ -20,13 +20,16 @@ public class Storage {
 	private static final String DEFAULT_TEXTFILE = "MyTasks.txt";
 	private static final String DEFAULT_AUTOCOMPLETION_FILE = "AutoCompletion.txt";
 
-	private static final int NUMBER_OF_FIELDS = 4;
+	private static final int NUMBER_OF_FIELDS = 5;
 
 	private static final String FIELDS_DESCRIPTION = "Description:";
 	private static final String FIELDS_START = "Start:";
 	private static final String FIELDS_END = "End:";
 	private static final String FIELDS_CATEGORY = "Category:";
+	private static final String FIELDS_PRIORITY = "Priority:";
 	private static final String FIELDS_CATEGORY_INDICATOR = "#";
+	private static final String FIELDS_NO_PRIORITY = "No";
+	private static final String FIELDS_HAVE_PRIORITY = "Yes";
 	private static final String FIELDS_BREAKLINE = "-----------------------------------";
 	private static final String FIELDS_HEADERLINE = "=================";
 
@@ -511,6 +514,15 @@ public class Storage {
 						setMultipleCategories(currentTask, category);
 					}
 					countFields++;
+					
+				} else if (field.equals(FIELDS_PRIORITY)) {
+					String checkPriority = splitLine[1];
+					if (checkPriority.equalsIgnoreCase(FIELDS_HAVE_PRIORITY)) {
+						currentTask.setImportance(true);
+					} else if (checkPriority.equalsIgnoreCase(FIELDS_NO_PRIORITY)) {
+						currentTask.setImportance(false);
+					}
+					countFields++;
 				}
 			}
 
@@ -543,40 +555,39 @@ public class Storage {
 
 	// This method converts Task to String object for writing purpose
 	public ArrayList<String> convertTaskToString(ArrayList<Task> taskList) {
-		String linesOfCategory = "";
+		String linesOfCategory;
 		String description, start = null, end = null;
-		String descriptionLine, startLine, endLine, categoryLine;
-		Task task1;
+		String descriptionLine, startLine, endLine, categoryLine, priorityLine;
+		Task task;
 		ArrayList<String> stringList = new ArrayList<String>();
 
 		for (int i = 0; i < taskList.size(); i++) {
 
-			task1 = taskList.get(i);
+			task = taskList.get(i);
 			linesOfCategory = "";
-			description = "";
-			start = "";
-			end = "";
 
 			// get description from task
-			description = task1.getDescription();
+			description = task.getDescription();
 			descriptionLine = FIELDS_DESCRIPTION + " " + description;
 
-			// get start from task
-			if (task1.getStartDateString().isEmpty()) {
+			// get start date/time from task
+			if (task.getStartDateString().isEmpty()) {
 				startLine = FIELDS_START + " ";
 			} else {
-				start = task1.getStartDateString();
+				start = task.getStartDateString();
 				startLine = FIELDS_START + " " + start;
 			}
-
-			if (task1.getEndDateString().isEmpty()) {
+			
+			// get end date/time from task
+			if (task.getEndDateString().isEmpty()) {
 				endLine = FIELDS_END + " ";
 			} else {
-				end = task1.getEndDateString();
+				end = task.getEndDateString();
 				endLine = FIELDS_END + " " + end;
 			}
-
-			ArrayList<String> categoryList = task1.getCategories();
+			
+			// get category
+			ArrayList<String> categoryList = task.getCategories();
 			if (categoryList.isEmpty()) {
 				categoryLine = FIELDS_CATEGORY + " ";
 			} else {
@@ -589,11 +600,21 @@ public class Storage {
 					categoryLine = FIELDS_CATEGORY + linesOfCategory;
 				}
 			}
+			
+			// get priority
+			boolean isPriority = task.isImportant();
+			
+			if (isPriority) {
+				priorityLine = FIELDS_PRIORITY + " " + FIELDS_HAVE_PRIORITY;
+			} else {
+				priorityLine = FIELDS_PRIORITY + " " + FIELDS_NO_PRIORITY;
+			}
 
 			stringList.add(descriptionLine);
 			stringList.add(startLine);
 			stringList.add(endLine);
 			stringList.add(categoryLine);
+			stringList.add(priorityLine);
 
 			String breakLine = FIELDS_BREAKLINE;
 			stringList.add(breakLine);
