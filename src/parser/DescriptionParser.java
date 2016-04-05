@@ -23,6 +23,28 @@ public class DescriptionParser {
 
 		DateTimeParser dateTimeParser = new DateTimeParser();
 
+        ArrayList<String> storeCategories = new ArrayList<String>();
+
+        if (categoryIndex != -1) {
+            String categoryString = input.substring(categoryIndex,input.length());
+            String[] splitCategories = categoryString.split(" ");
+            String categoryName;
+            if (splitCategories.length == 1) {
+                categoryName = getUserInput(categoryString, "#");
+                storeCategories.add(categoryName);
+
+            } else {
+                for (int i = 0; i < splitCategories.length; i++) {
+                    categoryName = getUserInput(splitCategories[i], "#");
+                    storeCategories.add(categoryName.toLowerCase());
+                }
+            }
+
+            setCategories(storeCategories);
+        }
+
+        if (categoryIndex!=-1) input = input.substring(0, categoryIndex).trim();
+
 		if (startTimeIndex != -1) {
 			int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
 			String startTimeString = input.substring(startTimeIndex + 5, startTimeCutIndex);
@@ -42,26 +64,6 @@ public class DescriptionParser {
 			endTimeIndex = input.length();
 		}
 		description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
-		ArrayList<String> storeCategories = new ArrayList<String>();
-
-		if (categoryIndex != -1) {
-			String categoryString = input.substring(categoryIndex,input.length());
-			String[] splitCategories = categoryString.split(" ");
-			String categoryName;
-			if (splitCategories.length == 1) {
-				categoryName = getUserInput(categoryString, "#");
-				storeCategories.add(categoryName);
-
-			} else {
-				for (int i = 0; i < splitCategories.length; i++) {
-					categoryName = getUserInput(splitCategories[i], "#");
-					storeCategories.add(categoryName);
-				}
-			}
-
-			setCategories(storeCategories);
-
-		}
 	}
 
 	private static String getUserInput(String line, String toReplace) {
