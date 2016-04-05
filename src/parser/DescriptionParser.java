@@ -17,8 +17,8 @@ public class DescriptionParser {
 
 		input = input.trim();
 
-		int startTimeIndex = input.indexOf("start");
-		int endTimeIndex = input.indexOf("end");
+		int startTimeIndex = input.indexOf(" start ");
+		int endTimeIndex = input.indexOf(" end ");
 		int categoryIndex = input.indexOf("#");
 
 		DateTimeParser dateTimeParser = new DateTimeParser();
@@ -47,13 +47,13 @@ public class DescriptionParser {
 
 		if (startTimeIndex != -1) {
 			int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
-			String startTimeString = input.substring(startTimeIndex + 5, startTimeCutIndex);
+			String startTimeString = input.substring(startTimeIndex + 6, startTimeCutIndex);
 			startTime = dateTimeParser.parse(startTimeString, false);
 		}
 
 		if (endTimeIndex != -1) {
 			int endTimeCutIndex = (startTimeIndex > endTimeIndex) ? startTimeIndex : input.length();
-			String endTimeString = input.substring(endTimeIndex + 3, endTimeCutIndex);
+			String endTimeString = input.substring(endTimeIndex + 4, endTimeCutIndex);
 			endTime = dateTimeParser.parse(endTimeString, true);
 		}
 
