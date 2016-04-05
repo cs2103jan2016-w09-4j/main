@@ -1,6 +1,7 @@
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,7 +26,8 @@ public class ParserTest {
     @Test
     public void parseCommand_NoTime_AddCommand() {
         GeneralParser parser = new GeneralParser();
-        Command expected = new Command(CommandType.ADD, "eat", LocalDateTime.of(LocalDate.of(2010, 10, 20), LocalTime.of(0, 0)), null);
+        Command expected = new Command(CommandType.ADD, "eat", LocalDateTime.of(LocalDate.of(2010, 10, 20), LocalTime.of(0, 0)),
+                null, new ArrayList<String>());
         Command actual = parser.parseCommand("add eat start 20-10-2010");
         assertEquals(expected.getType(), actual.getType());
         assertEquals(expected.getDescription(), actual.getDescription());
