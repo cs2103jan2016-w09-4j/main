@@ -22,7 +22,6 @@ import ui.MainApp;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
@@ -31,12 +30,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 public class DisplayController extends HiddenSidesPane {
@@ -50,7 +47,6 @@ public class DisplayController extends HiddenSidesPane {
     @FXML
     GridPane catList, helpList;
     private VBox todayList, otherList;
-    private Popup feedback;
 
     private static final int UNMODIFIED = -1;
     private static final String HEADER_COMPLETED_SINGLE = " completed task";
@@ -74,7 +70,6 @@ public class DisplayController extends HiddenSidesPane {
         initializeTaskPanel();
         initializeHelpPanel();
         initializeSidebar();
-        initializePopup();
     }
 
     private void initializeLogger() {
@@ -150,17 +145,6 @@ public class DisplayController extends HiddenSidesPane {
         ArrayList<Category> categories = main.getCategories();
         updateSidebar(categories);
         this.setTriggerDistance(50);
-    }
-    
-    private void initializePopup() {
-        feedback = new Popup();
-        feedback.setAutoHide(true);
-        // hide feedback popup on any key press
-        feedback.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent event) {
-                feedback.hide();
-            }
-        });
     }
     
     /***********************************************

@@ -1,12 +1,9 @@
 package ui;
 
-import java.util.logging.Level;
-
-import common.Command;
 import common.Result;
-import common.Command.CommandType;
-import javafx.scene.image.Image;
+import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
@@ -27,7 +24,14 @@ public class Feedback {
     
     public Feedback(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.popup = new Popup();
+        popup = new Popup();
+        popup.setAutoHide(true);
+        // hide feedback popup on any key press
+        popup.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent event) {
+                popup.hide();
+            }
+        });
     }
     
     public void displayFeedback(Result result) {
