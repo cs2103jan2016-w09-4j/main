@@ -125,16 +125,17 @@
 
 .desc {
     -fx-wrap-text: true;
-    -fx-text-alignment: justify;
+    -fx-text-alignment: left;
 }
 
 .details {
     -fx-alignment: center-left;
 }
 
-.details-text {
+.details > .label {
+    -fx-wrap-text: true;
     -fx-font-size: 15;
-    -fx-fill: #888888;
+    -fx-text-fill: #000000;
 }
 
 .table {

@@ -19,7 +19,7 @@
             <Label text="Categories" styleClass="header" />
             <ScrollPane>
                 <content>
-                    <GridPane fx:id="catList" styleClass="sidebar-list">
+                    <GridPane fx:id="categoryList" styleClass="sidebar-list">
                         <columnConstraints>
                             <ColumnConstraints hgrow="ALWAYS" halignment="LEFT" />
                             <ColumnConstraints halignment="RIGHT" />
@@ -32,6 +32,15 @@
     
     <fx:define>
         <VBox fx:id="taskPanel" styleClass="panel">
+            <ImageView styleClass="sidebar-button">
+                <image>
+                    <Image url="@../../resources/icons/sidebar.png" />
+                </image>
+            </ImageView>
+            <Label text="Today" minHeight="-Infinity" styleClass="header" />
+            <VBox fx:id="todayList"></VBox>
+            <Label text="Others" minHeight="-Infinity" styleClass="header" />
+            <VBox fx:id="otherList"></VBox>
         </VBox>
     </fx:define>
     <fx:define>
@@ -44,7 +53,7 @@
     </fx:define>
     <fx:define>
         <VBox fx:id="helpPanel" styleClass="panel">
-            <Label text="Help" styleClass="header" />
+            <Label text="Help" minHeight="-Infinity" styleClass="header" />
             <ScrollPane>
                 <content>
                     <GridPane fx:id="helpList" styleClass="table">
