@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Logic {
@@ -28,7 +27,6 @@ public class Logic {
     private static Logic logic = new Logic();
     
     private ArrayList<Task> list;
-    private ArrayList<Task> weekList;
     
 	private static final String CATEGORY_PRIORITY = "priority";
     private static final int MAX_PREDICTIONS = 5;
@@ -43,7 +41,6 @@ public class Logic {
         this.storage = new Storage();
         this.execution = new Execution();
         this.list = storage.getMainList();
-        weekList = new ArrayList<Task>();
     }
 
     private Result execute(Command command){
@@ -63,7 +60,6 @@ public class Logic {
             }
         }
         
-        sortWeekList();
         execution.updateTaskProgress();
         
         switch(commandType) {
@@ -94,7 +90,8 @@ public class Logic {
             	}
             	
             case HOME :
-                list = execution.getMainList();
+            	execution.sortWeekList();
+                list = execution.getWeekList();
                 execution.sortList(list);
                 execution.updateTaskProgress();
                 return new Result(commandType, true, "Return home", list);
@@ -116,22 +113,32 @@ public class Logic {
                 
             case SEARCHDONE :
             	if (categories != null) {
-            		list = execution.getDoneList();
             		ArrayList<Task> searchDoneResult = new ArrayList<Task>();
-        			for (Task task : list) {
-        				boolean put = true;
-        				for (String category : categories) {
-        					category = execution.toSentenceCase(category);
-        					if (!task.getCategories().contains(category)) {
-        						put = false;
-        						break;						
-        					}
+            		list = execution.getDoneList();
+            		if (categories.get(0).equals(CATEGORY_PRIORITY)) {
+            			for (Task task : list) {
+            				if (task.isImportant()) {
+            					searchDoneResult.add(task);
+            				}
+            			}
+            		} else { 
+            			for (Task task : list) {
+            				boolean put = true;
+            				for (String category : categories) {
+            					category = execution.toSentenceCase(category);
+            					if (!task.getCategories().contains(category)) {
+            						put = false;
+            						break;						
+            					}
+            				}
+            				if (put) {
+        						searchDoneResult.add(task);		
+            				}	
         				}
-        				if (put) {
-        					searchDoneResult.add(task);					
-        				}
-        			}
-        			return new Result(commandType, true, "Showing completed tasks", searchDoneResult);
+            		}	
+            		
+        		return new Result(commandType, true, "Showing completed tasks", searchDoneResult);
+        		
         		} else if (command.getDescription().length() == 0) {
             		list = execution.getDoneList();
             		return new Result(commandType, true, "Showing completed tasks", list);
@@ -146,7 +153,7 @@ public class Logic {
             			}
             		}
             		return new Result(commandType, true, "Showing completed tasks", searchDoneResult);
-            	}
+            	} 
             	
             case HELP :
                 return new Result(commandType, true, "Help", null);
@@ -191,10 +198,6 @@ public class Logic {
         return execution.getDoneList();
     }
     
-    public ArrayList<Task> getWeekList() {
-    	return weekList;
-    }
-
     public ArrayList<Category> getCategories() {
         TreeSet<Entry<String, Integer>> list = execution.getCategories();
         ArrayList<Category> categories = new ArrayList<Category>();
@@ -226,28 +229,6 @@ public class Logic {
         return null;
     }
     
-    private void sortWeekList(){
-    	
-    	weekList.clear();
-    	ArrayList<Task> list = execution.getMainList();
-    	
-    	LocalDate today = LocalDate.now();
-    	LocalDate weekToday = today.plusWeeks(1);
-    	
-		for (Task task : list){
-			LocalDateTime taskEnd = task.getEndDate();
-			if(taskEnd != null){
-				
-				LocalDate taskEndDate = taskEnd.toLocalDate();
-				if(taskEndDate != null){
-					if (today.compareTo(taskEndDate) <= 0 && taskEndDate.compareTo(weekToday) < 0){
-						weekList.add(task);
-					}		
-				}
-			}
-		}
-    }
-
     //@@author Ruoling
     private ArrayList<String> getPredictionsForAdd(String[] params) {
         // Predictions based on task descriptions that user previously entered

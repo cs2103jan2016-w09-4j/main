@@ -29,6 +29,7 @@ public class Execution {
     private static ArrayList<Task> previousCopyOfDoneList;
 	private static ArrayList<Task> copyOfMainListForRedo;
     private static ArrayList<Task> copyOfDoneListForRedo;
+    private ArrayList<Task> weekList;
 	private boolean canUndo = false;
 	private boolean canRedo = false;
 
@@ -69,6 +70,7 @@ public class Execution {
         previousCopyOfDoneList = new ArrayList<Task>();
 		copyOfMainListForRedo = new ArrayList<Task>();
         copyOfDoneListForRedo = new ArrayList<Task>();
+        weekList = new ArrayList<Task>();
 
 		categories = new TreeSet<Entry<String, Integer>>(keyComparator);
 		updateTaskProgress();
@@ -146,8 +148,9 @@ public class Execution {
 		} catch (IOException e) {
 			return new Result(CommandType.ADD, false, "Couldn't save", mainList);
 		}
-
-		return new Result(CommandType.ADD, true, "Added task", mainList);
+		
+		sortWeekList();
+		return new Result(CommandType.ADD, true, "Added task", weekList);
 	}
 
 	private boolean updateNumOfTaskForCat(String cat, boolean isAdded, Iterator<Entry<String, Integer>> iterator) {
@@ -207,8 +210,8 @@ public class Execution {
 		} catch (IOException ioe) {
 			return new Result(CommandType.DONE, false, "Couldn't save", mainList);
 		}
-
-		return new Result(CommandType.DONE, true, "Marked as completed", mainList);
+		sortWeekList();
+		return new Result(CommandType.DONE, true, "Marked as completed", weekList);
 	}
 
 	public Result deleteTask(int taskID) {
@@ -237,8 +240,9 @@ public class Execution {
 		} catch (IOException e) {
 			return new Result(CommandType.DELETE, false, "Couldn't save", mainList);
 		}
-
-		return new Result(CommandType.DELETE, true, "Deleted", mainList);
+		
+		sortWeekList();
+		return new Result(CommandType.DELETE, true, "Deleted", weekList);
 	}
 
 	public Result editTask(int taskID, String newDescription, LocalDateTime start, LocalDateTime end,
@@ -313,7 +317,8 @@ public class Execution {
 			return new Result(CommandType.EDIT, false, "Couldn't save", mainList);
 		}
 
-		return new Result(CommandType.EDIT, true, "Edited", mainList);
+		sortWeekList();
+		return new Result(CommandType.EDIT, true, "Edited", weekList);
 	}
 	
 	// overloading method of searchTask to search priority category
@@ -328,6 +333,7 @@ public class Execution {
 			}
 		}
 		
+		searchResults = sortSearchResults(searchResults);
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
 
@@ -350,6 +356,7 @@ public class Execution {
 		canUndo = false;
 		canRedo = false;
 		
+		searchResults = sortSearchResults(searchResults);
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
 	
@@ -376,6 +383,7 @@ public class Execution {
 			}
 		}
 		
+		searchResults = sortSearchResults(searchResults);
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
 
@@ -398,8 +406,9 @@ public class Execution {
 			updateFileDictionary(description);
 			canUndo = false;
 			canRedo = false;
-
-			return new Result(CommandType.SAVE, true, "Saved at " + description, mainList);
+			
+			sortWeekList();
+			return new Result(CommandType.SAVE, true, "Saved at " + description, weekList);
 		} catch (Exception e) {
 			canUndo = false;
 			canRedo = false;
@@ -435,7 +444,8 @@ public class Execution {
 			canUndo = false;
 			canRedo = false;
 			
-			return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
+			sortWeekList();
+			return new Result(CommandType.LOAD, true, "Loaded " + description, weekList);
 		} catch (IOException | ParseException e) {
 			mainList = tempMainList;
 			doneList = tempDoneList;
@@ -501,7 +511,7 @@ public class Execution {
 		} catch (IOException e) {
 			return new Result(CommandType.REDO, false, "Couldn't save", mainList);
 		}
-
+		
 		return new Result(CommandType.REDO, true, "Redone", mainList);
 	}
 
@@ -561,6 +571,46 @@ public class Execution {
 			id++;
 		}
 	}
+	
+	private ArrayList<Task> sortSearchResults(ArrayList<Task> thisList) {
+		Collections.sort(thisList);
+		int id = 1;
+		for (Task task : thisList) {
+			task.setId(id);
+			id++;
+		}
+		return thisList;
+	}
+	
+    public void sortWeekList() {
+    	
+    	weekList.clear();
+    	ArrayList<Task> list = mainList;
+    	
+    	LocalDate today = LocalDate.now();
+    	LocalDate weekToday = today.plusWeeks(1);
+    	
+		for (Task task : list) {
+			LocalDateTime taskEnd = task.getEndDate();
+			if(taskEnd != null) {
+				
+				LocalDate taskEndDate = taskEnd.toLocalDate();
+				if(taskEndDate != null) {
+					if (today.compareTo(taskEndDate) <= 0 && taskEndDate.compareTo(weekToday) < 0){
+						weekList.add(task);
+					}		
+				}
+			}
+		}
+		
+		for (Task task : list) {
+			if (task.getStartDate() == null && task.getEndDate() == null) {
+				weekList.add(task);
+			}
+		}
+		
+		sortList(weekList);
+    }
 
 	// Clears the status of all tasks to be unmodified
 	private void clearModifiedStatus() {
@@ -682,6 +732,10 @@ public class Execution {
 	public ArrayList<Task> getPreviousList() {
 		return previousCopyOfMainList;
 	}
+	
+    public ArrayList<Task> getWeekList() {
+    	return weekList;
+    }
 
 	public TreeSet<Entry<String, Integer>> getTaskDictionary() {
 		return taskDictionary;
