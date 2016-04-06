@@ -270,7 +270,7 @@ public class LogicTest {
                 wordWithWhitespace.getResults());
         FileAssert.assertEquals(expectedFile, actualFile);
     }
-    /* NO IDEA WHATS WRONG HERE
+    
     @Test
     public void undo_AfterAllowedCommand_ReturnToPreviousState() {
         createEmptyFile("output_undo_AfterAllowedCommand.txt");
@@ -293,7 +293,7 @@ public class LogicTest {
         File expectedFile = new File("testing/expected_undo_AfterAllowedCommand.txt");
         File actualFile = new File("output_undo_AfterAllowedCommand.txt");
         FileAssert.assertEquals(expectedFile, actualFile);
-    } */
+    }
     
     @Test
     public void undo_AfterUnallowedCommand_NoChange() {

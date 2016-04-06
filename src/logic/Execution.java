@@ -26,7 +26,9 @@ public class Execution {
 	private static ArrayList<Task> doneList;
 	private static ArrayList<Task> searchResults;
 	private static ArrayList<Task> previousCopyOfMainList;
+    private static ArrayList<Task> previousCopyOfDoneList;
 	private static ArrayList<Task> copyOfMainListForRedo;
+    private static ArrayList<Task> copyOfDoneListForRedo;
 	private boolean canUndo = false;
 	private boolean canRedo = false;
 
@@ -64,7 +66,9 @@ public class Execution {
 		doneList = storage.getCompletedList();
 		searchResults = new ArrayList<Task>();
 		previousCopyOfMainList = new ArrayList<Task>();
+        previousCopyOfDoneList = new ArrayList<Task>();
 		copyOfMainListForRedo = new ArrayList<Task>();
+        copyOfDoneListForRedo = new ArrayList<Task>();
 
 		categories = new TreeSet<Entry<String, Integer>>(keyComparator);
 		updateTaskProgress();
@@ -175,9 +179,11 @@ public class Execution {
 	}
 
 	public Result completeCommand(int taskID) {
+	    System.out.println("Before: " + mainList);
 		// preprocessing
 		clearModifiedStatus();
 		saveMainListForUndo();
+		saveDoneListForUndo();
 
 		// validate user input
 		int index = taskID - 1;
@@ -202,6 +208,7 @@ public class Execution {
 		} catch (IOException ioe) {
 			return new Result(CommandType.DONE, false, "Couldn't save", mainList);
 		}
+        System.out.println("After: " + mainList);
 
 		return new Result(CommandType.DONE, true, "Marked as completed", mainList);
 	}
@@ -453,6 +460,12 @@ public class Execution {
 		mainList.clear();
 		mainList.addAll(previousCopyOfMainList);
 
+        // transfer content from previousCopyOfDoneList to doneList
+        copyOfDoneListForRedo.clear();
+        copyOfDoneListForRedo.addAll(doneList);
+        doneList.clear();
+        doneList.addAll(previousCopyOfDoneList);
+		
 		// post-processing
 		canUndo = false;
 		canRedo = true;
@@ -533,6 +546,11 @@ public class Execution {
 		previousCopyOfMainList.clear();
 		previousCopyOfMainList.addAll(mainList);
 	}
+
+    public void saveDoneListForUndo() {
+        previousCopyOfDoneList.clear();
+        previousCopyOfDoneList.addAll(doneList);
+    }
 
 	// Sorts the list of tasks and updates task id
 	public void sortList(ArrayList<Task> thisList) {
