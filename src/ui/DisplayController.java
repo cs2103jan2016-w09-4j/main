@@ -15,6 +15,7 @@ import java.util.logging.SimpleFormatter;
 import org.controlsfx.control.HiddenSidesPane;
 
 import common.Command.CommandType;
+import common.Category;
 import common.Result;
 import common.Task;
 import ui.MainApp;
@@ -22,6 +23,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.control.Label;
@@ -33,6 +35,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
@@ -44,8 +47,12 @@ public class DisplayController extends HiddenSidesPane {
     private MainApp main;
     private Stage primaryStage;
     
-    private VBox taskPanel, searchPanel, completedPanel, helpPanel;
-    private SidebarController sidebar;
+    @FXML
+    private VBox taskPanel, searchPanel, donePanel, helpPanel;
+    @FXML
+    ListView<VBox> todayList, otherList;
+    @FXML
+    GridPane catList, helpList;
     private Popup feedback;
 
     private static final int UNMODIFIED = -1;
@@ -119,8 +126,8 @@ public class DisplayController extends HiddenSidesPane {
     }
     
     private void initializeCompletedPanel() {
-        completedPanel = new VBox();
-        completedPanel.getStyleClass().add("panel");
+        donePanel = new VBox();
+        donePanel.getStyleClass().add("panel");
     }
     
     private void initializeHelpPanel() {
@@ -187,8 +194,7 @@ public class DisplayController extends HiddenSidesPane {
     }
 
     private void initializeSidebar() {
-        sidebar = new SidebarController(main);
-        this.setLeft(sidebar);
+        updateSidebar(main.getCategories());
         this.setTriggerDistance(50);
     }
     
@@ -231,7 +237,7 @@ public class DisplayController extends HiddenSidesPane {
                 
             case SEARCHDONE :
                 updateCompletedPanel(result.getResults());
-                this.setContent(completedPanel);
+                this.setContent(donePanel);
                 break;
             
             case HELP :
@@ -242,13 +248,13 @@ public class DisplayController extends HiddenSidesPane {
                 // fallthrough
                 
             case EDIT :
-                sidebar.update();
+                updateSidebar(main.getCategories());
                 updateTaskPanel(result.getResults());
                 this.setContent(taskPanel);
                 break;
             
             default :
-                sidebar.update();
+                updateSidebar(main.getCategories());
                 updateTaskPanel(result.getResults());
                 showFeedback(cmdType, result.getMessage(), result.isSuccess());
                 this.setContent(taskPanel);
@@ -349,7 +355,7 @@ public class DisplayController extends HiddenSidesPane {
     }
     
     private void updateCompletedPanel(ArrayList<Task> results) {
-        assert (completedPanel != null);
+        assert (donePanel != null);
 
         Label completedHeader = createHeader(results.size() + (results.size() == 1 ? HEADER_COMPLETED_SINGLE : HEADER_COMPLETED_PLURAL));
         ObservableList<VBox> completedTasks = FXCollections.observableArrayList();
@@ -358,8 +364,8 @@ public class DisplayController extends HiddenSidesPane {
         }
         ListView<VBox> completedListView = createListView(completedTasks);
         
-        completedPanel.getChildren().clear();
-        completedPanel.getChildren().addAll(completedHeader, completedListView);
+        donePanel.getChildren().clear();
+        donePanel.getChildren().addAll(completedHeader, completedListView);
     }
 
     private void showFeedback(CommandType cmd, String msg, boolean isSuccess) {
@@ -557,6 +563,32 @@ public class DisplayController extends HiddenSidesPane {
             startEndDate = new Label(String.format(TASK_DETAILS_DATE_EVENT, startDate, endDate));
         }
         return startEndDate;
+    }
+    
+    private void updateSidebar(ArrayList<Category> categories) {
+        catList.getChildren().clear();
+        for (int i = 0; i < categories.size(); i++) {
+            Category cat = categories.get(i);
+            Label name = new Label(cat.getName());
+            catList.add(name, 0, i);
+            Label num = new Label(Integer.toString(cat.getCount()));
+            catList.add(num, 1, i);
+        }
+    }
+    
+    private HBox createCategoryEntry(Category cat) {
+        Label name = new Label(cat.getName());
+        HBox nameBox = new HBox();
+        nameBox.getChildren().add(name);
+        HBox.setHgrow(nameBox, Priority.ALWAYS);
+        
+        Label count = new Label(Integer.toString(cat.getCount()));
+        count.getStyleClass().add("count");
+        
+        HBox entry = new HBox();
+        entry.getChildren().addAll(nameBox, count);
+        entry.getStyleClass().add("entry-cat");
+        return entry;
     }
     
 }

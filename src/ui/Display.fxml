@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- @@author Ruoling -->
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.controlsfx.control.HiddenSidesPane?>
 <?import java.net.URL?>
 
 <fx:root xmlns:fx="http://javafx.com/fxml/1" type="HiddenSidesPane" >
+    <left>
+        <VBox styleClass="panel" prefWidth="200">
+            <Label text="Categories" styleClass="header" />
+            <ScrollPane>
+                <content>
+                    <GridPane fx:id="catList">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" halignment="LEFT" />
+                            <ColumnConstraints halignment="RIGHT" />
+                        </columnConstraints>
+                    </GridPane>
+                </content>
+            </ScrollPane>
+        </VBox>
+    </left>
+    
+    <fx:define>
+        <VBox fx:id="taskPanel" styleClass="panel">
+            <Label text="Today" styleClass="header" />
+            <ListView fx:id="todayList" />
+            <Label text="Others" styleClass="header" />
+            <ListView fx:id="otherList" />
+        </VBox>
+    </fx:define>
+    <fx:define>
+        <VBox fx:id="searchPanel" styleClass="panel">
+        </VBox>
+    </fx:define>
+    <fx:define>
+        <VBox fx:id="donePanel" styleClass="panel">
+        </VBox>
+    </fx:define>
+    <fx:define>
+        <VBox fx:id="helpPanel" styleClass="panel">
+            <Label text="Help" styleClass="header" />
+            <ScrollPane>
+                <content>
+                    <GridPane fx:id="helpList">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="30" />
+                            <ColumnConstraints percentWidth="70" />
+                        </columnConstraints>
+                    </GridPane>
+                </content>
+            </ScrollPane>
+        </VBox>
+    </fx:define>
+    
     <stylesheets>
         <URL value="@display.css" />
     </stylesheets>
