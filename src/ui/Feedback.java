@@ -2,10 +2,11 @@ package ui;
 
 import common.Result;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
@@ -13,7 +14,10 @@ public class Feedback {
     
     Stage primaryStage;
     
-    private Popup popup;
+    private Popup feedbackPopup;
+    private HBox content;
+    private ImageView icon;
+    private Label message;
     
     private static final String RESOURCES_ICON_SUCCESS = "/icons/success-small.png";
     private static final String RESOURCES_ICON_SUCCESS_DELETE = "/icons/delete-success-small.png";
@@ -24,20 +28,39 @@ public class Feedback {
     
     public Feedback(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        popup = new Popup();
-        popup.setAutoHide(true);
-        // hide feedback popup on any key press
-        popup.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent event) {
-                popup.hide();
-            }
-        });
+        initializeContent();
+        initializeFeedbackPopup();
+    }
+
+    private void initializeContent() {
+        content = new HBox();
+        content.getStylesheets().add(getClass().getResource("feedback.css").toExternalForm()); 
+        content.setId("popup-box");
+        
+        message = new Label();
+        message.setId("popup-text");
+        icon = new ImageView();
+        
+        content.getChildren().addAll(icon, message);
     }
     
+    private void initializeFeedbackPopup() {
+        feedbackPopup = new Popup();
+        // hide feedback popup when window loses focus
+        feedbackPopup.setAutoHide(true);
+        // hide feedback popup on any key press
+        feedbackPopup.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent event) {
+                feedbackPopup.hide();
+            }
+        });
+        feedbackPopup.getContent().add(content);
+    }
+
     public void displayFeedback(Result result) {
-        HBox feedback = createFeedback(result);
+        setFeedback(result);
         if (!isDisplayCommand(result)) {
-            showFeedback(feedback);
+            showFeedback();
         }
     }
     
@@ -53,9 +76,6 @@ public class Feedback {
                 // fallthrough
                 
             case HELP :
-                // fallthrough
-                
-            case INVALID :
                 return true;
             
             default :
@@ -63,29 +83,25 @@ public class Feedback {
         }
     }
 
-    private void showFeedback(HBox feedback) {
-        popup.getContent().clear();
-        popup.getContent().add(feedback);
-        double x = primaryStage.getX() + 10;
+    private void showFeedback() {
+        // align to left of window
+        double x = primaryStage.getX() + primaryStage.getScene().getX();
+        feedbackPopup.setX(x);
+        // align to bottom of window
         double y = primaryStage.getY() + primaryStage.getHeight();
-        popup.setX(x);
-        popup.setY(y);
-        popup.show(primaryStage);
+        feedbackPopup.setY(y);
+        feedbackPopup.show(primaryStage);
     }
 
-    private HBox createFeedback(Result result) {
-        HBox box = new HBox();
-        box.getStylesheets().add(getClass().getResource("feedback.css").toExternalForm()); 
-        Text message = new Text(result.getMessage());
-        ImageView icon = getIcon(result);
-        
-        box.setId("popup");
-        message.setId("popup-text");
-        box.getChildren().addAll(icon, message);
-        return box;
+    private void setFeedback(Result result) {
+        assert (result != null);
+        String msg = result.getMessage();
+        message.setText(msg);
+        Image img = getIcon(result);
+        icon.setImage(img);
     }
     
-    private ImageView getIcon(Result result) {
+    private Image getIcon(Result result) {
         String resource;
         switch (result.getCommandType()) {
             case DELETE :
@@ -103,7 +119,7 @@ public class Feedback {
                 resource = result.isSuccess() ? RESOURCES_ICON_SUCCESS : RESOURCES_ICON_FAIL;
                 break;
         }
-        return new ImageView(resource);
+        return new Image(resource);
     }
     
 }
