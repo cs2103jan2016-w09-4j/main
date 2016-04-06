@@ -65,6 +65,7 @@ public class DisplayController extends HiddenSidesPane {
     private static final String RESOURCES_ICON_FAIL_DELETE = "/icons/delete-fail-small.png";
     private static final String RESOURCES_ICON_FAIL_SAVE = "/icons/save-fail-small.png";
     private static final String RESOURCES_ICON_PRIORITY = "/icons/priority.png";
+    private static final String RESOURCES_ICON_SIDEBAR = "/icons/sidebar.png";
 
     public DisplayController(MainApp main, Stage primaryStage) {
         this.main = main;
@@ -188,7 +189,7 @@ public class DisplayController extends HiddenSidesPane {
     private void initializeSidebar() {
         sidebar = new SidebarController(main);
         this.setLeft(sidebar);
-        this.setTriggerDistance(30);
+        this.setTriggerDistance(50);
     }
     
     private void initializePopup() {
@@ -261,6 +262,10 @@ public class DisplayController extends HiddenSidesPane {
     
     private void updateTaskPanel(ArrayList<Task> allTasks) {
         assert (allTasks != null);
+        VBox sidebarButton = new VBox();
+        sidebarButton.setId("sidebar-button");
+        ImageView sidebarIcon = new ImageView(new Image(RESOURCES_ICON_SIDEBAR));
+        sidebarButton.getChildren().add(sidebarIcon);
         
         LocalDateTime todayDateTime = LocalDateTime.now();
         LocalDate todayDate = todayDateTime.toLocalDate();
@@ -325,7 +330,7 @@ public class DisplayController extends HiddenSidesPane {
         
         // add to task panel
         taskPanel.getChildren().clear();
-        taskPanel.getChildren().addAll(todayPanel, otherPanel);
+        taskPanel.getChildren().addAll(sidebarButton, todayPanel, otherPanel);
     }
 
     private void updateSearchPanel(ArrayList<Task> results) {

@@ -179,7 +179,6 @@ public class Execution {
 	}
 
 	public Result completeCommand(int taskID) {
-	    System.out.println("Before: " + mainList);
 		// preprocessing
 		clearModifiedStatus();
 		saveMainListForUndo();
@@ -208,7 +207,6 @@ public class Execution {
 		} catch (IOException ioe) {
 			return new Result(CommandType.DONE, false, "Couldn't save", mainList);
 		}
-        System.out.println("After: " + mainList);
 
 		return new Result(CommandType.DONE, true, "Marked as completed", mainList);
 	}
