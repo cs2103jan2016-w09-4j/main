@@ -32,14 +32,6 @@
     
     <fx:define>
         <VBox fx:id="taskPanel" styleClass="panel">
-            <ImageView styleClass="sidebar-button">
-                <image>
-                </image>
-            </ImageView>
-            <Label text="Today" styleClass="header" />
-            <VBox fx:id="todayList"></VBox>
-            <Label text="Others" styleClass="header" />
-            <VBox fx:id="otherList"></VBox>
         </VBox>
     </fx:define>
     <fx:define>

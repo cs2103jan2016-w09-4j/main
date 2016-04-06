@@ -160,3 +160,16 @@
 .sidebar-button {
     -fx-padding: 0 0 0 5;
 }
+
+.entry-cat {
+    -fx-padding: 3;
+    -fx-alignment: center-left;
+}
+
+.count {
+    -fx-font-size: 12;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+    -fx-background-color: #A1E7C6;
+    -fx-background-radius: 3;
+}
