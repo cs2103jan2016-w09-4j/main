@@ -488,7 +488,9 @@ public class Execution {
 		}
 		mainList.clear();
 		mainList.addAll(copyOfMainListForRedo);
-
+		doneList.clear();
+		doneList.addAll(copyOfDoneListForRedo);
+		
 		// post-processing
 		sortList(mainList);
 		canUndo = false;
