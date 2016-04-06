@@ -31,6 +31,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -185,7 +186,8 @@ public class DisplayController extends HiddenSidesPane {
                 break;
             
             default :
-                updateSidebar(main.getCategories());
+                ArrayList<Category> categories = main.getCategories();
+                updateSidebar(categories);
                 updateTaskPanel(tasks);
                 setMainPanelContent(taskPanel);
                 break;
@@ -202,31 +204,26 @@ public class DisplayController extends HiddenSidesPane {
 
     private void updateTaskPanel(ArrayList<Task> tasks) {
         assert (tasks != null);
-        LocalDateTime todayDateTime = LocalDateTime.now();
-        LocalDate todayDate = todayDateTime.toLocalDate();
+        createTodayList(tasks);
+        createOtherList(tasks);
+    }
+
+    private void createTodayList(ArrayList<Task> tasks) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate nowDate = now.toLocalDate();
         ObservableList<VBox> todayTasks = FXCollections.observableArrayList();
-        ObservableList<VBox> otherTasks = FXCollections.observableArrayList();
-        // index of tasks to scroll to
+        // index of task to scroll to
         int todayModified = UNMODIFIED;
-        int otherModified = UNMODIFIED;
-        // group tasks into Today or Others
         for (Task task : tasks) {
-            VBox entry = createOngoingTask(task, todayDateTime);
-            if (task.isOccurringOn(todayDate)) {
+            VBox entry = createOngoingTask(task, now);
+            if (task.isOccurringOn(nowDate)) {
                 todayTasks.add(entry);
                 if (task.isModified()) {
                     todayModified = todayTasks.size() - 1;
                 }
-            } else {
-                otherTasks.add(entry);
-                if (task.isModified()) {
-                    otherModified = otherTasks.size() - 1;
-                }
             }
         }
-        
         updateTodayList(todayTasks, todayModified);
-        updateOtherList(otherTasks, otherModified);
     }
 
     private void updateTodayList(ObservableList<VBox> todayTasks, int todayModified) {
@@ -235,6 +232,24 @@ public class DisplayController extends HiddenSidesPane {
         } else {
             setList(todayList, todayTasks, todayModified);
         }
+    }
+
+    private void createOtherList(ArrayList<Task> tasks) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate nowDate = now.toLocalDate();
+        ObservableList<VBox> otherTasks = FXCollections.observableArrayList();
+        // index of task to scroll to
+        int otherModified = UNMODIFIED;
+        for (Task task : tasks) {
+            VBox entry = createOngoingTask(task, now);
+            if (!task.isOccurringOn(nowDate)) {
+                otherTasks.add(entry);
+                if (task.isModified()) {
+                    otherModified = otherTasks.size() - 1;
+                }
+            }
+        }
+        updateOtherList(otherTasks, otherModified);
     }
 
     private void updateOtherList(ObservableList<VBox> otherTasks, int otherModified) {
@@ -246,49 +261,58 @@ public class DisplayController extends HiddenSidesPane {
     }
 
     private void setEmptyList(VBox list, String prompt) {
-        list.getChildren().clear();
         Label info = new Label(prompt);
         info.getStyleClass().add("entry-empty");
-        list.getChildren().add(info);
+        updateChildren(list, info);
     }
     
     private void setList(VBox list, ObservableList<VBox> tasks, int modified) {
         ListView<VBox> listView = createListView(tasks);
-        listView.setMaxHeight(primaryStage.getHeight()/2.5);
+        listView.maxHeightProperty().bind(primaryStage.heightProperty().divide(2.5));
         if (modified != UNMODIFIED) {
             listView.scrollTo(modified);
         }
-        list.getChildren().clear();
-        list.getChildren().add(listView);
+        updateChildren(list, listView);
     }
 
     private void updateSearchPanel(ArrayList<Task> tasks) {
         assert (tasks != null);
         Label searchHeader = createHeader(tasks.size(), HEADER_SEARCH_SINGLE, HEADER_SEARCH_PLURAL);
+        ObservableList<VBox> searchTasks = createSearchTasks(tasks);
+        ListView<VBox> searchListView = createListView(searchTasks);
+        updateChildren(searchPanel, searchHeader, searchListView);
+    }
+
+    private ObservableList<VBox> createSearchTasks(ArrayList<Task> tasks) {
         LocalDateTime todayDateTime = LocalDateTime.now();
         ObservableList<VBox> searchTasks = FXCollections.observableArrayList();
         for (Task task : tasks) {
             VBox entry = createOngoingTask(task, todayDateTime);
             searchTasks.add(entry);
         }
-        ListView<VBox> searchListView = createListView(searchTasks);
-
-        searchPanel.getChildren().clear();
-        searchPanel.getChildren().addAll(searchHeader, searchListView);
+        return searchTasks;
     }
     
     private void updateDonePanel(ArrayList<Task> tasks) {
         assert (tasks != null);
         Label doneHeader = createHeader(tasks.size(), HEADER_DONE_SINGLE, HEADER_DONE_PLURAL);
+        ObservableList<VBox> doneTasks = createDoneTasks(tasks);
+        ListView<VBox> doneListView = createListView(doneTasks);
+        updateChildren(donePanel, doneHeader, doneListView);
+    }
+
+    private ObservableList<VBox> createDoneTasks(ArrayList<Task> tasks) {
         ObservableList<VBox> doneTasks = FXCollections.observableArrayList();
         for (Task task : tasks) {
             VBox entry = createDoneEntry(task);
             doneTasks.add(entry);
         }
-        ListView<VBox> doneListView = createListView(doneTasks);
-        
-        donePanel.getChildren().clear();
-        donePanel.getChildren().addAll(doneHeader, doneListView);
+        return doneTasks;
+    }
+    
+    private void updateChildren(Pane parent, Node... children) {
+        parent.getChildren().clear();
+        parent.getChildren().addAll(children);
     }
     
     private Label createHeader(int size, String single, String plural) {
@@ -301,7 +325,9 @@ public class DisplayController extends HiddenSidesPane {
 
     private ListView<VBox> createListView(ObservableList<VBox> tasks) {
         ListView<VBox> listView = new ListView<VBox>(tasks);
-        // override ListView's default height value 400
+        // ListView's default height value is fixed at 400 regardless of
+        // size of list. Workaround for resizing ListView by binding to
+        // actual height and number of cells
         listView.prefHeightProperty().bind(Bindings.size(tasks).multiply(66));
         return listView;
     }
