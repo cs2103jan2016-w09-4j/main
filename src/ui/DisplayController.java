@@ -26,13 +26,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -50,7 +49,7 @@ public class DisplayController extends HiddenSidesPane {
     @FXML
     private VBox taskPanel, searchPanel, donePanel, helpPanel;
     @FXML
-    ListView<VBox> todayList, otherList;
+    VBox todayList, otherList;
     @FXML
     GridPane catList, helpList;
     private Popup feedback;
@@ -81,8 +80,6 @@ public class DisplayController extends HiddenSidesPane {
         //initializeLogger();
         loadFXML();
         initializeTaskPanel();
-        initializeSearchPanel();
-        initializeCompletedPanel();
         initializeHelpPanel();
         initializeSidebar();
         initializePopup();
@@ -113,88 +110,53 @@ public class DisplayController extends HiddenSidesPane {
     }
     
     private void initializeTaskPanel() {
-        taskPanel = new VBox();
-        taskPanel.getStyleClass().add("panel");
         ArrayList<Task> allTasks = main.getTasks();
         updateTaskPanel(allTasks);
-        this.setContent(taskPanel);
+        setMainPanelContent(taskPanel);
     }
 
-    private void initializeSearchPanel() {
-        searchPanel = new VBox();
-        searchPanel.getStyleClass().add("panel");
-    }
-    
-    private void initializeCompletedPanel() {
-        donePanel = new VBox();
-        donePanel.getStyleClass().add("panel");
-    }
-    
     private void initializeHelpPanel() {
-        helpPanel = new VBox();
-        helpPanel.getStyleClass().add("panel");
-        Label helpHeader = createHeader("Commands");
-        ScrollPane helpContent = createHelpContent();
-        helpPanel.getChildren().addAll(helpHeader, helpContent);
-    }
-
-    private ScrollPane createHelpContent() {
         String[] commands = { "Add a task",
-                              "Edit a task",
-                              "Search tasks",
-                              "Mark as done",
-                              "Access done tasks",
-                              "Delete a task",
-                              "Undo",
-                              "Redo",
-                              "Show help guide",
-                              "Exit",
-                              "Save file",
-                              "Load file",
-                              "View sidebar" };
-        
-        String[] formats = { "add <description>",
-                             "edit <task number> <new description> <new timing> #<new category>",
-                             "search <keyword / date / #category>",
-                             "done <task number>",
-                             "searchdone <keyword / date / #category>",
-                             "delete <task number>",
-                             "undo",
-                             "redo",
-                             "help",
-                             "exit",
-                             "save <directory> <filename>",
-                             "load <directory> <filename>",
-                             "CTRL+M" };
+                "Edit a task",
+                "Search tasks",
+                "Mark as done",
+                "Access done tasks",
+                "Delete a task",
+                "Undo",
+                "Redo",
+                "Show help guide",
+                "Exit",
+                "Save file",
+                "Load file",
+                "View sidebar" };
 
+        String[] formats = { "add <description>",
+                       "edit <task number> <new description> <new timing> #<new category>",
+                       "search <keyword / date / #category>",
+                       "done <task number>",
+                       "searchdone <keyword / date / #category>",
+                       "delete <task number>",
+                       "undo",
+                       "redo",
+                       "help",
+                       "exit",
+                       "save <directory> <filename>",
+                       "load <directory> <filename>",
+                       "CTRL+M" };
+        
         assert (commands.length == formats.length);
         
-        GridPane table = new GridPane();
-        table.getStyleClass().add("table");
-        
-        // set column widths to 30% for first col and 70% for second col
-        ColumnConstraints commandCol = new ColumnConstraints();
-        commandCol.setPercentWidth(30);
-        ColumnConstraints formatCol = new ColumnConstraints();
-        formatCol.setPercentWidth(70);
-        table.getColumnConstraints().addAll(commandCol, formatCol);
-        
-        // add command and format row by row
         for (int i = 0; i < commands.length; i++) {
             Label cmd = new Label(commands[i]);
-            table.add(cmd, 0, i);
+            helpList.add(cmd, 0, i);
             Label format = new Label(formats[i]);
-            table.add(format, 1, i);
+            helpList.add(format, 1, i);
         }
-        
-        // make table scrollable
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(table);
-        return scrollPane;
     }
 
     private void initializeSidebar() {
-        updateSidebar(main.getCategories());
+        ArrayList<Category> categories = main.getCategories();
+        updateSidebar(categories);
         this.setTriggerDistance(50);
     }
     
@@ -208,6 +170,10 @@ public class DisplayController extends HiddenSidesPane {
             }
         });
     }
+    
+    /***********************************************
+     * PUBLIC APIS TO MANAGE DISPLAY OF MAIN PANEL *
+     ***********************************************/
     
     public void toggleSidebar() {
         if (getPinnedSide() == Side.LEFT) {
@@ -232,32 +198,23 @@ public class DisplayController extends HiddenSidesPane {
 
             case SEARCH :
                 updateSearchPanel(result.getResults());
-                this.setContent(searchPanel);
+                setMainPanelContent(searchPanel);
                 break;
                 
             case SEARCHDONE :
                 updateCompletedPanel(result.getResults());
-                this.setContent(donePanel);
+                setMainPanelContent(donePanel);
                 break;
             
             case HELP :
-                this.setContent(helpPanel);
-                break;
-            
-            case ADD :
-                // fallthrough
-                
-            case EDIT :
-                updateSidebar(main.getCategories());
-                updateTaskPanel(result.getResults());
-                this.setContent(taskPanel);
+                setMainPanelContent(helpPanel);
                 break;
             
             default :
                 updateSidebar(main.getCategories());
                 updateTaskPanel(result.getResults());
                 showFeedback(cmdType, result.getMessage(), result.isSuccess());
-                this.setContent(taskPanel);
+                setMainPanelContent(taskPanel);
                 break;
         }
     }
@@ -265,17 +222,19 @@ public class DisplayController extends HiddenSidesPane {
     /******************
      * HELPER METHODS *
      ******************/
-    
+
+    private void setMainPanelContent(Node node) {
+        this.setContent(node);
+    }
+
     private void updateTaskPanel(ArrayList<Task> allTasks) {
         assert (allTasks != null);
-        VBox sidebarButton = new VBox();
-        sidebarButton.setId("sidebar-button");
+        // add sidebar button
         ImageView sidebarIcon = new ImageView(new Image(RESOURCES_ICON_SIDEBAR));
-        sidebarButton.getChildren().add(sidebarIcon);
         
+        // group tasks in Today or Others section
         LocalDateTime todayDateTime = LocalDateTime.now();
         LocalDate todayDate = todayDateTime.toLocalDate();
-        // group tasks in Today or Others section
         ObservableList<VBox> todayTasks = FXCollections.observableArrayList();
         ObservableList<VBox> otherTasks = FXCollections.observableArrayList();
         // index of tasks to scroll to
@@ -297,46 +256,45 @@ public class DisplayController extends HiddenSidesPane {
         }
         
         // build today panel
-        Label todayHeader = createHeader("Today");
-        VBox todayContent = new VBox();
+        VBox todayPanel = setTodayList(todayTasks, todayModified);
+        // build other panel
+        VBox otherPanel = setOtherList(otherTasks, otherModified);
+        
+        taskPanel.getChildren().clear();
+        taskPanel.getChildren().addAll(sidebarIcon, todayPanel, otherPanel);
+    }
+
+    private VBox setOtherList(ObservableList<VBox> otherTasks, int otherModified) {
+        VBox otherPanel = new VBox();
+        if (otherTasks.isEmpty()) {
+            Label empty = new Label("No other tasks pending this week! Type 'search' to view all tasks.");
+            empty.getStyleClass().add("entry-empty");
+            otherPanel.getChildren().add(empty);
+        } else {
+            ListView<VBox> otherListView = createListView(otherTasks);
+            otherListView.setMaxHeight(primaryStage.getHeight()/2.5);
+            if (otherModified != UNMODIFIED) {
+                otherListView.scrollTo(otherModified);
+            }
+            otherPanel.getChildren().add(otherListView);
+        }
+        return otherPanel;
+    }
+
+    private void setTodayList(ObservableList<VBox> todayTasks, int todayModified) {
+        VBox todayPanel = new VBox();
         if (todayTasks.isEmpty()) {
             Label empty = new Label("No tasks due today!");
             empty.getStyleClass().add("entry-empty");
-            todayContent.getChildren().add(empty);
+            todayList.getChildren().add(empty);
         } else {
             ListView<VBox> todayListView = createListView(todayTasks);
-            todayContent.getChildren().add(todayListView);
-            todayListView.setMaxHeight(primaryStage.getHeight()/2.1);
+            todayList.getChildren().add(todayListView);
+            todayListView.setMaxHeight(primaryStage.getHeight()/2.5);
             if (todayModified != UNMODIFIED) {
                 todayListView.scrollTo(todayModified);
             }
         }
-        
-        VBox todayPanel = new VBox();
-        todayPanel.getChildren().addAll(todayHeader, todayContent);
-        
-        // build other panel
-        Label otherHeader = createHeader("Others");
-        VBox otherContent = new VBox();
-        if (otherTasks.isEmpty()) {
-            Label empty = new Label("No other tasks pending this week! Type 'search' to view all tasks.");
-            empty.getStyleClass().add("entry-empty");
-            otherContent.getChildren().add(empty);
-        } else {
-            ListView<VBox> otherListView = createListView(otherTasks);
-            otherContent.getChildren().add(otherListView);
-            otherListView.setMaxHeight(primaryStage.getHeight()/2.1);
-            if (otherModified != UNMODIFIED) {
-                otherListView.scrollTo(otherModified);
-            }
-        }
-        
-        VBox otherPanel = new VBox();
-        otherPanel.getChildren().addAll(otherHeader, otherContent);
-        
-        // add to task panel
-        taskPanel.getChildren().clear();
-        taskPanel.getChildren().addAll(sidebarButton, todayPanel, otherPanel);
     }
 
     private void updateSearchPanel(ArrayList<Task> results) {

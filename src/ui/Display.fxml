@@ -4,19 +4,22 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.controlsfx.control.HiddenSidesPane?>
 <?import java.net.URL?>
 
 <fx:root xmlns:fx="http://javafx.com/fxml/1" type="HiddenSidesPane" >
     <left>
-        <VBox styleClass="panel" prefWidth="200">
+        <VBox prefWidth="200" styleClass="sidebar">
             <Label text="Categories" styleClass="header" />
             <ScrollPane>
                 <content>
-                    <GridPane fx:id="catList">
+                    <GridPane fx:id="catList" styleClass="sidebar-list">
                         <columnConstraints>
                             <ColumnConstraints hgrow="ALWAYS" halignment="LEFT" />
                             <ColumnConstraints halignment="RIGHT" />
@@ -29,10 +32,14 @@
     
     <fx:define>
         <VBox fx:id="taskPanel" styleClass="panel">
+            <ImageView styleClass="sidebar-button">
+                <image>
+                </image>
+            </ImageView>
             <Label text="Today" styleClass="header" />
-            <ListView fx:id="todayList" />
+            <VBox fx:id="todayList"></VBox>
             <Label text="Others" styleClass="header" />
-            <ListView fx:id="otherList" />
+            <VBox fx:id="otherList"></VBox>
         </VBox>
     </fx:define>
     <fx:define>
@@ -48,7 +55,7 @@
             <Label text="Help" styleClass="header" />
             <ScrollPane>
                 <content>
-                    <GridPane fx:id="helpList">
+                    <GridPane fx:id="helpList" styleClass="table">
                         <columnConstraints>
                             <ColumnConstraints percentWidth="30" />
                             <ColumnConstraints percentWidth="70" />

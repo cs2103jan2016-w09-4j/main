@@ -50,12 +50,12 @@
 
 .scroll-bar {
     -fx-opacity: 1;
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: transparent;
     -fx-padding: 3 0 3 3;
 }
 
 .scroll-bar:vertical .track {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: transparent;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
     -fx-border-width: 5;
@@ -149,6 +149,14 @@
     -fx-font-family: "Roboto Condensed Regular", "Segoe UI", sans-serif;
 }
 
-#sidebar-button {
+.sidebar {
+    -fx-alignment: top-left;
+    -fx-padding: 5;
+    -fx-spacing: 5;
+    -fx-background-color: #F6F6F6;
+    -fx-effect: dropshadow( gaussian , #AAAAAA , 10 , 0.1 , 0 , 0 );
+}
+
+.sidebar-button {
     -fx-padding: 0 0 0 5;
 }
