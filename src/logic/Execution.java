@@ -419,20 +419,17 @@ public class Execution {
 				String directory = split[0].toLowerCase();
 				String userFileName = split[1];
 				loadBack = storage.loadFileWithDirectory(directory, userFileName);
-				setMainList(loadBack);
-				doneList = storage.getCompletedList();
 			} else {
 				loadBack = storage.loadFileWithFileName(description);
-				setMainList(loadBack);
 			}
 
 			/// post-processing
+			setMainList(loadBack);
+			doneList = storage.getCompletedList();
 			updateFileDictionary(description);
 			canUndo = false;
 			canRedo = false;
 			
-			setMainList(storage.getMainList());
-
 			return new Result(CommandType.LOAD, true, "Loaded " + description, mainList);
 		} catch (IOException | ParseException e) {
 			mainList = tempMainList;

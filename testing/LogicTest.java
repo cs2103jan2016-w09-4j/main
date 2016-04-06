@@ -122,7 +122,7 @@ public class LogicTest {
         File actualFile = new File("output_saveTasks_WithFileName.txt");
         FileAssert.assertEquals(expectedFile, actualFile);
     }
-/* Cant figure out
+
     @Test
     public void loadTasks_WithFileName_Success() {
         Result result = logic.processCommand("load testing/input_loadTasks_WithFileName.txt");
@@ -142,15 +142,15 @@ public class LogicTest {
 
         ArrayList<Task> expectedDoneList = new ArrayList<Task>();
         expectedDoneList.add(new Task("Meeting", null, 
-                LocalDateTime.of(2016, 05, 24, 14, 0), 1));
+                LocalDateTime.of(2016, 05, 24, 14, 0)));
         expectedDoneList.add(new Task("Meeting", LocalDateTime.of(2016, 05, 24, 12, 0), 
-                LocalDateTime.of(2016, 05, 26, 14, 0), 2));
-        expectedDoneList.add(new Task("Goodbye", null, null, 3));
-        expectedDoneList.add(new Task("Meeting", LocalDateTime.of(2016, 05, 24, 14, 0), null, 4));
+                LocalDateTime.of(2016, 05, 26, 14, 0)));
+        expectedDoneList.add(new Task("Goodbye", null, null));
+        expectedDoneList.add(new Task("Meeting", LocalDateTime.of(2016, 05, 24, 14, 0), null));
         
         ArrayList<Task> actualDoneList = logic.getDoneList();
         assertArrayEquals(expectedDoneList.toArray(), actualDoneList.toArray());
-    } */ 
+    }
     
     @Test
     public void search_NoParam_DisplayAll() {
@@ -356,7 +356,7 @@ public class LogicTest {
         logic.processCommand("save output_redo_AfterUnallowedCommand.txt");
         
         logic.processCommand("add Donut");
-        logic.processCommand("add undo");
+        logic.processCommand("undo");
         logic.processCommand("add Eclair");
         Result result = logic.processCommand("redo");
         assertEquals(Command.CommandType.REDO, result.getCommandType());
