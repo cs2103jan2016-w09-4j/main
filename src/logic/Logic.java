@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class Logic {
 
     // Objects to call into other classes
-    private ExecutionRefactor execution;
+    private Execution execution;
     private Storage storage;
     private GeneralParser parser;
     private static Logic logic = new Logic();
@@ -37,7 +37,7 @@ public class Logic {
     };
     
     public Logic() {
-        this.execution = new ExecutionRefactor();
+        this.execution = new Execution();
         this.storage = new Storage();
         this.parser = new GeneralParser();
         this.list = storage.getMainList();
@@ -171,9 +171,9 @@ public class Logic {
         return logic;
     }
     
-    public ExecutionRefactor getExecutionInstance() {
+    public Execution getExecutionInstance() {
     	if (execution == null){
-    		return execution = new ExecutionRefactor();
+    		return execution = new Execution();
     	}
     	return execution;
     }
