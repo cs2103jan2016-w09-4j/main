@@ -60,6 +60,8 @@ public class Storage {
 		mainList = new ArrayList<Task>();
 		completedList = new ArrayList<Task>();
 		autoCompletionList = new ArrayList<String>();
+		
+		// initializeLogger();
 
 		// Create default file for load recent feature
 		try {
