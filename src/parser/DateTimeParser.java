@@ -127,9 +127,7 @@ public class DateTimeParser {
                     try {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(timeFormats[i]);
                         String tryString = timeString.substring(sIndex, eIndex);
-                        if (tryString.equals("4:30PM")) System.out.println("WOWOW");
                         time = LocalTime.parse(tryString, formatter);
-                        if (tryString.equals("4:30PM")) System.out.println("!!!");
                         timeFound = true;
                     }
                     catch (DateTimeParseException exc) {
