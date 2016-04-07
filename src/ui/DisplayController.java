@@ -325,9 +325,8 @@ public class DisplayController extends HiddenSidesPane {
 
     private ListView<VBox> createListView(ObservableList<VBox> tasks) {
         ListView<VBox> listView = new ListView<VBox>(tasks);
-        // ListView's default height value is fixed at 400 regardless of
-        // size of list. Workaround for resizing ListView by binding to
-        // actual height and number of cells
+        // ListView's default height is fixed at 400 regardless of size of list
+        // Workaround for resizing ListView by binding to (cell height * number)
         listView.prefHeightProperty().bind(Bindings.size(tasks).multiply(66));
         return listView;
     }

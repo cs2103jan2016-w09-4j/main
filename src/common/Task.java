@@ -123,7 +123,7 @@ public class Task implements Comparable<Task> {
         } else if (isEvent()) {
             LocalDate startD = start.toLocalDate();
             LocalDate endD = end.toLocalDate();
-            if (startD.isEqual(endD)) {
+            if (startD.isEqual(endD) && !startD.isEqual(now)) {
                 String startDate = formatRelativeDate(start, startD);
                 String endDate = formatRelativeDate(end, endD);
                 startEndDate = String.format(TASK_DETAILS_DATE_EVENT_ONE_DAY, startD, startDate, endDate);
