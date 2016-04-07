@@ -29,6 +29,7 @@ public class Task implements Comparable<Task> {
     private boolean isModified;
     
     private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
     public Task(String description) {
@@ -70,15 +71,24 @@ public class Task implements Comparable<Task> {
     }
     
     public LocalDate getStartDate() {
-        return start.toLocalDate();
+        if (start != null) {
+            return start.toLocalDate();
+        }
+        return null;
     }
     
     public String getStartString() {
-        return formatDateTime(start);
+        if (start != null) {
+            return formatDateTime(start);
+        }
+        return "";
     }
     
     public String getRelativeStartString(LocalDate now) {
-        return formatRelativeDateTime(start, now);
+        if (start != null) {
+            return formatRelativeDateTime(start, now);
+        }
+        return "";
     }
 
     public LocalDateTime getEnd() {
@@ -86,59 +96,69 @@ public class Task implements Comparable<Task> {
     }
     
     public LocalDate getEndDate() {
-        return end.toLocalDate();
+        if (end != null) {
+            return end.toLocalDate();
+        }
+        return null;
     }
     
     public String getEndString() {
-        return formatDateTime(end);
+        if (end != null) {
+            return formatDateTime(end);
+        }
+        return "";
     }
     
     public String getRelativeEndString(LocalDate now) {
-        return formatRelativeDateTime(end, now);
+        if (end != null) {
+            return formatRelativeDateTime(end, now);
+        }
+        return "";
     }
     
     public String getStartEndString() {
-        String startEndDate = "";
+        String startEndString = "";
         if (isFloating()) {
             if (start != null) {
-                String startDate = formatDateTime(start);
-                startEndDate = String.format(TASK_DETAILS_DATE_FLOATING, startDate);
+                String startString = getStartString();
+                startEndString = String.format(TASK_DETAILS_DATE_FLOATING, startString);
             }
         } else if (isDeadline()) {
-            String endDate = formatDateTime(end);
-            startEndDate = String.format(TASK_DETAILS_DATE_DEADLINE, endDate);
+            String endString = getEndString();
+            startEndString = String.format(TASK_DETAILS_DATE_DEADLINE, endString);
         } else if (isEvent()) {
-            String startDate = formatDateTime(start);
-            String endDate = formatDateTime(end);
-            startEndDate = String.format(TASK_DETAILS_DATE_EVENT, startDate, endDate);
+            String startString = getStartString();
+            String endString = getEndString();
+            startEndString = String.format(TASK_DETAILS_DATE_EVENT, startString, endString);
         }
-        return startEndDate;
+        return startEndString;
     }
     
     public String getRelativeStartEndString(LocalDate now) {
-        String startEndDate = "";
+        String startEndString = "";
         if (isFloating()) {
             if (start != null) {
-                String startDate = formatRelativeDateTime(start, now);
-                startEndDate = String.format(TASK_DETAILS_DATE_FLOATING, startDate);
+                String startString = getRelativeStartString(now);
+                startEndString = String.format(TASK_DETAILS_DATE_FLOATING, startString);
             }
         } else if (isDeadline()) {
-            String endDate = formatRelativeDateTime(end, now);
-            startEndDate = String.format(TASK_DETAILS_DATE_DEADLINE, endDate);
+            String endString = getRelativeEndString(now);
+            startEndString = String.format(TASK_DETAILS_DATE_DEADLINE, endString);
         } else if (isEvent()) {
-            LocalDate startD = start.toLocalDate();
-            LocalDate endD = end.toLocalDate();
-            if (startD.isEqual(endD) && !startD.isEqual(now)) {
-                String startDate = formatRelativeDateTime(start, startD);
-                String endDate = formatRelativeDateTime(end, endD);
-                startEndDate = String.format(TASK_DETAILS_DATE_EVENT_ONE_DAY, startD, startDate, endDate);
+            LocalDate startDate = getStartDate();
+            LocalDate endDate = getEndDate();
+            if (startDate.isEqual(endDate) && !startDate.isEqual(now)) {
+                String startString = getRelativeStartString(startDate);
+                String endString = getRelativeEndString(endDate);
+                String date = dateFormatter.format(start);
+                startEndString = String.format(TASK_DETAILS_DATE_EVENT_ONE_DAY, date, startString, endString);
             } else {
-                String startDate = formatRelativeDateTime(start, now);
-                String endDate = formatRelativeDateTime(end, now);
-                startEndDate = String.format(TASK_DETAILS_DATE_EVENT, startDate, endDate);
+                String startString = formatRelativeDateTime(start, now);
+                String endString = formatRelativeDateTime(end, now);
+                startEndString = String.format(TASK_DETAILS_DATE_EVENT, startString, endString);
             }
         }
-        return startEndDate;
+        return startEndString;
     }
 
     public ArrayList<String> getCategories() {
