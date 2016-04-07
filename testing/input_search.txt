@@ -31,6 +31,12 @@ End:
 Category: #Zzzzz #Yyyyy
 Priority: No
 -----------------------------------
+Description: task
+Start: 
+End: 
+Category: 
+Priority: No
+-----------------------------------
 
 =================
 COMPLETED TASKS:

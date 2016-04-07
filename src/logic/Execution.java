@@ -72,6 +72,10 @@ public class Execution {
         copyOfDoneListForRedo = new ArrayList<Task>();
         weekList = new ArrayList<Task>();
 
+        sortList(mainList);
+        sortWeekList();
+        System.out.println(mainList.toString());
+
 		categories = new TreeSet<Entry<String, Integer>>(keyComparator);
 		updateTaskProgress();
 
@@ -93,8 +97,7 @@ public class Execution {
 
 		// validate user input
 		if (description.isEmpty()) {
-			sortList(mainList);
-			return new Result(CommandType.ADD, false, "No description!", mainList);
+			return new Result(CommandType.ADD, false, "No description!", weekList);
 		}
 
 		// create a new Task with specified details
@@ -136,6 +139,7 @@ public class Execution {
 
 		// postprocessing
 		sortList(mainList);
+		sortWeekList();
 		updateDictionary(description);
 		canUndo = true;
 		canRedo = false;
@@ -195,6 +199,7 @@ public class Execution {
 
 			// postprocessing
 			sortList(mainList);
+		    sortWeekList();
 			canUndo = true;
 			canRedo = false;
 			updateTaskProgress();
@@ -210,7 +215,6 @@ public class Execution {
 		} catch (IOException ioe) {
 			return new Result(CommandType.DONE, false, "Couldn't save", mainList);
 		}
-		sortWeekList();
 		return new Result(CommandType.DONE, true, "Marked as completed", weekList);
 	}
 
@@ -229,6 +233,7 @@ public class Execution {
 
 		// post-processing
 		sortList(mainList);
+	    sortWeekList();
 		canUndo = true;
 		canRedo = false;
 		updateTaskProgress();
@@ -241,7 +246,6 @@ public class Execution {
 			return new Result(CommandType.DELETE, false, "Couldn't save", mainList);
 		}
 		
-		sortWeekList();
 		return new Result(CommandType.DELETE, true, "Deleted", weekList);
 	}
 
@@ -333,7 +337,7 @@ public class Execution {
 			}
 		}
 		
-		searchResults = sortSearchResults(searchResults);
+		//searchResults = sortSearchResults(searchResults);
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
 
@@ -343,6 +347,11 @@ public class Execution {
 		searchResults.clear();
 
 		if (keyword != null) {
+		    if (keyword.trim().isEmpty()) {
+		        System.out.println(mainList.toString());
+
+		        return new Result(CommandType.SEARCH, true, "Searched", mainList);
+		    }
 			for (int i = 0; i < mainList.size(); i++) {
 				String descriptionLowerCase = mainList.get(i).getDescription().toLowerCase();
 				String keywordLowerCase = keyword.toLowerCase();
@@ -356,7 +365,7 @@ public class Execution {
 		canUndo = false;
 		canRedo = false;
 		
-		searchResults = sortSearchResults(searchResults);
+		//searchResults = sortSearchResults(searchResults);
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
 	
@@ -383,7 +392,7 @@ public class Execution {
 			}
 		}
 		
-		searchResults = sortSearchResults(searchResults);
+		//searchResults = sortSearchResults(searchResults);
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
 	/* Incomplete
@@ -470,6 +479,7 @@ public class Execution {
 			}
 
 			/// post-processing
+			sortList(mainList);
 			setMainList(loadBack);
 			doneList = storage.getCompletedList();
 			updateFileDictionary(description);
@@ -616,15 +626,13 @@ public class Execution {
 	}
 	
     public void sortWeekList() {
-    	
     	weekList.clear();
-    	ArrayList<Task> list = mainList;
     	
     	LocalDateTime today = LocalDateTime.now();
     	LocalDate todayDate = LocalDate.now();
     	LocalDate weekAfterToday = todayDate.plusWeeks(1);
     	
-		for (Task task : list) {
+		for (Task task : mainList) {
 			if (task.isFloating()) {
 			    weekList.add(task);
 			} else if (task.isOverdue(today)) {
@@ -637,7 +645,7 @@ public class Execution {
 			}
 		}
 		
-		sortList(weekList);
+		//sortList(weekList);
     }
 
 	// Clears the status of all tasks to be unmodified

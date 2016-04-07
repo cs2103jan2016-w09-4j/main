@@ -91,9 +91,8 @@ public class Logic {
             	}
             	
             case HOME :
-            	execution.sortWeekList();
+                execution.sortList(execution.getMainList());
                 list = execution.getWeekList();
-                execution.sortList(list);
                 execution.updateTaskProgress();
                 return new Result(commandType, true, "Return home", list);
                 
