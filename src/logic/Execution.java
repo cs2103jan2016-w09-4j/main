@@ -386,6 +386,7 @@ public class Execution {
 		searchResults = sortSearchResults(searchResults);
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
+	/* Incomplete
 	
 	public Result searchTask(LocalDateTime start, LocalDateTime end) {
 		
@@ -411,12 +412,12 @@ public class Execution {
 			for (Task task: mainList) {
 				LocalDateTime taskStart = task.getStart();
 				LocalDateTime taskEnd = task.getEnd();
-				//if (taskStart.isAfter())
+				if (taskStart.isAfter())
 			}
 		}
 		
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
-	}
+	} */
 
 	public Result savingTasks(String description) {
 		sortList(mainList);
@@ -647,8 +648,12 @@ public class Execution {
 	}
 
 	public String toSentenceCase(String text) {
-		String sentenceCase = text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
-		return sentenceCase;
+		if (text.length() > 0){
+			String sentenceCase = text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
+			return sentenceCase;
+		} else {
+			return "";
+		}
 	}
 
 	private void updateDictionary(String text) {
