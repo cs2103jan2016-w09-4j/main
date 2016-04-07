@@ -657,8 +657,9 @@ public class Execution {
         }
         String sentenceCase = textTrimmed.substring(0, 1).toUpperCase();
         if (textTrimmed.length() > 1) {
-            sentenceCase += sentenceCase.substring(1).toLowerCase();
+            sentenceCase += textTrimmed.substring(1).toLowerCase();
         }
+        System.out.println(sentenceCase);
         return sentenceCase;
 	        
 	}
