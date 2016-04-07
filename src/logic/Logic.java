@@ -220,9 +220,9 @@ public class Logic {
         if (firstWord.equalsIgnoreCase("add")) {
             return getPredictionsForAdd(params);
         } else if (firstWord.equalsIgnoreCase("search")) {
-            if (input.matches("\\s*search\\s+.*")) {
+            //if (input.matches("\\s*search\\s+.*")) {
                 return getPredictionsForSearch(params);
-            }
+            //}
         } else if (firstWord.equalsIgnoreCase("edit")) {
             return getPredictionsForEdit(params);
         } else if (firstWord.equalsIgnoreCase("save") || firstWord.equalsIgnoreCase("load")) {

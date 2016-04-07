@@ -64,6 +64,7 @@ public class MainApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.getIcons().add(new Image(RESOURCES_ICON_PROGRAM));
+        primaryStage.setTitle("GRIDTask");
     }
     
     private void initializeUI(Stage primaryStage) {

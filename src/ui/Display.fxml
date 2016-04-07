@@ -32,9 +32,9 @@
     
     <fx:define>
         <VBox fx:id="taskPanel" styleClass="panel">
-            <ImageView styleClass="sidebar-button">
+            <ImageView>
                 <image>
-                    <Image url="@../../resources/icons/sidebar.png" />
+                    <Image url="@../../icons/sidebar.png" />
                 </image>
             </ImageView>
             <Label text="Today" minHeight="-Infinity" styleClass="header" />
