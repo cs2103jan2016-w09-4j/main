@@ -64,47 +64,52 @@ public class Task implements Comparable<Task> {
     public int getId() {
         return id;
     }
-        
-    public LocalDateTime getStartDate() {
+    
+    public LocalDateTime getStart() {
         return start;
     }
     
-   public String getStartDateString() {
-	   if (start != null) {
-		   return dateTimeFormatter.format(start);
-	   } 
-	   
-	   String start2 = "";
-	   return start2;
+    public LocalDate getStartDate() {
+        return start.toLocalDate();
+    }
+    
+    public String getStartString() {
+        return formatDateTime(start);
+    }
+    
+    public String getRelativeStartString(LocalDate now) {
+        return formatRelativeDateTime(start, now);
     }
 
-    public LocalDateTime getEndDate() {
+    public LocalDateTime getEnd() {
         return end;
     }
     
-    public String getEndDateString() {
-        //return formatter.format(end);
-    	if (end != null) {
-    		return dateTimeFormatter.format(end);
- 	   } 
- 	   
- 	   String end2 = "";
- 	   return end2;
+    public LocalDate getEndDate() {
+        return end.toLocalDate();
+    }
+    
+    public String getEndString() {
+        return formatDateTime(end);
+    }
+    
+    public String getRelativeEndString(LocalDate now) {
+        return formatRelativeDateTime(end, now);
     }
     
     public String getStartEndString() {
         String startEndDate = "";
         if (isFloating()) {
             if (start != null) {
-                String startDate = formatDate(start);
+                String startDate = formatDateTime(start);
                 startEndDate = String.format(TASK_DETAILS_DATE_FLOATING, startDate);
             }
         } else if (isDeadline()) {
-            String endDate = formatDate(end);
+            String endDate = formatDateTime(end);
             startEndDate = String.format(TASK_DETAILS_DATE_DEADLINE, endDate);
         } else if (isEvent()) {
-            String startDate = formatDate(start);
-            String endDate = formatDate(end);
+            String startDate = formatDateTime(start);
+            String endDate = formatDateTime(end);
             startEndDate = String.format(TASK_DETAILS_DATE_EVENT, startDate, endDate);
         }
         return startEndDate;
@@ -114,22 +119,22 @@ public class Task implements Comparable<Task> {
         String startEndDate = "";
         if (isFloating()) {
             if (start != null) {
-                String startDate = formatRelativeDate(start, now);
+                String startDate = formatRelativeDateTime(start, now);
                 startEndDate = String.format(TASK_DETAILS_DATE_FLOATING, startDate);
             }
         } else if (isDeadline()) {
-            String endDate = formatRelativeDate(end, now);
+            String endDate = formatRelativeDateTime(end, now);
             startEndDate = String.format(TASK_DETAILS_DATE_DEADLINE, endDate);
         } else if (isEvent()) {
             LocalDate startD = start.toLocalDate();
             LocalDate endD = end.toLocalDate();
             if (startD.isEqual(endD) && !startD.isEqual(now)) {
-                String startDate = formatRelativeDate(start, startD);
-                String endDate = formatRelativeDate(end, endD);
+                String startDate = formatRelativeDateTime(start, startD);
+                String endDate = formatRelativeDateTime(end, endD);
                 startEndDate = String.format(TASK_DETAILS_DATE_EVENT_ONE_DAY, startD, startDate, endDate);
             } else {
-                String startDate = formatRelativeDate(start, now);
-                String endDate = formatRelativeDate(end, now);
+                String startDate = formatRelativeDateTime(start, now);
+                String endDate = formatRelativeDateTime(end, now);
                 startEndDate = String.format(TASK_DETAILS_DATE_EVENT, startDate, endDate);
             }
         }
@@ -396,11 +401,11 @@ public class Task implements Comparable<Task> {
         return false;
     }
     
-    private String formatDate(LocalDateTime dateTime) {
+    private String formatDateTime(LocalDateTime dateTime) {
         return dateTimeFormatter.format(dateTime);
     }
     
-    private String formatRelativeDate(LocalDateTime dateTime, LocalDate now) {
+    private String formatRelativeDateTime(LocalDateTime dateTime, LocalDate now) {
         if (dateTime.toLocalDate().isEqual(now)) {
             return timeFormatter.format(dateTime);
         } else {
