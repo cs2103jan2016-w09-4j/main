@@ -587,25 +587,20 @@ public class Execution {
     	weekList.clear();
     	ArrayList<Task> list = mainList;
     	
-    	LocalDate today = LocalDate.now();
-    	LocalDate weekToday = today.plusWeeks(1);
+    	LocalDateTime today = LocalDateTime.now();
+    	LocalDate todayDate = LocalDate.now();
+    	LocalDate weekAfterToday = todayDate.plusWeeks(1);
     	
 		for (Task task : list) {
-			LocalDateTime taskEnd = task.getEndDate();
-			if(taskEnd != null) {
-				
-				LocalDate taskEndDate = taskEnd.toLocalDate();
-				if(taskEndDate != null) {
-					if (today.compareTo(taskEndDate) <= 0 && taskEndDate.compareTo(weekToday) < 0){
-						weekList.add(task);
-					}		
-				}
-			}
-		}
-		
-		for (Task task : list) {
-			if (task.getStartDate() == null && task.getEndDate() == null) {
-				weekList.add(task);
+			if (task.isFloating()) {
+			    weekList.add(task);
+			} else if (task.isOverdue(today)) {
+			    weekList.add(task);
+			} else {
+		        LocalDate taskEndDate = task.getEndDate();
+		        if (taskEndDate.isBefore(weekAfterToday)) {
+		            weekList.add(task);
+		        }
 			}
 		}
 		
