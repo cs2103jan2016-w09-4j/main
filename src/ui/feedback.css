@@ -1,30 +1,22 @@
 /* @@author Ruoling */
-.label {
-    -fx-font-size: 15;
-    -fx-font-family: sans-serif;
+/* Defines the design of the feedback popup */
+
+/* reduce font aliasing  */
+.text {
+    -fx-font-smoothing-type: gray;
+}
+
+#popup-box {
+    -fx-background-color: #F4F4F4;
+    -fx-padding: 5;
+    -fx-spacing: 5;
+    -fx-alignment: center-left;
+}
+
+#popup-text {
+    -fx-font-size: 20;
+    -fx-text-fill: #000000;
+    -fx-font-family: "Roboto Regular", "Segoe UI", sans-serif;
     -fx-alignment: center-left;
     -fx-label-padding: 5;
-}
-
-#popup-success {
-    -fx-background-color: #F4F4F4;
-    -fx-padding: 5;
-    -fx-spacing: 5;
-    -fx-alignment: center-left;
-}
-
-#popup-success-text {
-    -fx-font-size: 18;
-    -fx-fill: #000000;
-}
-
-#popup-fail {
-    -fx-background-color: #F4F4F4;
-    -fx-padding: 5;
-    -fx-spacing: 5;
-}
-
-#popup-fail-text {
-    -fx-font-size: 18;
-    -fx-fill: #000000;
 }

@@ -28,7 +28,8 @@ public class MainApp extends Application {
     private BorderPane root;
     private DisplayController display;
     private InputController input;
-    
+    private Feedback feedback;
+ 
     private static final int WINDOW_WIDTH_MIN = 400;
     private static final int WINDOW_HEIGHT_MIN = 300;
     private static final int WINDOW_WIDTH_DEFAULT = 650;
@@ -82,6 +83,7 @@ public class MainApp extends Application {
                 }
             }
         });
+        feedback = new Feedback(primaryStage);
     }
 
     /* ||||||||||||||||||||||||||||||||||||||||||
@@ -106,6 +108,7 @@ public class MainApp extends Application {
     public void handleCommand(String input) {
         Result result = logic.processCommand(input);
         display.displayResult(result);
+        feedback.displayFeedback(result);
     }
 
     public ArrayList<String> getPredictions(String input) {
