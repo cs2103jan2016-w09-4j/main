@@ -28,7 +28,7 @@ public class TaskTest {
      * 
      */
     @Test
-    public void isSameDate_CompareGivenDate_ExpectedBoolean() throws ParseException {
+    public void isOccurringOn_CompareGivenDate_ExpectedBoolean() throws ParseException {
         LocalDate date = LocalDateTime.parse("01/01/2016 12:00", formatter).toLocalDate();
 
         Task floating = new Task(TASK_DESCRIPTION_SECOND);

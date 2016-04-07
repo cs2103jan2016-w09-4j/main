@@ -50,12 +50,12 @@
 
 .scroll-bar {
     -fx-opacity: 1;
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: transparent;
     -fx-padding: 3 0 3 3;
 }
 
 .scroll-bar:vertical .track {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: transparent;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
     -fx-border-width: 5;
@@ -88,11 +88,11 @@
     -fx-font-size: 25;
     -fx-font-family: "Roboto Slab Regular", "Segoe UI", sans-serif;
     -fx-alignment: center-left;
-    -fx-label-padding: 5;
+    -fx-label-padding: 5 5 0 5;
 }
 
 .panel {
-    -fx-spacing: 5;
+    -fx-spacing: 3;
     -fx-padding: 5 15 5 15;
     -fx-background-color: #FFFFFF;
 }
@@ -125,16 +125,17 @@
 
 .desc {
     -fx-wrap-text: true;
-    -fx-text-alignment: justify;
+    -fx-text-alignment: left;
 }
 
 .details {
     -fx-alignment: center-left;
 }
 
-.details-text {
+.details > .label {
+    -fx-wrap-text: true;
     -fx-font-size: 15;
-    -fx-fill: #888888;
+    -fx-text-fill: #000000;
 }
 
 .table {
@@ -149,6 +150,27 @@
     -fx-font-family: "Roboto Condensed Regular", "Segoe UI", sans-serif;
 }
 
-#sidebar-button {
+.sidebar {
+    -fx-alignment: top-left;
+    -fx-padding: 5;
+    -fx-spacing: 5;
+    -fx-background-color: #F6F6F6;
+    -fx-effect: dropshadow( gaussian , #AAAAAA , 10 , 0.1 , 0 , 0 );
+}
+
+.sidebar-button {
     -fx-padding: 0 0 0 5;
+}
+
+.entry-cat {
+    -fx-padding: 3;
+    -fx-alignment: center-left;
+}
+
+.count {
+    -fx-font-size: 12;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+    -fx-background-color: #A1E7C6;
+    -fx-background-radius: 3;
 }
