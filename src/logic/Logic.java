@@ -85,7 +85,7 @@ public class Logic {
             		}
             		return execution.searchTask(categories);
             	} else if (startDate != null || endDate != null){
-            		//return execution.searchTask(startDate, endDate);
+            		return execution.searchTask(startDate, endDate);
             	} else {
             		return execution.searchTask(description);
             	}

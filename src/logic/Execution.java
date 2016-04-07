@@ -395,17 +395,17 @@ public class Execution {
 		//searchResults = sortSearchResults(searchResults);
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
 	}
-	/* Incomplete
 	
 	public Result searchTask(LocalDateTime start, LocalDateTime end) {
 		
 		clearModifiedStatus();
 		searchResults.clear();
-		
+
 		if (start == null) { // search by end time (search backward)
 			for (Task task: mainList) {
 				LocalDateTime taskEnd = task.getEnd();
 				if (taskEnd.compareTo(end) < 0) {
+					
 					searchResults.add(task);
 				}
 			}
@@ -417,16 +417,16 @@ public class Execution {
 				}
 			}
 			
-		} else { // search by a range of time (the range)
+		} /*else { // search by a range of time (the range)
 			for (Task task: mainList) {
 				LocalDateTime taskStart = task.getStart();
 				LocalDateTime taskEnd = task.getEnd();
 				if (taskStart.isAfter())
 			}
-		}
+		}*/
 		
 		return new Result(CommandType.SEARCH, true, "Searched", searchResults);
-	} */
+	} 
 
 	public Result savingTasks(String description) {
 		sortList(mainList);
