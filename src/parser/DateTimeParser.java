@@ -94,9 +94,9 @@ public class DateTimeParser {
         LocalDate date = LocalDate.MIN;
         LocalTime time = defaultEndDay ? LocalTime.of(23, 59) : LocalTime.of(0, 0);
 
-        for (int i = 0; i < dateFormats.length; i++) {
-            for (int sIndex = 0; sIndex<timeString.length(); sIndex++) {
-                for (int eIndex=timeString.length(); eIndex>sIndex; eIndex--) {
+        for (int sIndex = 0; sIndex<timeString.length(); sIndex++) {
+            for (int eIndex=timeString.length(); eIndex>sIndex; eIndex--) {
+                for (int i = 0; i < dateFormats.length; i++) {
                     if (dateFound) break;
 
                     try {
@@ -119,14 +119,15 @@ public class DateTimeParser {
             }
         }
 
-        for (int i = 0; i < timeFormats.length; i++) {
-            for (int sIndex = 0; sIndex<timeString.length(); sIndex++) {
-                for (int eIndex = timeString.length(); eIndex>sIndex; eIndex--) {
+        for (int sIndex = 0; sIndex<timeString.length(); sIndex++) {
+            for (int eIndex = timeString.length(); eIndex>sIndex; eIndex--) {
+                for (int i = 0; i < timeFormats.length; i++) {
                     if (timeFound) break;
 
                     try {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(timeFormats[i]);
-                        time = LocalTime.parse(timeString.substring(sIndex, eIndex), formatter);
+                        String tryString = timeString.substring(sIndex, eIndex);
+                        time = LocalTime.parse(tryString, formatter);
                         timeFound = true;
                     }
                     catch (DateTimeParseException exc) {
