@@ -135,7 +135,6 @@
 .details > .label {
     -fx-wrap-text: true;
     -fx-font-size: 15;
-    -fx-text-fill: #000000;
 }
 
 .table {
@@ -158,17 +157,14 @@
     -fx-effect: dropshadow( gaussian , #AAAAAA , 10 , 0.1 , 0 , 0 );
 }
 
-.sidebar-button {
-    -fx-padding: 0 0 0 5;
-}
-
 .entry-cat {
+    -fx-font-size: 20;
     -fx-padding: 3;
     -fx-alignment: center-left;
 }
 
 .count {
-    -fx-font-size: 12;
+    -fx-font-size: 15;
     -fx-wrap-text: true;
     -fx-text-alignment: center;
     -fx-background-color: #A1E7C6;
