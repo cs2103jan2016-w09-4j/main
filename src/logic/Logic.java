@@ -21,9 +21,9 @@ import java.time.LocalDateTime;
 public class Logic {
 
     // Objects to call into other classes
-    private GeneralParser parser;
+    private ExecutionRefactor execution;
     private Storage storage;
-    private Execution execution;
+    private GeneralParser parser;
     private static Logic logic = new Logic();
     
     private ArrayList<Task> list;
@@ -37,9 +37,9 @@ public class Logic {
     };
     
     public Logic() {
-        this.parser = new GeneralParser();
+        this.execution = new ExecutionRefactor();
         this.storage = new Storage();
-        this.execution = new Execution();
+        this.parser = new GeneralParser();
         this.list = storage.getMainList();
     }
 
@@ -65,42 +65,30 @@ public class Logic {
         switch(commandType) {
         
             case ADD :
-            	if (description == null) {
-            		return new Result(CommandType.ADD, false, "No description!", new ArrayList<Task>());
-            	}
-            	else {
-            		return execution.addTask(description, startDate, endDate, categories);
-            	}
+            	return execution.addTask(command);
             
             case DELETE :
-                return execution.deleteTask(taskID);
+                return execution.deleteTask(command);
             
             case EDIT :
-                return execution.editTask(taskID, description, startDate, endDate, categories);
+                return execution.editTask(command);
                 
             case SEARCH :
-            	if (categories != null) {
-            		if (categories.get(0).equals(CATEGORY_PRIORITY)) {
-            			return execution.searchTask();
-            		}
-            		return execution.searchTask(categories);
-            	} else if (startDate != null || endDate != null){
-            		return execution.searchTask(startDate, endDate);
-            	} else {
-            		return execution.searchTask(description);
-            	}
+            	return execution.searchTasks(command);
             	
             case HOME :
+                /*
                 execution.sortList(execution.getMainList());
                 list = execution.getWeekList();
                 execution.updateTaskProgress();
-                return new Result(commandType, true, "Return home", list);
+                */
+                return execution.filterTasks();
                 
             case SAVE :
-                return execution.savingTasks(description);
+                return execution.saveTasks(command);
                 
             case LOAD :
-                return execution.loadingTasks(description);
+                return execution.loadTasks(command);
 
             case UNDO :
                 return execution.undoCommand();
@@ -109,7 +97,7 @@ public class Logic {
                 return execution.redoCommand();
                 
             case DONE :
-                return execution.completeCommand(taskID);
+                return execution.doneTask(command);
                 
             case SEARCHDONE :
             	if (categories != null) {
@@ -183,9 +171,9 @@ public class Logic {
         return logic;
     }
     
-    public Execution getExecutionInstance() {
+    public ExecutionRefactor getExecutionInstance() {
     	if (execution == null){
-    		return execution = new Execution();
+    		return execution = new ExecutionRefactor();
     	}
     	return execution;
     }

@@ -69,10 +69,11 @@ public class ExecutionRefactor {
         // load tasks from storage
         mainList = storage.getMainList();
         doneList = storage.getCompletedList();
+        weekList = new ArrayList<Task>();
         // sort tasks
         sortList(mainList);
         updateWeekList();
-        updateTaskProgress();
+        initializeTaskProgress();
 
         // for undo and redo
         previousCopyOfMainList = new ArrayList<Task>();
@@ -86,6 +87,10 @@ public class ExecutionRefactor {
         initializeCategories();
     }
 
+    private void initializeTaskProgress() {
+        categories = new TreeSet<Entry<String, Integer>>(keyComparator);
+        updateTaskProgress();
+    }
     private void initializeDictionary() {
         taskDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
         wordDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
@@ -123,7 +128,7 @@ public class ExecutionRefactor {
         ArrayList<String> inputCategories = command.getCategories();
         
         // validate user input
-        if (description.isEmpty()) {
+        if (description == null || description.isEmpty()) {
             return new Result(CommandType.ADD, false, "No description!", weekList);
         }
         if (start != null && end != null) {
@@ -176,7 +181,7 @@ public class ExecutionRefactor {
         if (!isValidIndex(index)) {
             return new Result(CommandType.EDIT, false, "Wrong task number", weekList);
         }
-        if (description.isEmpty()) {
+        if (description == null || description.isEmpty()) {
             return new Result(CommandType.EDIT, false, "No description!", weekList);
         }
         if (start != null && end != null) {
@@ -185,14 +190,17 @@ public class ExecutionRefactor {
             }
         }
 
-        // get the task to edit
-        Task task = mainList.get(index);
         
-        // edit Task with specified details
-        task.setModified(true);
-        setStartEnd(start, end, task);
-        setCategories(inputCategories, task);
+        // create a new Task with specified details
+        Task newTask = new Task(description);
+        newTask.setModified(true);
+        setStartEnd(start, end, newTask);
+        setCategories(inputCategories, newTask);
         
+        // remove specified task from list and add new task
+        mainList.remove(index);
+        mainList.add(newTask);
+
         // postprocessing
         sortList(mainList);
         updateWeekList();
@@ -303,6 +311,7 @@ public class ExecutionRefactor {
         
         // post-processing
         updateWeekList();
+        updateTaskProgress();
         canUndo = false;
         canRedo = true;
         
@@ -503,6 +512,10 @@ public class ExecutionRefactor {
         return new Result(CommandType.SEARCH, true, "Searched", searchResults);
     }
 
+    public Result filterTasks() {
+        return new Result(Command.CommandType.HOME, true, "Return home", weekList);
+    }
+    
     // Task details and progress
     
     private void setStartEnd(LocalDateTime start, LocalDateTime end, Task newTask) {
@@ -729,8 +742,24 @@ public class ExecutionRefactor {
     }
     
     public void updateWeekList() {
-        // TODO
-    }
+        weekList.clear();
+        
+        LocalDateTime today = LocalDateTime.now();
+        LocalDate todayDate = LocalDate.now();
+        LocalDate weekAfterToday = todayDate.plusWeeks(1);
+        
+        for (Task task : mainList) {
+            if (task.isFloating()) {
+                weekList.add(task);
+            } else if (task.isOverdue(today)) {
+                weekList.add(task);
+            } else {
+                LocalDate taskEndDate = task.getEndDate();
+                if (taskEndDate.isBefore(weekAfterToday)) {
+                    weekList.add(task);
+                }
+            }
+        }    }
 
     // Sets the status of all tasks to be unmodified
     private void clearModifiedStatus() {
