@@ -60,6 +60,8 @@ public class Storage {
 		mainList = new ArrayList<Task>();
 		completedList = new ArrayList<Task>();
 		autoCompletionList = new ArrayList<String>();
+		
+		// initializeLogger();
 
 		// Create default file for load recent feature
 		try {
@@ -603,18 +605,18 @@ public class Storage {
 			descriptionLine = FIELDS_DESCRIPTION + " " + description;
 
 			// get start date/time from task
-			if (task.getStartDateString().isEmpty()) {
+			if (task.getStartString().isEmpty()) {
 				startLine = FIELDS_START + " ";
 			} else {
-				start = task.getStartDateString();
+				start = task.getStartString();
 				startLine = FIELDS_START + " " + start;
 			}
 
 			// get end date/time from task
-			if (task.getEndDateString().isEmpty()) {
+			if (task.getEndString().isEmpty()) {
 				endLine = FIELDS_END + " ";
 			} else {
-				end = task.getEndDateString();
+				end = task.getEndString();
 				endLine = FIELDS_END + " " + end;
 			}
 

@@ -211,16 +211,18 @@ public class Logic {
     }
     
     public ArrayList<String> getPredictions(String input) {
-        input = input.trim();
-        if (input.isEmpty()) {
+        String inputTrimmed = input.trim();
+        if (inputTrimmed.isEmpty()) {
             return null;
         }
-        String[] params = input.split("\\s+", 2);
+        String[] params = inputTrimmed.split("\\s+", 2);
         String firstWord = params[0];
         if (firstWord.equalsIgnoreCase("add")) {
             return getPredictionsForAdd(params);
         } else if (firstWord.equalsIgnoreCase("search")) {
-            return getPredictionsForSearch(params);
+            if (input.matches("\\s*search\\s+.*")) {
+                return getPredictionsForSearch(params);
+            }
         } else if (firstWord.equalsIgnoreCase("edit")) {
             return getPredictionsForEdit(params);
         } else if (firstWord.equalsIgnoreCase("save") || firstWord.equalsIgnoreCase("load")) {
@@ -321,7 +323,7 @@ public class Logic {
         // get maximum number of predictions
         for (Entry<String, Integer> entry : freqList) {
             String prediction = entry.getKey();
-            hashSet.add(command + " " + prediction);
+            hashSet.add(command + " " + prediction + " ");
             if (hashSet.size() == MAX_PREDICTIONS) {
                 break;
             }

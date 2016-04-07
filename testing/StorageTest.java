@@ -29,6 +29,7 @@ public class StorageTest {
 	private String fileName2 = "newFile";
 	private String fileName3 = "AutoCompletion.txt";
 	private String defaultFileName = "DefaultFile.txt";
+	private ArrayList<Task> recentList;
 	
 	private String outputException = "";
 	//String expectedDirectory = "/Users/Documents/testDirectory";
@@ -41,6 +42,9 @@ public class StorageTest {
 		mainList = testStorage.getMainList();
 		completedList = testStorage.getCompletedList();
 		autocompletionList = testStorage.getAutoCompletionList();
+		recentList = new ArrayList<Task>();
+		recentList.addAll(mainList);
+		
 		getDataFromFile = new ArrayList<Task>();
 
 		if (mainList.isEmpty()) {
@@ -130,6 +134,7 @@ public class StorageTest {
 			getDataFromFile = testStorage.convertStringToTask(stringList, 0);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
+			System.out.println("Unable to convert String to Task");
 			e.printStackTrace();
 		}
 
@@ -195,7 +200,7 @@ public class StorageTest {
 
 	@Test 
 	public void loadFileWithFileName_DefaultTextFile_LoadListFromFile() throws FileNotFoundException, IOException, ParseException {
-		getDataFromFile.clear();
+
 		File file1 = new File(fileName1);
 		getDataFromFile = testStorage.loadFileWithFileName(fileName1);
 		assertEquals(getDataFromFile, mainList);
@@ -231,6 +236,7 @@ public class StorageTest {
 		File defaultTextFile = new File(defaultFileName);
 		Scanner scanner = new Scanner(defaultTextFile);
 		String getRecentLine = scanner.nextLine();
+		System.out.println("recent line from default file is " + getRecentLine);
 		scanner.close();
 		
 		String expectedLine = expectedDirectory + " , " + fileName2;
@@ -266,14 +272,46 @@ public class StorageTest {
 		File defaultTextFile =  new File(fileName1);
 		FileAssert.assertEquals(loadFile, defaultTextFile);
 		
-		loadFile.delete();
+		//loadFile.delete();
 		
 	}
 	
 	@Test
 	public void saveAndLoadWithDirectory_NewFile_SaveAndLoadFile() throws NotDirectoryException, IOException, ParseException {
+		System.out.println("Test with directory");
 		saveToFileWithDirectory_NewFileAndDirectory_FileSaved();
 		loadFileWithDirectory_NewFileAndDirectory_LoadNewFile();
+	}
+	
+	@Test
+	public void testLoadRecentFileWithDirectory_NewFile_LoadRecentFileWithDirectory() throws IOException, ParseException {
+		testStorage.loadFileWithDirectory(expectedDirectory, fileName2);
+		File loadFile = new File(expectedDirectory + "/" + fileName2);
+		
+		ArrayList<String> stringList = new ArrayList<String>();
+		String readLine;
+		
+		BufferedReader readFile = new BufferedReader(new FileReader(loadFile));
+		while ((readLine = readFile.readLine()) != null) {
+			stringList.add(readLine);
+		}
+		
+		ArrayList<Task> stringListToTask = testStorage.convertStringToTask(stringList, 0);
+		//ArrayList<String> recentListString = testStorage.convertTaskToString(recentList);
+	
+		int count = 0;
+		for (int i = 0; i < recentList.size(); i++) {
+			Task line1 = recentList.get(i);
+			System.out.println("line 1 is " + line1);
+			Task line2 = stringListToTask.get(i);
+			System.out.println("line 2 is " + line2);
+
+			if (line1.equals(line2)) {
+				count++;
+			}
+		}
+		// test content
+		assertEquals(recentList.size(), count);
 	}
 
 	// ================================================================================

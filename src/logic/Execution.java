@@ -49,11 +49,11 @@ public class Execution {
 
 	// Common English function words, will not be stored in word dictionary
 	private static final String[] functionWords = { "a", "about", "an", "and", "as", "at",
-												  "by", "for", "in", "of","or", 
-												  "the", "to", "with" };
+	                                                "by", "for", "in", "of","or", 
+	                                                "the", "to", "with" };
 
-	// Comparator where element uniqueness depends only on the
-	// String key and not the frequency count
+	// Comparator where element uniqueness depends only on
+	// the String key and not the frequency count
 	private static final Comparator<Entry<String, Integer>> keyComparator = new Comparator<Entry<String, Integer>>() {
 		public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
 			// element uniqueness depends only on the entry's key
@@ -652,8 +652,9 @@ public class Execution {
 	}
 
 	private void updateDictionary(String text) {
-		if (text != null) {
-			text = text.toLowerCase();
+	    assert (text != null);
+	    text = text.trim();
+		if (!text.isEmpty()) {
 			updateTaskDictionary(text);
 			updateWordDictionary(text);
 			saveAutoCompletionList();
@@ -663,11 +664,12 @@ public class Execution {
 	private void initializeDictionary() {
 	    ArrayList<String> autocompletionList = storage.getAutoCompletionList();
         for (String entry : autocompletionList) {
-            entry = entry.toLowerCase();
+            entry = toSentenceCase(entry);
             updateTaskDictionary(entry);
             updateWordDictionary(entry);
         }
 	}
+	
     // @@author Ruoling
     private void saveAutoCompletionList() {
         // convert TreeSet to ArrayList
@@ -689,7 +691,7 @@ public class Execution {
 	}
 
 	private void updateWordDictionary(String text) {
-		String[] words = text.split("\\s+");
+		String[] words = text.toLowerCase().split("\\s+");
 		for (int i = 0; i < words.length; i++) {
 			if (!isNumberOrFunctionWord(words[i])) {
 				int freqCount = removeFromDictionary(wordDictionary, words[i]);
