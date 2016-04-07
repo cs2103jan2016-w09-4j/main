@@ -648,12 +648,19 @@ public class Execution {
 	}
 
 	public String toSentenceCase(String text) {
-		if (text.length() > 0){
-			String sentenceCase = text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
-			return sentenceCase;
-		} else {
-			return "";
-		}
+	    if (text == null) {
+	        throw new NullPointerException();
+	    }
+        String textTrimmed = text.trim();
+        if (textTrimmed.isEmpty()) {
+            return textTrimmed;
+        }
+        String sentenceCase = textTrimmed.substring(0, 1).toUpperCase();
+        if (textTrimmed.length() > 1) {
+            sentenceCase += sentenceCase.substring(1).toLowerCase();
+        }
+        return sentenceCase;
+	        
 	}
 
 	private void updateDictionary(String text) {
@@ -670,8 +677,10 @@ public class Execution {
 	    ArrayList<String> autocompletionList = storage.getAutoCompletionList();
         for (String entry : autocompletionList) {
             entry = toSentenceCase(entry);
-            updateTaskDictionary(entry);
-            updateWordDictionary(entry);
+            if (!entry.isEmpty()) {
+                updateTaskDictionary(entry);
+                updateWordDictionary(entry);
+            }
         }
 	}
 	
