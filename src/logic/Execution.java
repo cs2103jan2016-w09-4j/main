@@ -310,6 +310,7 @@ public class Execution {
         doneList.addAll(previousCopyOfDoneList);
         
         // post-processing
+        sortList(mainList);
         updateWeekList();
         updateTaskProgress();
         canUndo = false;
@@ -339,6 +340,7 @@ public class Execution {
         doneList.addAll(copyOfDoneListForRedo);
         
         // post-processing
+        sortList(mainList);
         updateWeekList();
         canUndo = false;
         canRedo = false;
