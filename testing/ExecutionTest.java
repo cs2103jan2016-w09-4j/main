@@ -40,10 +40,10 @@ public class ExecutionTest{
     	LocalDateTime start = LocalDateTime.of(2016, 5, 24, 14, 0);  // 24/5/2016 2pm
     	LocalDateTime end = LocalDateTime.of(2016, 5, 24, 18, 0);  // 24/5/2016 6pm
     	
-    	execution.addTask("Hello", null, null, null);
-    	execution.addTask("Testing", null, null, null);
-    	execution.addTask("Only end time", null, end, null);
-    	execution.addTask("Start and end time", start, end, null);
+    	execution.addTask(new Command(CommandType.ADD, "Hello"));
+    	execution.addTask(new Command(CommandType.ADD, "Testing"));
+    	execution.addTask(new Command(CommandType.ADD, "Only end time", null, end, null));
+    	execution.addTask(new Command(CommandType.ADD, "Start and end time", start, end, null));
     	mainList = execution.getMainList();
 
     	compareList = new ArrayList<Task>();
@@ -58,7 +58,7 @@ public class ExecutionTest{
     
     public void editTask_AllTaskTypes_EditedTheSelectedTask() {
     	
-    	execution.editTask(3, "Sayonara no sora", null, null, null);
+    	execution.editTask(new Command(CommandType.EDIT, 3, "Sayonara no sora", null, null, null));
     	mainList = execution.getMainList();
     	
     	compareList.get(2).setDescription("Sayonara no sora");
@@ -67,16 +67,20 @@ public class ExecutionTest{
 	
     public void deleteTask_AllTaskTypes_DeletedTheSelectedTask() {
     	
-    	execution.deleteTask(1);
+    	execution.deleteTask(new Command(CommandType.DELETE, 1));
     	mainList = execution.getMainList();
     	
     	compareList.remove(0);
+    	int index = 1;
+    	for (Task task : compareList) {
+    	    task.setId(index++);
+    	}
     	assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
     
     public void doneTask_AllTaskTypes_DoneTheSelectedTask() {
     	
-    	execution.completeCommand(1);
+    	execution.doneTask(new Command(CommandType.DONE, 1));
     	mainList = execution.getDoneList();
     	
     	ArrayList<Task> done = new ArrayList<Task>();
