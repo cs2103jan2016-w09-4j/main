@@ -9,6 +9,7 @@ import java.nio.file.NotDirectoryException;
 import java.text.ParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Map.Entry;
 
@@ -26,17 +27,17 @@ public class StorageTest {
 	private ArrayList<Task> mainList;
 	private ArrayList<Task> getDataFromFile;
 	private ArrayList<Task> completedList;
-	private ArrayList<Entry<String,Integer>> autocompletionList;
+	private ArrayList<Entry<String, Integer>> autocompletionList;
 	private String fileName1 = "MyTasks.txt";
 	private String fileName2 = "newFile";
 	private String fileName3 = "AutoCompletion.txt";
 	private String defaultFileName = "DefaultFile.txt";
 	private ArrayList<Task> recentList;
-	
+
 	private String outputException = "";
-	//String expectedDirectory = "/Users/Documents/testDirectory";
+	// String expectedDirectory = "/Users/Documents/testDirectory";
 	String expectedDirectory = "/Users/tanching/Dropbox/Y2S2/CS2103T/testDirectory";
-	
+
 	@Before
 	public void init() throws IOException, ParseException {
 		System.out.println("initializing");
@@ -46,7 +47,7 @@ public class StorageTest {
 		autocompletionList = testStorage.getAutoCompletionList();
 		recentList = new ArrayList<Task>();
 		recentList.addAll(mainList);
-		
+
 		getDataFromFile = new ArrayList<Task>();
 
 		if (mainList.isEmpty()) {
@@ -57,7 +58,7 @@ public class StorageTest {
 			System.out.println("Clear mainlist");
 			mainList.clear();
 		}
-		
+
 		if (autocompletionList.isEmpty()) {
 			System.out.println("autocompletion list is empty");
 		} else {
@@ -66,7 +67,7 @@ public class StorageTest {
 			System.out.println("Clear autocompletion list");
 			autocompletionList.clear();
 		}
-		
+
 		if (completedList.isEmpty()) {
 			System.out.println("completedList is empty");
 		} else {
@@ -94,24 +95,24 @@ public class StorageTest {
 
 		mainList.add(task1);
 		mainList.add(task2);
-		
+
 		// adding task into completed list
 		Task task3 = new Task("do tutorial");
 		ArrayList<String> categoryToAdd2 = new ArrayList<String>();
 		categoryToAdd2.add("homework");
 		task3.setCategories(categoryToAdd2);
-		
+
 		// have 1 field
 		Task task4 = new Task("meet friends");
-		
+
 		completedList.add(task3);
 		completedList.add(task4);
-		
-		//add string as autocompletion
+
+		// add string as autocompletion
 		String line1 = "add meeting now";
 		String line2 = "gathering at 4pm";
-		autocompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(line1,2));
-		autocompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(line2,2));
+		autocompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(line1, 2));
+		autocompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(line2, 2));
 
 		System.out.println("Print main list");
 		printResult(mainList);
@@ -131,7 +132,7 @@ public class StorageTest {
 		while ((readLine = readFile.readLine()) != null) {
 			stringList.add(readLine);
 		}
-		
+
 		try {
 			getDataFromFile = testStorage.convertStringToTask(stringList, 0);
 		} catch (ParseException e) {
@@ -154,11 +155,11 @@ public class StorageTest {
 		// test content
 		assertEquals(mainList.size(), count);
 	}
-	
+
 	@Test
 	public void writeAutoCompletionData_ContentsOfAnotherFile_CorrectNumOfStringandContent() throws IOException {
 		testStorage.writeAutoCompletionData();
-		
+
 		String readLine;
 
 		// read file into arraylist
@@ -170,15 +171,15 @@ public class StorageTest {
 			stringList.add(readLine);
 		}
 
-		//System.out.println("size of autocompletionList is " + autocompletionList.size());
-		//System.out.println("size of stringList is " + stringList.size());
-
 		assertEquals(autocompletionList.size(), stringList.size());
 
 		int count = 0;
 		for (int i = 0; i < stringList.size(); i++) {
 			String line1 = stringList.get(i);
-			String line2 = autocompletionList.get(i);
+			//System.out.println("line 1 from autocompletion is " + line1);
+			String line2 = autocompletionList.get(i).getKey() + " : " + "Frequency : "
+					+ autocompletionList.get(i).getValue();
+			//System.out.println("key is " + line2);
 
 			if (line1.equals(line2)) {
 				count++;
@@ -200,8 +201,9 @@ public class StorageTest {
 		file3.delete();
 	}
 
-	@Test 
-	public void loadFileWithFileName_DefaultTextFile_LoadListFromFile() throws FileNotFoundException, IOException, ParseException {
+	@Test
+	public void loadFileWithFileName_DefaultTextFile_LoadListFromFile()
+			throws FileNotFoundException, IOException, ParseException {
 
 		File file1 = new File(fileName1);
 		getDataFromFile = testStorage.loadFileWithFileName(fileName1);
@@ -229,84 +231,86 @@ public class StorageTest {
 
 		assertEquals("Invalid File", outputException);
 	}
-	
-	//@Test
+
+	// @Test
 	public void saveToFileWithDirectory_NewFileAndDirectory_FileSaved() throws NotDirectoryException, IOException {
 		testStorage.saveToFileWithDirectory(expectedDirectory, fileName2);
-		
-		//Read DefaultFile.txt to see if it is written correctly
+
+		// Read DefaultFile.txt to see if it is written correctly
 		File defaultTextFile = new File(defaultFileName);
 		Scanner scanner = new Scanner(defaultTextFile);
 		String getRecentLine = scanner.nextLine();
 		System.out.println("recent line from default file is " + getRecentLine);
 		scanner.close();
-		
+
 		String expectedLine = expectedDirectory + " , " + fileName2;
-		
-		assertEquals(expectedLine,getRecentLine);
-		
+
+		assertEquals(expectedLine, getRecentLine);
+
 		defaultTextFile.delete();
-		
+
 		File file1 = new File(expectedDirectory + "/" + fileName2);
-		File file2 =  new File(fileName1);
+		File file2 = new File(fileName1);
 		FileAssert.assertEquals(file2, file1);
-		
+
 	}
-	
-	//@Test
-	public void loadFileWithDirectory_NewFileAndDirectory_LoadNewFile() throws NotDirectoryException, FileNotFoundException, IOException, ParseException {
+
+	// @Test
+	public void loadFileWithDirectory_NewFileAndDirectory_LoadNewFile()
+			throws NotDirectoryException, FileNotFoundException, IOException, ParseException {
 		testStorage.loadFileWithDirectory(expectedDirectory, fileName2);
 		File loadFile = new File(expectedDirectory + "/" + fileName2);
-		
+
 		ArrayList<String> stringList = new ArrayList<String>();
 		String readLine;
-		
+
 		BufferedReader readFile = new BufferedReader(new FileReader(loadFile));
 		while ((readLine = readFile.readLine()) != null) {
 			stringList.add(readLine);
 		}
-		
+
 		ArrayList<Task> mainListFromFile = testStorage.convertStringToTask(stringList, 0);
-		
+
 		testStorage.setMainList(mainListFromFile);
 		testStorage.writeToFile();
-		
-		File defaultTextFile =  new File(fileName1);
+
+		File defaultTextFile = new File(fileName1);
 		FileAssert.assertEquals(loadFile, defaultTextFile);
-		
-		//loadFile.delete();
-		
+
+		// loadFile.delete();
+
 	}
-	
+
 	@Test
-	public void saveAndLoadWithDirectory_NewFile_SaveAndLoadFile() throws NotDirectoryException, IOException, ParseException {
+	public void saveAndLoadWithDirectory_NewFile_SaveAndLoadFile()
+			throws NotDirectoryException, IOException, ParseException {
 		System.out.println("Test with directory");
 		saveToFileWithDirectory_NewFileAndDirectory_FileSaved();
 		loadFileWithDirectory_NewFileAndDirectory_LoadNewFile();
 	}
-	
+
 	@Test
-	public void testLoadRecentFileWithDirectory_NewFile_LoadRecentFileWithDirectory() throws IOException, ParseException {
+	public void testLoadRecentFileWithDirectory_NewFile_LoadRecentFileWithDirectory()
+			throws IOException, ParseException {
 		testStorage.loadFileWithDirectory(expectedDirectory, fileName2);
 		File loadFile = new File(expectedDirectory + "/" + fileName2);
-		
+
 		ArrayList<String> stringList = new ArrayList<String>();
 		String readLine;
-		
+
 		BufferedReader readFile = new BufferedReader(new FileReader(loadFile));
 		while ((readLine = readFile.readLine()) != null) {
 			stringList.add(readLine);
 		}
-		
+
 		ArrayList<Task> stringListToTask = testStorage.convertStringToTask(stringList, 0);
-		//ArrayList<String> recentListString = testStorage.convertTaskToString(recentList);
-	
+
 		int count = 0;
 		for (int i = 0; i < recentList.size(); i++) {
 			Task line1 = recentList.get(i);
-			System.out.println("line 1 is " + line1);
+			//System.out.println("line 1 is " + line1);
 			Task line2 = stringListToTask.get(i);
-			System.out.println("line 2 is " + line2);
+			//System.out.println("line 2 is " + line2);
 
 			if (line1.equals(line2)) {
 				count++;
@@ -325,10 +329,16 @@ public class StorageTest {
 			System.out.println(testArray.get(i).getDescription());
 		}
 	}
-	
-	private static void printString(ArrayList<String> testArray) {
-		for (int i = 0; i < testArray.size(); i++) {
-			System.out.println(testArray.get(i));
+
+	public static void printString(ArrayList<Entry<String, Integer>> autoCompletionList) {
+
+		Iterator<Entry<String, Integer>> iterator = autoCompletionList.iterator();
+		while (iterator.hasNext()) {
+			Entry<String, Integer> next = iterator.next();
+			String entry = next.getKey();
+			int freqCount = next.getValue();
+
+			System.out.println("entry is " + entry + " and freqcount is " + freqCount);
 		}
 	}
 }
