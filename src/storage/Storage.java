@@ -649,9 +649,7 @@ public class Storage {
 			stringList.add(endLine);
 			stringList.add(categoryLine);
 			stringList.add(priorityLine);
-
-			String breakLine = FIELDS_BREAKLINE;
-			stringList.add(breakLine);
+			stringList.add(FIELDS_BREAKLINE);
 
 		}
 		return stringList;
@@ -671,7 +669,7 @@ public class Storage {
 		return lineWithoutDirectory;
 	}
 
-	// This method adds the data from file to mainlist
+	// This method adds the data from file to list
 	private void updateList(ArrayList<Task> dataFromFile, ArrayList<Task> list) {
 		for (int j = 0; j < dataFromFile.size(); j++) {
 			list.add(dataFromFile.get(j));
