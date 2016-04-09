@@ -3,30 +3,43 @@ package parser;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-//import java.util.regex.Pattern;
-//import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import parser.DateTimeParser;
 
-public class DescriptionParser {
+public class TaskDetails {
+    private static final String START_TIME_MARKER = "\\bstart\\b";
+    private static final String END_TIME_MARKER = "\\bend\\b";
+    private static final String WRONG_POSITION_OF_CATEGORY_NOTIFY = "# should be put after time";
+
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
 	private String description;
 	private ArrayList<String> categories;
 
-	public DescriptionParser(String input) {
-//	    Pattern pattern = Pattern.compile("#+\\w*\\b");
-
+	public TaskDetails(String input) throws WrongCommandFormatException {
 		input = input.trim();
 
-		int startTimeIndex = input.indexOf(" start ");
-		int endTimeIndex = input.indexOf(" end ");
+		Pattern startTimePattern = Pattern.compile(START_TIME_MARKER);
+		Pattern endTimePattern = Pattern.compile(END_TIME_MARKER);
+
+		Matcher startTimeMatcher = startTimePattern.matcher(input);
+		Matcher endTimeMatcher = endTimePattern.matcher(input);
+
+		int startTimeIndex = startTimeMatcher.find() ? startTimeMatcher.start() : -1; //input.indexOf(" start ");
+		int endTimeIndex = endTimeMatcher.find() ? endTimeMatcher.start() : -1; //input.indexOf(" end ");
 		int categoryIndex = input.indexOf("#");
+
+		if (categoryIndex < Integer.max(startTimeIndex, endTimeIndex)) {
+		    throw new WrongCommandFormatException(WRONG_POSITION_OF_CATEGORY_NOTIFY);
+		}
 
 		DateTimeParser dateTimeParser = new DateTimeParser();
 
         ArrayList<String> storeCategories = new ArrayList<String>();
 
         if (categoryIndex != -1) {
-            String categoryString = input.substring(categoryIndex,input.length());
+            String categoryString = input.substring(categoryIndex, input.length());
             String[] splitCategories = categoryString.split(" ");
             String categoryName;
             if (splitCategories.length == 1) {
@@ -47,13 +60,13 @@ public class DescriptionParser {
 
 		if (startTimeIndex != -1) {
 			int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
-			String startTimeString = input.substring(startTimeIndex + 6, startTimeCutIndex);
+			String startTimeString = input.substring(startTimeMatcher.end(), startTimeCutIndex);
 			startTime = dateTimeParser.parse(startTimeString, false);
 		}
 
 		if (endTimeIndex != -1) {
 			int endTimeCutIndex = (startTimeIndex > endTimeIndex) ? startTimeIndex : input.length();
-			String endTimeString = input.substring(endTimeIndex + 4, endTimeCutIndex);
+			String endTimeString = input.substring(endTimeMatcher.end(), endTimeCutIndex);
 			endTime = dateTimeParser.parse(endTimeString, true);
 		}
 

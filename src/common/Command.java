@@ -57,7 +57,7 @@ public class Command {
           this.end = end;
           this.categories = categories;
 	}
-    
+
     public Command(CommandType type, int id, String description,  LocalDateTime start, LocalDateTime end) { // edit
         this.type = type;
         this.id = id;
@@ -76,12 +76,16 @@ public class Command {
             return false;
 
         Command xCommand = (Command) x;
-        if (type != xCommand.type) return false;
-        if (id != xCommand.id) return false;
-        if (!start.equals(xCommand.start)) return false;
-        if (!end.equals(xCommand.end)) return false;
-        if (!description.equals(xCommand.description)) return false;
-        if (!categories.equals(xCommand.categories)) return false;
+        if (type!=xCommand.type) return false;
+        if (id!=xCommand.id) return false;
+
+        if (start==null ? xCommand.start!=null : !start.equals(xCommand.start)) return false;
+
+        if (end==null ? xCommand.end!=null : !end.equals(xCommand.end)) return false;
+
+        if (description == null ? xCommand.description!=null : !description.equals(xCommand.description)) return false;
+
+//        if (categories == null ? xCommand.categories!=null : !categories.equals(xCommand.categories)) return false;
 
         return true;
     }

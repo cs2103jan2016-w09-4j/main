@@ -5,6 +5,22 @@ import common.*;
 import common.Command.CommandType;
 
 public class GeneralParser {
+    private static final String ADD_COMMAND_CODE = "add";
+    private static final String EDIT_COMMAND_CODE = "edit";
+    private static final String DELETE_COMMAND_CODE = "delete";
+    private static final String SEARCH_COMMAND_CODE = "search";
+    private static final String DONE_COMMAND_CODE = "done";
+    private static final String SEARCHDONE_COMMAND_CODE = "searchdone";
+    private static final String SAVE_COMMAND_CODE = "save";
+    private static final String LOAD_COMMAND_CODE = "load";
+    private static final String UNDO_COMMAND_CODE = "undo";
+    private static final String REDO_COMMAND_CODE = "redo";
+    private static final String HOME_COMMAND_CODE = "home";
+    private static final String HELP_COMMAND_CODE = "help";
+    private static final String EXIT_COMMAND_CODE = "exit";
+
+    private static final String INVALID_COMMAND_NOTIFY = "Invalid command";
+    private static final String EMPTY_COMMAND_NOTIFY = "Empty command entered";
 
     public GeneralParser() {
 
@@ -15,69 +31,72 @@ public class GeneralParser {
         return result;
     }
 
-    public Command parseCommand(String commandString) {
-//      String[] commandParts = commandString.trim().split("\\s+", 2);
-//      String commandTypeString = commandParts[0];
-//      String commandContent = commandParts[1];
+    public Command parseCommand(String commandString) throws EmptyCommandException, InvalidCommandException, WrongCommandFormatException {
+        String[] commandParts = commandString.trim().split("\\s+", 2);
+
+        if (commandParts.length==0) {
+            throw new EmptyCommandException(EMPTY_COMMAND_NOTIFY);
+        }
+
+        String commandCode = commandParts[0].toLowerCase();
+        String commandContent = commandString.substring(commandCode.length(), commandString.length());
 
         String command = commandString.trim().toLowerCase();
 
-        if (command.startsWith("add")) {
-        	if (commandString.length() <= 3) {
-        		return new Command(CommandType.ADD);
-        	}
-            DescriptionParser details = new DescriptionParser(commandString.substring(4).trim());
+        if (commandCode.equals(ADD_COMMAND_CODE)) {
+            if (commandContent.equals("")) return new Command(CommandType.ADD);
+            TaskDetails details = new TaskDetails(commandContent);
             return new Command(CommandType.ADD, details.getDescription(), details.getStartTime(), details.getEndTime(),details.getCategories());
 
-        } else if (command.startsWith("delete")) {
+        } else if (commandCode.equals(DELETE_COMMAND_CODE)) {
             return new Command(CommandType.DELETE, Integer.parseInt(commandString.substring(7).trim()));
 
-        } else if (command.startsWith("edit")) {
+        } else if (commandCode.equals(EDIT_COMMAND_CODE)) {
             String content = commandString.substring(5);
             String firstWord = getFirstWord(content);
             String description = content.substring(firstWord.length()).trim();
 
-            DescriptionParser details = new DescriptionParser(description);
+            TaskDetails details = new TaskDetails(description);
             return new Command(CommandType.EDIT, Integer.parseInt(firstWord),
                     details.getDescription(), details.getStartTime(), details.getEndTime(), details.getCategories());
-        } else if (command.startsWith("done")) {
+        } else if (commandCode.equals(DONE_COMMAND_CODE)) {
             return new Command(CommandType.DONE, Integer.parseInt(commandString.substring(4).trim()));
 
-        } else if (command.startsWith("searchdone")) {
+        } else if (commandCode.equals(SEARCHDONE_COMMAND_CODE)) {
         	String content = getUserInput(command,"searchdone");
-            DescriptionParser details = new DescriptionParser(content);
+            TaskDetails details = new TaskDetails(content);
             return new Command(CommandType.SEARCHDONE, details.getDescription(), details.getStartTime(), details.getEndTime(),
                     details.getCategories());
 
-        } else if (command.startsWith("search")) {
+        } else if (commandCode.equals(SEARCH_COMMAND_CODE)) {
             String content = getUserInput(command,"search");
-            DescriptionParser details = new DescriptionParser(content);
+            TaskDetails details = new TaskDetails(content);
 
             return new Command(CommandType.SEARCH, details.getDescription(), details.getStartTime(), details.getEndTime(),
                     details.getCategories());
 
-        } else if (command.startsWith("save")) {
+        } else if (commandCode.equals(SAVE_COMMAND_CODE)) {
             return new Command(CommandType.SAVE, commandString.substring(4).trim());
 
-        } else if (command.startsWith("load")) {
+        } else if (commandCode.equals(LOAD_COMMAND_CODE)) {
             return new Command(CommandType.LOAD, commandString.substring(4).trim());
 
-        } else if (command.startsWith("undo")) {
+        } else if (commandCode.equals(UNDO_COMMAND_CODE)) {
             return new Command(CommandType.UNDO);
 
-        } else if (command.startsWith("redo")) {
+        } else if (commandCode.equals(REDO_COMMAND_CODE)) {
             return new Command(CommandType.REDO);
 
-        } else if (command.startsWith("home")) {
+        } else if (commandCode.equals(HOME_COMMAND_CODE)) {
             return new Command(CommandType.HOME);
 
-        } else if (command.startsWith("help")) {
+        } else if (commandCode.equals(HELP_COMMAND_CODE)) {
             return new Command(CommandType.HELP);
 
-        } else if (command.startsWith("exit")) {
+        } else if (commandCode.equals(EXIT_COMMAND_CODE)) {
             return new Command(CommandType.EXIT);
         } else {
-            return new Command(CommandType.INVALID);
+            throw new InvalidCommandException(INVALID_COMMAND_NOTIFY);
         }
     }
 
