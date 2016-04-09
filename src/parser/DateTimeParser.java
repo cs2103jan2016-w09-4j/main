@@ -85,8 +85,7 @@ public class DateTimeParser {
     }
 
     public LocalDateTime parse(String timeString, boolean defaultEndDay) {
-        timeString = timeString.trim();
-        timeString = timeString.replace("am", "AM").replace("pm", "PM");
+        timeString = timeString.trim().replace("am", "AM").replace("pm", "PM");
 
         boolean timeFound = false,
                 dateFound = false;
