@@ -95,15 +95,28 @@ public class Execution {
         taskDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
         wordDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
         fileDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
-        ArrayList<String> autocompletionList = storage.getAutoCompletionList();
-        for (String entry : autocompletionList) {
-            entry = toSentenceCase(entry);
-            if (!entry.isEmpty()) {
-                updateTaskDictionary(entry);
-                updateWordDictionary(entry);
+        ArrayList<Entry<String,Integer>> autocompletionList = storage.getAutoCompletionList();
+        
+        for (Entry<String, Integer> entry : autocompletionList) {
+        	String autoCompletionEntry = entry.getKey();
+        	autoCompletionEntry = toSentenceCase(autoCompletionEntry);
+        	int freqCount = entry.getValue();
+            
+        	if (!autoCompletionEntry.isEmpty()) {
+            	addToDictionary(taskDictionary, autoCompletionEntry, freqCount);        	
+            	addToWordDictionary(autoCompletionEntry, freqCount);
             }
         }
     }
+
+	private void addToWordDictionary(String autoCompletionEntry, int freqCount) {
+		String[] words = autoCompletionEntry.toLowerCase().split("\\s+");
+		for (int i = 0; i < words.length; i++) {
+		    if (!isNumberOrFunctionWord(words[i])) {
+		        addToDictionary(wordDictionary, words[i], freqCount);
+		    }
+		}
+	}
     
     private void initializeCategories() {
         categories = new TreeSet<Entry<String, Integer>>(keyComparator);
@@ -625,9 +638,9 @@ public class Execution {
     // @@author Ruoling
     private void saveAutoCompletionList() {
         // convert TreeSet to ArrayList
-        ArrayList<String> autoCompletionList = new ArrayList<String>();
+    	ArrayList<Entry<String,Integer>> autoCompletionList = new ArrayList<Entry<String,Integer>>();
         for (Entry<String, Integer> entry : taskDictionary) {
-            autoCompletionList.add(entry.getKey());
+            autoCompletionList.add(entry);
         }
         storage.setAutoCompletionList(autoCompletionList);
         try {
