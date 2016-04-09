@@ -7,8 +7,10 @@ import java.nio.file.NotDirectoryException;
 import java.text.ParseException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Map.Entry;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -42,7 +44,7 @@ public class Storage {
 
 	private static ArrayList<Task> mainList;
 	private static ArrayList<Task> completedList;
-	private static ArrayList<String> autoCompletionList;
+	private static ArrayList<Entry<String,Integer>> autoCompletionList;
 
 	private String fileName;
 	private String savedDirectory;
@@ -59,8 +61,8 @@ public class Storage {
 
 		mainList = new ArrayList<Task>();
 		completedList = new ArrayList<Task>();
-		autoCompletionList = new ArrayList<String>();
-		
+		autoCompletionList = new ArrayList<Entry<String,Integer>>();
+
 		// initializeLogger();
 
 		// Create default file for load recent feature
@@ -121,7 +123,7 @@ public class Storage {
 		} catch (IOException e) {
 			logger.log(Level.INFO, "Unable to get most recent file");
 		}
-		
+
 		setMainList(recentTaskList);
 
 		return mainList;
@@ -133,7 +135,7 @@ public class Storage {
 	}
 
 	// For Logic to get autocompletion list
-	public ArrayList<String> getAutoCompletionList() {
+	public ArrayList<Entry<String,Integer>> getAutoCompletionList() {
 		autoCompletionList = loadAutoCompletionFile();
 		return autoCompletionList;
 	}
@@ -223,11 +225,22 @@ public class Storage {
 	}
 
 	// This method reads the data from autocompletion file
-	private ArrayList<String> loadAutoCompletionFile() {
-		ArrayList<String> recentAutoCompletionList = new ArrayList<String>();
+	private ArrayList<Entry<String,Integer>> loadAutoCompletionFile() {
+		ArrayList<String> autoCompletionListString = new ArrayList<String>();
+		ArrayList<Entry<String,Integer>> recentAutoCompletionList = new ArrayList<Entry<String,Integer>>();
 		File file = new File(autoCompletionFileName);
 		try {
-			readFileWhenFileExists(file, recentAutoCompletionList);
+			readFileWhenFileExists(file, autoCompletionListString);
+			
+			// get string and frequency
+			for (int i = 0; i < autoCompletionListString.size(); i++) {
+				String getLine = autoCompletionListString.get(i);
+				String[] splitGetLine = getLine.split(" : ");
+				String autoCompletionEntry = splitGetLine[0];
+				int freqCount = Integer.parseInt(splitGetLine[2]);
+				
+				recentAutoCompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(autoCompletionEntry,freqCount));
+			}
 		} catch (FileNotFoundException e) {
 			// Returns empty list if file not found
 			logger.log(Level.INFO, "AutoCompletion.txt does not exist");
@@ -312,8 +325,11 @@ public class Storage {
 	}
 
 	private void writeStringFromAutoCompletedList(FileWriter writer) throws IOException {
+
 		for (int i = 0; i < autoCompletionList.size(); i++) {
-			String lineToWrite = autoCompletionList.get(i);
+			String autoCompletionEntry = autoCompletionList.get(i).getKey();
+			int frequency = autoCompletionList.get(i).getValue();
+			String lineToWrite = autoCompletionEntry + " : " + "Frequency : " + frequency;
 			writer.write(lineToWrite + "\r\n");
 		}
 	}
@@ -380,8 +396,7 @@ public class Storage {
 	 * This method loads data from a specific file. This method will throw an
 	 * exception if the file does not exist
 	 */
-	public ArrayList<Task> loadFileWithFileName(String userFileName)
-			throws IOException, ParseException {
+	public ArrayList<Task> loadFileWithFileName(String userFileName) throws IOException, ParseException {
 
 		assert (!userFileName.isEmpty());
 
@@ -570,7 +585,7 @@ public class Storage {
 		return taskList;
 	}
 
-	private void setMultipleCategories(Task task1, String category) {
+	private void setMultipleCategories(Task task, String category) {
 		// if there are multiple categories
 		String categoryName, name;
 		String[] multipleCategories = category.split(" ");
@@ -583,7 +598,7 @@ public class Storage {
 		}
 
 		if (!categories.isEmpty()) {
-			task1.setCategories(categories);
+			task.setCategories(categories);
 		}
 	}
 
@@ -688,7 +703,7 @@ public class Storage {
 		Storage.completedList = completedList;
 	}
 
-	public void setAutoCompletionList(ArrayList<String> autoCompletionList) {
+	public void setAutoCompletionList(ArrayList<Entry<String,Integer>> autoCompletionList) {
 		Storage.autoCompletionList = autoCompletionList;
 	}
 }

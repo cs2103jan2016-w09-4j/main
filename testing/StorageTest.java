@@ -7,8 +7,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.NotDirectoryException;
 import java.text.ParseException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Map.Entry;
 
 import junitx.framework.FileAssert;
 
@@ -24,7 +26,7 @@ public class StorageTest {
 	private ArrayList<Task> mainList;
 	private ArrayList<Task> getDataFromFile;
 	private ArrayList<Task> completedList;
-	private ArrayList<String> autocompletionList;
+	private ArrayList<Entry<String,Integer>> autocompletionList;
 	private String fileName1 = "MyTasks.txt";
 	private String fileName2 = "newFile";
 	private String fileName3 = "AutoCompletion.txt";
@@ -108,8 +110,8 @@ public class StorageTest {
 		//add string as autocompletion
 		String line1 = "add meeting now";
 		String line2 = "gathering at 4pm";
-		autocompletionList.add(line1);
-		autocompletionList.add(line2);
+		autocompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(line1,2));
+		autocompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(line2,2));
 
 		System.out.println("Print main list");
 		printResult(mainList);
