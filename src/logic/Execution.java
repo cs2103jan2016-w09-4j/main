@@ -518,7 +518,7 @@ public class Execution {
             for (Task task: list) {
                 LocalDateTime taskEnd = task.getEnd();
                 if(taskEnd != null && end != null){
-                	if (taskEnd.compareTo(end) >= 0) {
+                	if (taskEnd.compareTo(end) <= 0) {
                 		searchResults.add(task);
                 	}
                 }
@@ -528,8 +528,7 @@ public class Execution {
             for (Task task: list) {
                 LocalDateTime taskStart = task.getStart();
                 if(taskStart != null && start != null){
-                	if (taskStart.compareTo(start) <= 0) {  
-                		System.out.println("I was here");
+                	if (taskStart.compareTo(start) >= 0) {  
                 		searchResults.add(task);
                 	}
                 }
