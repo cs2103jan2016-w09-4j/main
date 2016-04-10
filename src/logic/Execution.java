@@ -528,15 +528,21 @@ public class Execution {
         if (start == null) { // search by end time (search backward)
             for (Task task: list) {
                 LocalDateTime taskEnd = task.getEnd();
-                if (taskEnd.compareTo(end) < 0) {
-                    searchResults.add(task);
+                if(taskEnd != null && end != null){
+                	if (taskEnd.compareTo(end) >= 0) {
+                		searchResults.add(task);
+                	}
                 }
             }
         } else if (end == null) { // search by start time (search forward)
+        	System.out.println("What is start: " + start);
             for (Task task: list) {
                 LocalDateTime taskStart = task.getStart();
-                if (taskStart.compareTo(start) > 0) {
-                    searchResults.add(task);
+                if(taskStart != null && start != null){
+                	if (taskStart.compareTo(start) <= 0) {  
+                		System.out.println("I was here");
+                		searchResults.add(task);
+                	}
                 }
             }
             

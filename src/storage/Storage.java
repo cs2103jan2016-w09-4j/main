@@ -521,7 +521,7 @@ public class Storage {
 	// ================================================================================
 
 	// This method converts String to Task to allow execution of other commands
-	public ArrayList<Task> convertStringToTask(ArrayList<String> stringList, int startIndex) throws ParseException {
+	private ArrayList<Task> convertStringToTask(ArrayList<String> stringList, int startIndex) throws ParseException {
 
 		Task currentTask = new Task("");
 		String description, start, end, category;
@@ -608,7 +608,7 @@ public class Storage {
 	}
 
 	// This method converts Task to String object for writing purpose
-	public ArrayList<String> convertTaskToString(ArrayList<Task> taskList) {
+	private ArrayList<String> convertTaskToString(ArrayList<Task> taskList) {
 		String linesOfCategory;
 		String description, start = null, end = null;
 		String descriptionLine, startLine, endLine, categoryLine, priorityLine;
