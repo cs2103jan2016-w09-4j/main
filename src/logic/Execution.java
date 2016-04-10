@@ -375,6 +375,11 @@ public class Execution {
         
         String saveLocation = command.getDescription().trim();
         
+        // validate user input
+        if (saveLocation.isEmpty()) {
+            return new Result(CommandType.SAVE, false, "Specify a save location", weekList);
+        }
+        
         // save
         try {
             if (saveLocation.contains(" ")) {
@@ -393,7 +398,8 @@ public class Execution {
             
             return new Result(CommandType.SAVE, true, "Saved at " + saveLocation, weekList);
         } catch (IOException ioe) {
-            return new Result(CommandType.SAVE, false, "Couldn't save data at " + saveLocation, mainList);
+            return new Result(CommandType.SAVE, false, "Couldn't save at " + saveLocation
+                              + ". Try another directory", weekList);
         }
     }
     
@@ -409,6 +415,11 @@ public class Execution {
         tempDoneList.addAll(doneList);
         
         String loadLocation = command.getDescription().trim();
+        
+        // validate user input
+        if (loadLocation.isEmpty()) {
+            return new Result(CommandType.LOAD, false, "Specify a file location", weekList);
+        }
         
         // load
         try {
@@ -438,7 +449,7 @@ public class Execution {
             doneList = tempDoneList;
             canUndo = false;
             canRedo = false;
-            return new Result(CommandType.LOAD, false, "Failed to load " + loadLocation, weekList);
+            return new Result(CommandType.LOAD, false, "Couldn't find " + loadLocation, weekList);
         }
     }
     
@@ -517,25 +528,34 @@ public class Execution {
         if (start == null) { // search by end time (search backward)
             for (Task task: list) {
                 LocalDateTime taskEnd = task.getEnd();
-                if (taskEnd.compareTo(end) < 0) {
-                    searchResults.add(task);
+                if (taskEnd != null && end != null){
+                	if (taskEnd.compareTo(end) <= 0) {
+                		searchResults.add(task);
+                	}
                 }
             }
         } else if (end == null) { // search by start time (search forward)
             for (Task task: list) {
                 LocalDateTime taskStart = task.getStart();
-                if (taskStart.compareTo(start) > 0) {
-                    searchResults.add(task);
+                if (taskStart != null && start != null){
+                	if (taskStart.compareTo(start) >= 0) {  
+                		searchResults.add(task);
+                	}
                 }
             }
             
-        } /*else { // search by a range of time (the range)
-            for (Task task: mainList) {
+        } else { // search by a range of time (the range)
+            for (Task task: list) {
                 LocalDateTime taskStart = task.getStart();
                 LocalDateTime taskEnd = task.getEnd();
-                if (taskStart.isAfter())
+                if (taskStart != null && start != null && taskEnd != null && end != null){
+                	if (taskStart.compareTo(start) >= 0 && taskEnd.compareTo(end) <= 0){
+                		System.out.println("hey sir");
+	                	searchResults.add(task);
+	                }
+                }
             }
-        }*/
+        }
         
         return searchResults;
     }
@@ -556,6 +576,7 @@ public class Execution {
     }
 
     public Result filterTasks() {
+        clearModifiedStatus();
         updateWeekList();
         return new Result(Command.CommandType.HOME, true, "Return home", weekList);
     }
@@ -867,7 +888,6 @@ public class Execution {
         if (textTrimmed.length() > 1) {
             sentenceCase += textTrimmed.substring(1).toLowerCase();
         }
-        System.out.println(sentenceCase);
         return sentenceCase;
             
     }

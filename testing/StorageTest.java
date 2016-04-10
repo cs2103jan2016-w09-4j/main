@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.NotDirectoryException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -28,14 +30,13 @@ public class StorageTest {
 	private ArrayList<Task> completedList;
 	private ArrayList<Entry<String, Integer>> autocompletionList;
 	private String fileName1 = "MyTasks.txt";
-	private String fileName2 = "newFile";
-	private String fileName3 = "AutoCompletion.txt";
+	private String testfile = "StorageTestFile.txt";
+	private String autoCompletionTextFile = "AutoCompletion.txt";
 	private String defaultFileName = "DefaultFile.txt";
-	private ArrayList<Task> recentList;
 
 	private String outputException = "";
-	// Enter a valid directory to test
-	String expectedDirectory = "/Users/tanching/Dropbox/Y2S2/CS2103T/testDirectory";
+	Path currentRelativePath = Paths.get("");
+	String expectedDirectory = currentRelativePath.toAbsolutePath().toString();
 
 	@Before
 	public void init() throws IOException, ParseException {
@@ -43,9 +44,6 @@ public class StorageTest {
 		mainList = testStorage.getMainList();
 		completedList = testStorage.getCompletedList();
 		autocompletionList = testStorage.getAutoCompletionList();
-		recentList = new ArrayList<Task>();
-		recentList.addAll(mainList);
-
 		getDataFromFile = new ArrayList<Task>();
 
 		if (mainList.isEmpty()) {
@@ -67,7 +65,7 @@ public class StorageTest {
 		}
 
 		// Add task into mainList
-		System.out.println("Adding tasks");
+		//System.out.println("Adding tasks");
 
 		// first task have all 3 fields
 		Task task1 = new Task("meeting at night");
@@ -81,6 +79,7 @@ public class StorageTest {
 		// have 2 fields
 		Task task2 = new Task("gathering");
 		task2.setEnd("25/03/2016 14:00");
+		task2.setImportance(true);
 
 		mainList.add(task1);
 		mainList.add(task2);
@@ -93,6 +92,7 @@ public class StorageTest {
 
 		// have 1 field
 		Task task4 = new Task("meet friends");
+		task4.setImportance(true);
 
 		completedList.add(task3);
 		completedList.add(task4);
@@ -118,27 +118,9 @@ public class StorageTest {
 		while ((readLine = readFile.readLine()) != null) {
 			stringList.add(readLine);
 		}
-
-		try {
-			getDataFromFile = testStorage.convertStringToTask(stringList, 0);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Unable to convert String to Task");
-		}
-
-		assertEquals(mainList.size(), getDataFromFile.size());
-
-		count = 0;
-		for (int i = 0; i < mainList.size(); i++) {
-			Task task1 = mainList.get(i);
-			Task task2 = getDataFromFile.get(i);
-
-			if (task1.getDescription().equals(task2.getDescription())) {
-				count++;
-			}
-		}
-		// test content
-		assertEquals(mainList.size(), count);
+		
+		File testFile = new File("testing/expected_writeToFile_AllTaskTypes");
+		FileAssert.assertEquals(defaultTextFile, testFile);
 	}
 
 	@Test
@@ -148,7 +130,7 @@ public class StorageTest {
 		String readLine;
 
 		// read file into arraylist
-		File defaultTextFile = new File(fileName3);
+		File defaultTextFile = new File(autoCompletionTextFile);
 		BufferedReader readFile = new BufferedReader(new FileReader(defaultTextFile));
 
 		ArrayList<String> stringList = new ArrayList<String>();
@@ -175,23 +157,20 @@ public class StorageTest {
 	@Test
 	public void saveToFileNoDirectory_NewFile_FileSaved() throws FileNotFoundException, IOException, ParseException {
 
-		testStorage.saveToFile(fileName2);
-		File file2 = new File(fileName1);
-		File file3 = new File(fileName2);
-		FileAssert.assertEquals(file2, file3);
+		testStorage.saveToFile(testfile);
+		File defaultFile = new File(fileName1);
+		File newFile = new File(testfile);
+		FileAssert.assertEquals(defaultFile, newFile);
 
-		file3.delete();
+		newFile.delete();
 	}
 
 	@Test
 	public void loadFileWithFileName_DefaultTextFile_LoadListFromFile()
 			throws FileNotFoundException, IOException, ParseException {
 
-		File file1 = new File(fileName1);
 		getDataFromFile = testStorage.loadFileWithFileName(fileName1);
 		assertEquals(getDataFromFile, mainList);
-
-		file1.delete();
 	}
 
 	@Test
@@ -212,31 +191,29 @@ public class StorageTest {
 
 	// @Test
 	public void saveToFileWithDirectory_NewFileAndDirectory_FileSaved() throws NotDirectoryException, IOException {
-		testStorage.saveToFileWithDirectory(expectedDirectory, fileName2);
-
+		testStorage.saveToFileWithDirectory(expectedDirectory, testfile);
+		
 		// Read DefaultFile.txt to see if it is written correctly
 		File defaultTextFile = new File(defaultFileName);
 		Scanner scanner = new Scanner(defaultTextFile);
 		String getRecentLine = scanner.nextLine();
 		scanner.close();
 
-		String expectedLine = expectedDirectory + " , " + fileName2;
+		String expectedLine = expectedDirectory + " , " + testfile;
 
 		assertEquals(expectedLine, getRecentLine);
 
-		defaultTextFile.delete();
-
-		File file1 = new File(expectedDirectory + "/" + fileName2);
-		File file2 = new File(fileName1);
-		FileAssert.assertEquals(file2, file1);
+		File newFile = new File(expectedDirectory + "/" + testfile);
+		File defaultFile = new File(fileName1);
+		FileAssert.assertEquals(defaultFile, newFile);
 
 	}
 
 	// @Test
 	public void loadFileWithDirectory_NewFileAndDirectory_LoadNewFile()
 			throws NotDirectoryException, FileNotFoundException, IOException, ParseException {
-		testStorage.loadFileWithDirectory(expectedDirectory, fileName2);
-		File loadFile = new File(expectedDirectory + "/" + fileName2);
+		testStorage.loadFileWithDirectory(expectedDirectory, testfile);
+		File loadFile = new File(expectedDirectory + "/" + testfile);
 
 		ArrayList<String> stringList = new ArrayList<String>();
 		String readLine;
@@ -245,16 +222,9 @@ public class StorageTest {
 		while ((readLine = readFile.readLine()) != null) {
 			stringList.add(readLine);
 		}
-
-		ArrayList<Task> mainListFromFile = testStorage.convertStringToTask(stringList, 0);
-
-		testStorage.setMainList(mainListFromFile);
-		testStorage.writeToFile();
-
+		
 		File defaultTextFile = new File(fileName1);
-		FileAssert.assertEquals(loadFile, defaultTextFile);
-
-		loadFile.delete();
+		FileAssert.assertEquals(defaultTextFile, loadFile);
 	}
 
 	@Test
@@ -262,5 +232,17 @@ public class StorageTest {
 			throws NotDirectoryException, IOException, ParseException {
 		saveToFileWithDirectory_NewFileAndDirectory_FileSaved();
 		loadFileWithDirectory_NewFileAndDirectory_LoadNewFile();
+	}
+	
+	@Test
+	public void getAutoCompletionList_AutoCompletionFileDeleted_ReturnEmptyArrayList() {
+		File autoCompletionFile = new File(autoCompletionTextFile);
+		autoCompletionFile.delete();
+		
+		ArrayList<Entry<String, Integer>> newAutoCompletionList = testStorage.getAutoCompletionList();
+		ArrayList<Entry<String, Integer>> emptyList = new ArrayList<Entry<String, Integer>>();
+		
+		assertEquals(emptyList,newAutoCompletionList);
+		
 	}
 }

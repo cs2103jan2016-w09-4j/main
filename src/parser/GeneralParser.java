@@ -39,7 +39,8 @@ public class GeneralParser {
         }
 
         String commandCode = commandParts[0].toLowerCase();
-        String commandContent = commandString.substring(commandCode.length(), commandString.length());
+        String commandContent = "";
+        if (commandParts.length>=2) commandContent = commandParts[1];
 
         if (commandCode.equals(ADD_COMMAND_CODE)) {
             if (commandContent.equals("")) return new Command(CommandType.ADD);
@@ -52,9 +53,6 @@ public class GeneralParser {
         } else if (commandCode.equals(EDIT_COMMAND_CODE)) {
             String firstWord = getFirstWord(commandContent);
             String description = commandContent.substring(firstWord.length()).trim();
-            System.out.println(commandContent);
-            System.out.println(firstWord);
-            System.out.println(description);
 
             TaskDetails details = new TaskDetails(description);
             return new Command(CommandType.EDIT, Integer.parseInt(firstWord),
