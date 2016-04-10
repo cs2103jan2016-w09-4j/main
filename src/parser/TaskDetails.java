@@ -30,7 +30,7 @@ public class TaskDetails {
 		int endTimeIndex = endTimeMatcher.find() ? endTimeMatcher.start() : -1; //input.indexOf(" end ");
 		int categoryIndex = input.indexOf("#");
 
-		if (categoryIndex < Integer.max(startTimeIndex, endTimeIndex)) {
+		if (categoryIndex>-1 && categoryIndex < Integer.max(startTimeIndex, endTimeIndex)) {
 		    throw new WrongCommandFormatException(WRONG_POSITION_OF_CATEGORY_NOTIFY);
 		}
 

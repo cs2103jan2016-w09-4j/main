@@ -9,7 +9,6 @@ import java.nio.file.NotDirectoryException;
 import java.text.ParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Map.Entry;
 
@@ -35,12 +34,11 @@ public class StorageTest {
 	private ArrayList<Task> recentList;
 
 	private String outputException = "";
-	// String expectedDirectory = "/Users/Documents/testDirectory";
+	// Enter a valid directory to test
 	String expectedDirectory = "/Users/tanching/Dropbox/Y2S2/CS2103T/testDirectory";
 
 	@Before
 	public void init() throws IOException, ParseException {
-		System.out.println("initializing");
 		testStorage = new Storage();
 		mainList = testStorage.getMainList();
 		completedList = testStorage.getCompletedList();
@@ -53,35 +51,26 @@ public class StorageTest {
 		if (mainList.isEmpty()) {
 			System.out.println("main list is empty");
 		} else {
-			System.out.println("Printing main list");
-			printResult(mainList);
-			System.out.println("Clear mainlist");
 			mainList.clear();
 		}
 
 		if (autocompletionList.isEmpty()) {
 			System.out.println("autocompletion list is empty");
 		} else {
-			System.out.println("Printing autocompletion list");
-			printString(autocompletionList);
-			System.out.println("Clear autocompletion list");
 			autocompletionList.clear();
 		}
 
 		if (completedList.isEmpty()) {
 			System.out.println("completedList is empty");
 		} else {
-			System.out.println("Printing completedList");
-			printResult(completedList);
-			System.out.println("Clear completedList");
 			completedList.clear();
 		}
 
 		// Add task into mainList
 		System.out.println("Adding tasks");
+
 		// first task have all 3 fields
-		Task task1 = new Task("meeting at night so late");
-		// Task task1 = new Task("watch tv");
+		Task task1 = new Task("meeting at night");
 		task1.setStart("22/03/2016 13:00");
 		task1.setEnd("22/03/2016 16:00");
 		ArrayList<String> categoryToAdd = new ArrayList<String>();
@@ -113,9 +102,6 @@ public class StorageTest {
 		String line2 = "gathering at 4pm";
 		autocompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(line1, 2));
 		autocompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(line2, 2));
-
-		System.out.println("Print main list");
-		printResult(mainList);
 	}
 
 	@Test
@@ -138,7 +124,6 @@ public class StorageTest {
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			System.out.println("Unable to convert String to Task");
-			e.printStackTrace();
 		}
 
 		assertEquals(mainList.size(), getDataFromFile.size());
@@ -176,10 +161,8 @@ public class StorageTest {
 		int count = 0;
 		for (int i = 0; i < stringList.size(); i++) {
 			String line1 = stringList.get(i);
-			//System.out.println("line 1 from autocompletion is " + line1);
 			String line2 = autocompletionList.get(i).getKey() + " : " + "Frequency : "
 					+ autocompletionList.get(i).getValue();
-			//System.out.println("key is " + line2);
 
 			if (line1.equals(line2)) {
 				count++;
@@ -197,7 +180,6 @@ public class StorageTest {
 		File file3 = new File(fileName2);
 		FileAssert.assertEquals(file2, file3);
 
-		// file2.delete();
 		file3.delete();
 	}
 
@@ -218,11 +200,7 @@ public class StorageTest {
 		testStorage.saveToFile(fileName1);
 		getDataFromFile = testStorage.loadFileWithFileName(fileName1);
 		assertEquals(getDataFromFile, mainList);
-
-		// @Test testInvalidFileForLoading()
-		// Equivalence partition:
-		// test possible file names and invalid file names
-		// loadFile
+		
 		try {
 			testStorage.loadFileWithFileName("not a file");
 		} catch (FileNotFoundException fnfe) {
@@ -240,7 +218,6 @@ public class StorageTest {
 		File defaultTextFile = new File(defaultFileName);
 		Scanner scanner = new Scanner(defaultTextFile);
 		String getRecentLine = scanner.nextLine();
-		System.out.println("recent line from default file is " + getRecentLine);
 		scanner.close();
 
 		String expectedLine = expectedDirectory + " , " + fileName2;
@@ -277,68 +254,13 @@ public class StorageTest {
 		File defaultTextFile = new File(fileName1);
 		FileAssert.assertEquals(loadFile, defaultTextFile);
 
-		// loadFile.delete();
-
+		loadFile.delete();
 	}
 
 	@Test
 	public void saveAndLoadWithDirectory_NewFile_SaveAndLoadFile()
 			throws NotDirectoryException, IOException, ParseException {
-		System.out.println("Test with directory");
 		saveToFileWithDirectory_NewFileAndDirectory_FileSaved();
 		loadFileWithDirectory_NewFileAndDirectory_LoadNewFile();
-	}
-
-	@Test
-	public void testLoadRecentFileWithDirectory_NewFile_LoadRecentFileWithDirectory()
-			throws IOException, ParseException {
-		testStorage.loadFileWithDirectory(expectedDirectory, fileName2);
-		File loadFile = new File(expectedDirectory + "/" + fileName2);
-
-		ArrayList<String> stringList = new ArrayList<String>();
-		String readLine;
-
-		BufferedReader readFile = new BufferedReader(new FileReader(loadFile));
-		while ((readLine = readFile.readLine()) != null) {
-			stringList.add(readLine);
-		}
-
-		ArrayList<Task> stringListToTask = testStorage.convertStringToTask(stringList, 0);
-
-		int count = 0;
-		for (int i = 0; i < recentList.size(); i++) {
-			Task line1 = recentList.get(i);
-			//System.out.println("line 1 is " + line1);
-			Task line2 = stringListToTask.get(i);
-			//System.out.println("line 2 is " + line2);
-
-			if (line1.equals(line2)) {
-				count++;
-			}
-		}
-		// test content
-		assertEquals(recentList.size(), count);
-	}
-
-	// ================================================================================
-	// Extracted Methods
-	// ================================================================================
-
-	private static void printResult(ArrayList<Task> testArray) {
-		for (int i = 0; i < testArray.size(); i++) {
-			System.out.println(testArray.get(i).getDescription());
-		}
-	}
-
-	public static void printString(ArrayList<Entry<String, Integer>> autoCompletionList) {
-
-		Iterator<Entry<String, Integer>> iterator = autoCompletionList.iterator();
-		while (iterator.hasNext()) {
-			Entry<String, Integer> next = iterator.next();
-			String entry = next.getKey();
-			int freqCount = next.getValue();
-
-			System.out.println("entry is " + entry + " and freqcount is " + freqCount);
-		}
 	}
 }
