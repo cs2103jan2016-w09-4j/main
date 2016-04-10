@@ -14,33 +14,26 @@ import parser.DateTimeParser;
 public class DateTimeParserTest {
 
     @Test
-    public void parse_GeneralTest() {
+    public void parse_FullTimeFormat() {
         DateTimeParser parser = new DateTimeParser();
-        assertEquals(LocalDateTime.of(LocalDate.of(2016, 10, 20), LocalTime.of(10, 59)), parser.parse("add eat start 10:59 20-10-2016 good", true));
+        assertEquals(LocalDateTime.of(LocalDate.of(2016, 10, 20), LocalTime.of(10, 59)), parser.parse("10:59 20-10-2016 good", true));
     }
 
     @Test
-    public void parse_HasEndTime(){
+    public void parse_NoLeadingZeroesFormat(){
         DateTimeParser parser = new DateTimeParser();
-        assertEquals(LocalDateTime.of(LocalDate.of(2004, 8, 29), LocalTime.of(9, 10)), parser.parse("end 9:10 29-8-2004", true));
+        assertEquals(LocalDateTime.of(LocalDate.of(2004, 8, 29), LocalTime.of(9, 10)), parser.parse("9:10 29-8-2004", true));
     }
 
     @Test
     public void parse_HasTimeAndNoYear_ReturnTimeWithCurrentYear(){
         DateTimeParser parser = new DateTimeParser();
-        assertEquals(LocalDateTime.of(LocalDate.of(2016, 8, 29), LocalTime.of(9, 10)), parser.parse("end 9:10 29-8", true));
+        assertEquals(LocalDateTime.of(LocalDate.of(2016, 8, 29), LocalTime.of(9, 10)), parser.parse("9:10 29-8", true));
     }
 
     @Test
     public void parse_HasTimeAndNoDate_ReturnTimeWithCurrentDate(){
-    	Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-    	Date date = calendar.getTime();
-    	int day = calendar.get(Calendar.DATE);
-    	int month = calendar.get(Calendar.MONTH) + 1;
-    	int year = calendar.get(Calendar.YEAR);
-    	
         DateTimeParser parser = new DateTimeParser();
-        assertEquals(LocalDateTime.of(LocalDate.of(year, month, day), LocalTime.of(17, 0)), parser.parse("add task 5pm", true));
+        assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0)), parser.parse("5pm", true));
     }
-
 }

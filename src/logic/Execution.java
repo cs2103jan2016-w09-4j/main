@@ -535,7 +535,6 @@ public class Execution {
                 }
             }
         } else if (end == null) { // search by start time (search forward)
-        	System.out.println("What is start: " + start);
             for (Task task: list) {
                 LocalDateTime taskStart = task.getStart();
                 if (taskStart != null && start != null){
@@ -546,12 +545,13 @@ public class Execution {
             }
             
         } else { // search by a range of time (the range)
-            for (Task task: mainList) {
+            for (Task task: list) {
                 LocalDateTime taskStart = task.getStart();
                 LocalDateTime taskEnd = task.getEnd();
                 if (taskStart != null && start != null && taskEnd != null && end != null){
                 	if (taskStart.compareTo(start) >= 0 && taskEnd.compareTo(end) <= 0){
-	                		searchResults.add(task);
+                		System.out.println("hey sir");
+	                	searchResults.add(task);
 	                }
                 }
             }
@@ -888,7 +888,6 @@ public class Execution {
         if (textTrimmed.length() > 1) {
             sentenceCase += textTrimmed.substring(1).toLowerCase();
         }
-        System.out.println(sentenceCase);
         return sentenceCase;
             
     }
