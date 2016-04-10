@@ -11,7 +11,7 @@ import common.Command.CommandType;
 
 import parser.GeneralParser;
 
-public class ParserTest {
+public class GeneralParserTest {
 
     @Test
     public void parseCommand_AddWithDescriptionOnly_AddCommand() {
@@ -54,6 +54,25 @@ public class ParserTest {
 
         try {
             Command actual = parser.parseCommand("add eat start 22:30 20-10-2010");
+            assertEquals(expected.getType(), actual.getType());
+            assertEquals(expected.getDescription(), actual.getDescription());
+            assertEquals(expected.getStartDate(), actual.getStartDate());
+            assertEquals(expected.getEndDate(), actual.getEndDate());
+        }
+        catch (Exception e){
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseCommand_AddWithTime_DefaultToday() {
+        GeneralParser parser = new GeneralParser();
+        Command expected = new Command(CommandType.ADD, "eat", LocalDateTime.of(LocalDate.now(), LocalTime.of(16, 0)),
+                                                                LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0)),
+                                                                new ArrayList<String>());
+
+        try {
+            Command actual = parser.parseCommand("add eat start 4pm end 5pm");
             assertEquals(expected.getType(), actual.getType());
             assertEquals(expected.getDescription(), actual.getDescription());
             assertEquals(expected.getStartDate(), actual.getStartDate());

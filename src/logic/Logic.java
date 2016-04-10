@@ -4,6 +4,9 @@ package logic;
 import common.*;
 import common.Command.CommandType;
 import parser.GeneralParser;
+import parser.WrongCommandFormatException;
+import parser.EmptyCommandException;
+import parser.InvalidCommandException;
 import storage.Storage;
 import logic.Execution;
 
@@ -163,7 +166,7 @@ public class Logic {
         try {
             Command command = parser.parseCommand(input);
             return execute(command);
-        } catch (Exception e) {
+        } catch (WrongCommandFormatException|EmptyCommandException|InvalidCommandException e) {
             return new Result();
         }
     }
