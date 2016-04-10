@@ -517,7 +517,7 @@ public class Execution {
         if (start == null) { // search by end time (search backward)
             for (Task task: list) {
                 LocalDateTime taskEnd = task.getEnd();
-                if(taskEnd != null && end != null){
+                if (taskEnd != null && end != null){
                 	if (taskEnd.compareTo(end) <= 0) {
                 		searchResults.add(task);
                 	}
@@ -527,20 +527,24 @@ public class Execution {
         	System.out.println("What is start: " + start);
             for (Task task: list) {
                 LocalDateTime taskStart = task.getStart();
-                if(taskStart != null && start != null){
+                if (taskStart != null && start != null){
                 	if (taskStart.compareTo(start) >= 0) {  
                 		searchResults.add(task);
                 	}
                 }
             }
             
-        } /*else { // search by a range of time (the range)
+        } else { // search by a range of time (the range)
             for (Task task: mainList) {
                 LocalDateTime taskStart = task.getStart();
                 LocalDateTime taskEnd = task.getEnd();
-                if (taskStart.isAfter())
+                if (taskStart != null && start != null && taskEnd != null && end != null){
+                	if (taskStart.compareTo(start) >= 0 && taskEnd.compareTo(end) <= 0){
+	                		searchResults.add(task);
+	                }
+                }
             }
-        }*/
+        }
         
         return searchResults;
     }
