@@ -375,6 +375,11 @@ public class Execution {
         
         String saveLocation = command.getDescription().trim();
         
+        // validate user input
+        if (saveLocation.isEmpty()) {
+            return new Result(CommandType.SAVE, false, "Specify a save location", weekList);
+        }
+        
         // save
         try {
             if (saveLocation.contains(" ")) {
@@ -393,7 +398,8 @@ public class Execution {
             
             return new Result(CommandType.SAVE, true, "Saved at " + saveLocation, weekList);
         } catch (IOException ioe) {
-            return new Result(CommandType.SAVE, false, "Couldn't save data at " + saveLocation, mainList);
+            return new Result(CommandType.SAVE, false, "Couldn't save at " + saveLocation
+                              + ". Try another directory", weekList);
         }
     }
     
@@ -409,6 +415,11 @@ public class Execution {
         tempDoneList.addAll(doneList);
         
         String loadLocation = command.getDescription().trim();
+        
+        // validate user input
+        if (loadLocation.isEmpty()) {
+            return new Result(CommandType.LOAD, false, "Specify a file location", weekList);
+        }
         
         // load
         try {
@@ -438,7 +449,7 @@ public class Execution {
             doneList = tempDoneList;
             canUndo = false;
             canRedo = false;
-            return new Result(CommandType.LOAD, false, "Failed to load " + loadLocation, weekList);
+            return new Result(CommandType.LOAD, false, "Couldn't find " + loadLocation, weekList);
         }
     }
     
@@ -556,6 +567,7 @@ public class Execution {
     }
 
     public Result filterTasks() {
+        clearModifiedStatus();
         updateWeekList();
         return new Result(Command.CommandType.HOME, true, "Return home", weekList);
     }
