@@ -1,8 +1,13 @@
 package common;
 
+/**
+ * Represents a category entry.
+ */
 public class Category {
 
+    // Category name
     private String name;
+    // Number of ongoing tasks in this category
     private int count;
     
     public Category(String name) {

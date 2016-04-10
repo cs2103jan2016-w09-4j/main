@@ -29,9 +29,6 @@ public class Logic {
     private GeneralParser parser;
     private static Logic logic = new Logic();
 
-    private ArrayList<Task> list;
-
-	private static final String CATEGORY_PRIORITY = "priority";
     private static final int MAX_PREDICTIONS = 5;
     private static final Comparator<Entry<String, Integer>> freqComparator = new Comparator<Entry<String, Integer>>() {
         public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
@@ -43,7 +40,16 @@ public class Logic {
         this.execution = new Execution();
         this.storage = new Storage();
         this.parser = new GeneralParser();
-        this.list = storage.getMainList();
+    }
+
+    public Result processCommand(String input) {
+        System.out.println(input);
+        try {
+            Command command = parser.parseCommand(input);
+            return execute(command);
+        } catch (WrongCommandFormatException|EmptyCommandException|InvalidCommandException e) {
+            return new Result();
+        }
     }
 
     private Result execute(Command command){
@@ -112,16 +118,6 @@ public class Logic {
             default :
                 return new Result();
 
-        }
-    }
-
-    public Result processCommand(String input) {
-        System.out.println(input);
-        try {
-            Command command = parser.parseCommand(input);
-            return execute(command);
-        } catch (WrongCommandFormatException|EmptyCommandException|InvalidCommandException e) {
-            return new Result();
         }
     }
 

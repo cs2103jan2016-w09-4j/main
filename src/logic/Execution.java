@@ -103,7 +103,7 @@ public class Execution {
         	int freqCount = entry.getValue();
             
         	if (!autoCompletionEntry.isEmpty()) {
-            	addToDictionary(taskDictionary, autoCompletionEntry, freqCount);        	
+            	addToTreeSet(taskDictionary, autoCompletionEntry, freqCount);        	
             	addToWordDictionary(autoCompletionEntry, freqCount);
             }
         }
@@ -113,7 +113,7 @@ public class Execution {
 		String[] words = autoCompletionEntry.toLowerCase().split("\\s+");
 		for (int i = 0; i < words.length; i++) {
 		    if (!isNumberOrFunctionWord(words[i])) {
-		        addToDictionary(wordDictionary, words[i], freqCount);
+		        addToTreeSet(wordDictionary, words[i], freqCount);
 		    }
 		}
 	}
@@ -652,20 +652,20 @@ public class Execution {
         for (Task task : mainList) {
             if (task.isImportant()) {
                 // update 'Priority' category count
-                int count = removeFromDictionary(categories, CATEGORY_PRIORITY);
-                addToDictionary(categories, CATEGORY_PRIORITY, ++count);
+                int count = removeFromTreeSet(categories, CATEGORY_PRIORITY);
+                addToTreeSet(categories, CATEGORY_PRIORITY, ++count);
             }
 
             if (task.isOccurringOn(currentDate)) {
                 // update 'Today' category count
-                int count = removeFromDictionary(categories, CATEGORY_TODAY);
-                addToDictionary(categories, CATEGORY_TODAY, ++count);
+                int count = removeFromTreeSet(categories, CATEGORY_TODAY);
+                addToTreeSet(categories, CATEGORY_TODAY, ++count);
             }
 
             // Other categories
             for (String cat : task.getCategories()) {
-                int count = removeFromDictionary(categories, cat);
-                addToDictionary(categories, cat, ++count);
+                int count = removeFromTreeSet(categories, cat);
+                addToTreeSet(categories, cat, ++count);
             }
 
         }
@@ -701,31 +701,31 @@ public class Execution {
     }
 
     private void updateTaskDictionary(String text) {
-        int freqCount = removeFromDictionary(taskDictionary, text);
-        addToDictionary(taskDictionary, text, ++freqCount);
+        int freqCount = removeFromTreeSet(taskDictionary, text);
+        addToTreeSet(taskDictionary, text, ++freqCount);
     }
 
     private void updateWordDictionary(String text) {
         String[] words = text.toLowerCase().split("\\s+");
         for (int i = 0; i < words.length; i++) {
             if (!isNumberOrFunctionWord(words[i])) {
-                int freqCount = removeFromDictionary(wordDictionary, words[i]);
-                addToDictionary(wordDictionary, words[i], ++freqCount);
+                int freqCount = removeFromTreeSet(wordDictionary, words[i]);
+                addToTreeSet(wordDictionary, words[i], ++freqCount);
             }
         }
     }
 
     private void updateFileDictionary(String text) {
-        int freqCount = removeFromDictionary(fileDictionary, text);
-        addToDictionary(fileDictionary, text, ++freqCount);
+        int freqCount = removeFromTreeSet(fileDictionary, text);
+        addToTreeSet(fileDictionary, text, ++freqCount);
     }
 
-    // Remove the text from the dictionary if it exists and return its frequency
+    // Remove the text from the tree set if it exists and return its frequency
     // count
-    // If it does not already exist in the dictionary, frequency count is 0
-    private int removeFromDictionary(TreeSet<Entry<String, Integer>> dictionary, String text) {
+    // If it does not already exist in the tree set, frequency count is 0
+    private int removeFromTreeSet(TreeSet<Entry<String, Integer>> treeSet, String text) {
         int freqCount = 0;
-        Iterator<Entry<String, Integer>> iterator = dictionary.iterator();
+        Iterator<Entry<String, Integer>> iterator = treeSet.iterator();
         while (iterator.hasNext()) {
             Entry<String, Integer> next = iterator.next();
             if (next.getKey().equalsIgnoreCase(text)) {
@@ -738,9 +738,9 @@ public class Execution {
         return freqCount;
     }
 
-    // Add the text to the dictionary with its frequency count
-    private void addToDictionary(TreeSet<Entry<String, Integer>> dictionary, String text, int freqCount) {
-        dictionary.add(new AbstractMap.SimpleEntry<String, Integer>(text, freqCount));
+    // Add the text to the tree set with its frequency count
+    private void addToTreeSet(TreeSet<Entry<String, Integer>> treeSet, String text, int freqCount) {
+        treeSet.add(new AbstractMap.SimpleEntry<String, Integer>(text, freqCount));
     }
 
     // Returns true if the specified word is a number or function word

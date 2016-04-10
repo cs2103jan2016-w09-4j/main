@@ -1,3 +1,4 @@
+//@@author Ruoling
 package common;
 
 import java.text.ParseException;
@@ -6,6 +7,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+/**
+ * Represents a single task with several fields such as
+ * description, start date, end date and categories.
+ *
+ * Floating task - no end date
+ * Deadline task - has end date only
+ * Event task - has start and end date
+ */
 public class Task implements Comparable<Task> {
     
     private static final int LESS_THAN = -1;
