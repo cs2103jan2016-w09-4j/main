@@ -31,7 +31,7 @@ public class MainApp extends Application {
     private Feedback feedback;
  
     private static final int WINDOW_WIDTH_MIN = 400;
-    private static final int WINDOW_HEIGHT_MIN = 300;
+    private static final int WINDOW_HEIGHT_MIN = 380;
     private static final int WINDOW_WIDTH_DEFAULT = 650;
     private static final int WINDOW_HEIGHT_DEFAULT = 500;
     
@@ -57,14 +57,13 @@ public class MainApp extends Application {
     }
 
     private void initializeWindow(Stage primaryStage) {
-        root = new BorderPane();
+        primaryStage.getIcons().add(new Image(RESOURCES_ICON_PROGRAM));
         primaryStage.setMinWidth(WINDOW_WIDTH_MIN);
         primaryStage.setMinHeight(WINDOW_HEIGHT_MIN);
+        root = new BorderPane();
         Scene scene = new Scene(root, WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT);
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.getIcons().add(new Image(RESOURCES_ICON_PROGRAM));
-        primaryStage.setTitle("GRIDTask");
     }
     
     private void initializeUI(Stage primaryStage) {
@@ -72,7 +71,7 @@ public class MainApp extends Application {
         Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO_SLAB).toExternalForm(), 20);
         Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO_CONDENSED).toExternalForm(), 20);
         Font.loadFont(getClass().getResource(RESOURCES_FONT_ROBOTO_BOLD).toExternalForm(), 20);
-        display = new DisplayController(this, primaryStage);
+        display = new DisplayController(this);
         input = new InputController(this);
         root.setCenter(display);
         root.setBottom(input);
