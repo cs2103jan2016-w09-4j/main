@@ -452,23 +452,51 @@ public class Execution {
         
         ArrayList<String> categories = command.getCategories();
         if (categories != null) {
-            return searchTasksByCategory(categories);
+            ArrayList<Task> searchResults = searchTasksByCategory(mainList, categories);
+            return new Result(CommandType.SEARCH, true, "Retrieved matching tasks", searchResults);
         }
         LocalDateTime start = command.getStartDate();
         LocalDateTime end = command.getEndDate();
         if (start != null || end != null) {
-            return searchTasksByDate(start, end);
+            ArrayList<Task> searchResults = searchTasksByDate(mainList, start, end);
+            return new Result(CommandType.SEARCH, true, "Retrieved matching tasks", searchResults);
         }
         String keyword = command.getDescription();
         if (keyword == null || keyword.trim().isEmpty()) {
             return new Result(CommandType.SEARCH, true, "Showing all tasks", mainList);
         }
-        return searchTasksByKeyword(keyword);
+        ArrayList<Task> searchResults = searchTasksByKeyword(mainList, keyword);
+        return new Result(CommandType.SEARCH, true, "Retrieved matching tasks", searchResults);
     }
 
-    private Result searchTasksByCategory(ArrayList<String> categories) {
+    public Result searchDoneTasks(Command command) {
+        // pre-processing
+        clearModifiedStatus();
+        canUndo = false;
+        canRedo = false;
+        
+        ArrayList<String> categories = command.getCategories();
+        if (categories != null) {
+            ArrayList<Task> searchResults = searchTasksByCategory(doneList, categories);
+            return new Result(CommandType.SEARCHDONE, true, "Searched", searchResults);
+        }
+        LocalDateTime start = command.getStartDate();
+        LocalDateTime end = command.getEndDate();
+        if (start != null || end != null) {
+            ArrayList<Task> searchResults = searchTasksByDate(doneList, start, end);
+            return new Result(CommandType.SEARCHDONE, true, "Retrieved matching tasks", searchResults);
+        }
+        String keyword = command.getDescription();
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return new Result(CommandType.SEARCHDONE, true, "Showing all completed tasks", doneList);
+        }
+        ArrayList<Task> searchResults = searchTasksByKeyword(doneList, keyword);
+        return new Result(CommandType.SEARCHDONE, true, "Retrieved matching tasks", searchResults);
+    }
+    
+    private ArrayList<Task> searchTasksByCategory(ArrayList<Task> list, ArrayList<String> categories) {
         ArrayList<Task> searchResults = new ArrayList<Task>();
-        for (Task task : mainList) {
+        for (Task task : list) {
             boolean put = true;
             for (String category : categories) {
                 category = toSentenceCase(category);
@@ -481,20 +509,20 @@ public class Execution {
                 searchResults.add(task);                    
             }
         }
-        return new Result(CommandType.SEARCH, true, "Searched", searchResults);
+        return searchResults;
     }
 
-    private Result searchTasksByDate(LocalDateTime start, LocalDateTime end) {
+    private ArrayList<Task> searchTasksByDate(ArrayList<Task> list, LocalDateTime start, LocalDateTime end) {
         ArrayList<Task> searchResults = new ArrayList<Task>();
         if (start == null) { // search by end time (search backward)
-            for (Task task: mainList) {
+            for (Task task: list) {
                 LocalDateTime taskEnd = task.getEnd();
                 if (taskEnd.compareTo(end) < 0) {
                     searchResults.add(task);
                 }
             }
         } else if (end == null) { // search by start time (search forward)
-            for (Task task: mainList) {
+            for (Task task: list) {
                 LocalDateTime taskStart = task.getStart();
                 if (taskStart.compareTo(start) > 0) {
                     searchResults.add(task);
@@ -509,12 +537,12 @@ public class Execution {
             }
         }*/
         
-        return new Result(CommandType.SEARCH, true, "Searched", searchResults);
+        return searchResults;
     }
 
-    private Result searchTasksByKeyword(String keyword) {
+    private ArrayList<Task> searchTasksByKeyword(ArrayList<Task> list, String keyword) {
         ArrayList<Task> searchResults = new ArrayList<Task>();
-        for (Task task : mainList) {
+        for (Task task : list) {
             String descriptionLowerCase = task.getDescription().toLowerCase();
             String keywordLowerCase = keyword.toLowerCase();
             if (descriptionLowerCase.contains(keywordLowerCase)) {
@@ -524,10 +552,11 @@ public class Execution {
         
         updateDictionary(keyword);
         
-        return new Result(CommandType.SEARCH, true, "Searched", searchResults);
+        return searchResults;
     }
 
     public Result filterTasks() {
+        updateWeekList();
         return new Result(Command.CommandType.HOME, true, "Return home", weekList);
     }
     

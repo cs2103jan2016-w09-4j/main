@@ -67,28 +67,14 @@ public class Logic {
             case ADD :
             	return execution.addTask(command);
 
-            case DELETE :
-                return execution.deleteTask(command);
-
             case EDIT :
                 return execution.editTask(command);
 
-            case SEARCH :
-            	return execution.searchTasks(command);
+            case DELETE :
+                return execution.deleteTask(command);
 
-            case HOME :
-                /*
-                execution.sortList(execution.getMainList());
-                list = execution.getWeekList();
-                execution.updateTaskProgress();
-                */
-                return execution.filterTasks();
-
-            case SAVE :
-                return execution.saveTasks(command);
-
-            case LOAD :
-                return execution.loadTasks(command);
+            case DONE :
+                return execution.doneTask(command);
 
             case UNDO :
                 return execution.undoCommand();
@@ -96,52 +82,20 @@ public class Logic {
             case REDO :
                 return execution.redoCommand();
 
-            case DONE :
-                return execution.doneTask(command);
+            case SAVE :
+                return execution.saveTasks(command);
+
+            case LOAD :
+                return execution.loadTasks(command);
+
+            case SEARCH :
+                return execution.searchTasks(command);
 
             case SEARCHDONE :
-            	if (categories != null) {
-            		ArrayList<Task> searchDoneResult = new ArrayList<Task>();
-            		list = execution.getDoneList();
-            		if (categories.get(0).equals(CATEGORY_PRIORITY)) {
-            			for (Task task : list) {
-            				if (task.isImportant()) {
-            					searchDoneResult.add(task);
-            				}
-            			}
-            		} else {
-            			for (Task task : list) {
-            				boolean put = true;
-            				for (String category : categories) {
-            					category = execution.toSentenceCase(category);
-            					if (!task.getCategories().contains(category)) {
-            						put = false;
-            						break;
-            					}
-            				}
-            				if (put) {
-        						searchDoneResult.add(task);
-            				}
-        				}
-            		}
+            	return execution.searchDoneTasks(command);
 
-        		return new Result(commandType, true, "Showing completed tasks", searchDoneResult);
-
-        		} else if (command.getDescription().length() == 0) {
-            		list = execution.getDoneList();
-            		return new Result(commandType, true, "Showing completed tasks", list);
-            	} else {
-            		ArrayList<Task> searchDoneResult = new ArrayList<Task>();
-            		list = execution.getDoneList();
-            		description = description.toLowerCase();
-            		for (Task task : list) {
-            			String descriptionLowerCase = task.getDescription().toLowerCase();
-            			if (descriptionLowerCase.contains(description)) {
-            				searchDoneResult.add(task);
-            			}
-            		}
-            		return new Result(commandType, true, "Showing completed tasks", searchDoneResult);
-            	}
+            case HOME :
+                return execution.filterTasks();
 
             case HELP :
                 return new Result(commandType, true, "Help", null);
