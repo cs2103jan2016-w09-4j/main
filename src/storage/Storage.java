@@ -36,6 +36,7 @@ public class Storage {
 	private static final String FIELDS_END = "End:";
 	private static final String FIELDS_CATEGORY = "Category:";
 	private static final String FIELDS_PRIORITY = "Priority:";
+	private static final String FIELDS_FREQUENCY = "Frequency : ";
 	private static final String FIELDS_CATEGORY_INDICATOR = "#";
 	private static final String FIELDS_NO_PRIORITY = "No";
 	private static final String FIELDS_HAVE_PRIORITY = "Yes";
@@ -233,14 +234,8 @@ public class Storage {
 			readFileWhenFileExists(file, autoCompletionListString);
 			
 			// get string and frequency
-			for (int i = 0; i < autoCompletionListString.size(); i++) {
-				String getLine = autoCompletionListString.get(i);
-				String[] splitGetLine = getLine.split(" : ");
-				String autoCompletionEntry = splitGetLine[0];
-				int freqCount = Integer.parseInt(splitGetLine[2]);
-				
-				recentAutoCompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(autoCompletionEntry,freqCount));
-			}
+			addEntryToAutoCompletionList(autoCompletionListString, recentAutoCompletionList);
+		
 		} catch (FileNotFoundException e) {
 			// Returns empty list if file not found
 			logger.log(Level.INFO, "AutoCompletion.txt does not exist");
@@ -248,6 +243,18 @@ public class Storage {
 		}
 
 		return recentAutoCompletionList;
+	}
+
+	private void addEntryToAutoCompletionList(ArrayList<String> autoCompletionListString,
+			ArrayList<Entry<String, Integer>> recentAutoCompletionList) {
+		for (int i = 0; i < autoCompletionListString.size(); i++) {
+			String getLine = autoCompletionListString.get(i);
+			String[] splitGetLine = getLine.split(" : ");
+			String autoCompletionEntry = splitGetLine[0];
+			int freqCount = Integer.parseInt(splitGetLine[2]);
+			
+			recentAutoCompletionList.add(new AbstractMap.SimpleEntry<String, Integer>(autoCompletionEntry,freqCount));
+		}
 	}
 
 	// Obtain filename without directory
@@ -263,7 +270,7 @@ public class Storage {
 	// ================================================================================
 
 	/*
-	 * This methods overwrites the data in the file This method will check if
+	 * This methods overwrites the data in the file. This method will check if
 	 * the directory of the file changed
 	 */
 	public void writeToFile() throws IOException {
@@ -285,7 +292,6 @@ public class Storage {
 	}
 
 	public void writeAutoCompletionData() throws IOException {
-		// System.out.println("writing to auto completion file");
 		FileWriter writer = new FileWriter(autoCompletionFileName);
 		writeStringFromAutoCompletedList(writer);
 		writer.close();
@@ -329,7 +335,7 @@ public class Storage {
 		for (int i = 0; i < autoCompletionList.size(); i++) {
 			String autoCompletionEntry = autoCompletionList.get(i).getKey();
 			int frequency = autoCompletionList.get(i).getValue();
-			String lineToWrite = autoCompletionEntry + " : " + "Frequency : " + frequency;
+			String lineToWrite = autoCompletionEntry + " : " + FIELDS_FREQUENCY + frequency;
 			writer.write(lineToWrite + "\r\n");
 		}
 	}
@@ -356,7 +362,7 @@ public class Storage {
 	 * the new file will be created in the directory
 	 */
 	public void saveToFileWithDirectory(String directory, String userFileName)
-			throws IOException, NotDirectoryException {
+			throws IOException {
 
 		assert (!directory.isEmpty());
 		assert (!userFileName.isEmpty());
@@ -370,7 +376,6 @@ public class Storage {
 		} else {
 			File userDirectoryAndName = new File(directory + "/" + userFileName);
 			FileWriter writer = new FileWriter(userDirectoryAndName.getAbsoluteFile());
-			// writeTasksFromMainList(writer);
 
 			// write to default file to load most recent
 			String toWrite = directory + " , " + userFileName;
