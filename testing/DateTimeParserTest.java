@@ -3,9 +3,12 @@ import static org.junit.Assert.*;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.junit.Test;
 
+import net.fortuna.ical4j.model.TimeZone;
 import parser.DateTimeParser;
 
 public class DateTimeParserTest {
@@ -30,8 +33,14 @@ public class DateTimeParserTest {
 
     @Test
     public void parse_HasTimeAndNoDate_ReturnTimeWithCurrentDate(){
+    	Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+    	Date date = calendar.getTime();
+    	int day = calendar.get(Calendar.DATE);
+    	int month = calendar.get(Calendar.MONTH) + 1;
+    	int year = calendar.get(Calendar.YEAR);
+    	
         DateTimeParser parser = new DateTimeParser();
-        assertEquals(LocalDateTime.of(LocalDate.of(2016, 3, 30), LocalTime.of(17, 0)), parser.parse("add task 5pm", true));
+        assertEquals(LocalDateTime.of(LocalDate.of(year, month, day), LocalTime.of(17, 0)), parser.parse("add task 5pm", true));
     }
 
 }
