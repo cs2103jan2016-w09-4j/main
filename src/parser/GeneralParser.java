@@ -41,8 +41,6 @@ public class GeneralParser {
         String commandCode = commandParts[0].toLowerCase();
         String commandContent = commandString.substring(commandCode.length(), commandString.length());
 
-        String command = commandString.trim().toLowerCase();
-
         if (commandCode.equals(ADD_COMMAND_CODE)) {
             if (commandContent.equals("")) return new Command(CommandType.ADD);
             TaskDetails details = new TaskDetails(commandContent);
@@ -52,9 +50,11 @@ public class GeneralParser {
             return new Command(CommandType.DELETE, Integer.parseInt(commandString.substring(7).trim()));
 
         } else if (commandCode.equals(EDIT_COMMAND_CODE)) {
-            String content = commandString.substring(5);
-            String firstWord = getFirstWord(content);
-            String description = content.substring(firstWord.length()).trim();
+            String firstWord = getFirstWord(commandContent);
+            String description = commandContent.substring(firstWord.length()).trim();
+            System.out.println(commandContent);
+            System.out.println(firstWord);
+            System.out.println(description);
 
             TaskDetails details = new TaskDetails(description);
             return new Command(CommandType.EDIT, Integer.parseInt(firstWord),
@@ -63,14 +63,12 @@ public class GeneralParser {
             return new Command(CommandType.DONE, Integer.parseInt(commandString.substring(4).trim()));
 
         } else if (commandCode.equals(SEARCHDONE_COMMAND_CODE)) {
-        	String content = getUserInput(command,"searchdone");
-            TaskDetails details = new TaskDetails(content);
+            TaskDetails details = new TaskDetails(commandContent);
             return new Command(CommandType.SEARCHDONE, details.getDescription(), details.getStartTime(), details.getEndTime(),
                     details.getCategories());
 
         } else if (commandCode.equals(SEARCH_COMMAND_CODE)) {
-            String content = getUserInput(command,"search");
-            TaskDetails details = new TaskDetails(content);
+            TaskDetails details = new TaskDetails(commandContent);
 
             return new Command(CommandType.SEARCH, details.getDescription(), details.getStartTime(), details.getEndTime(),
                     details.getCategories());
@@ -98,11 +96,5 @@ public class GeneralParser {
         } else {
             throw new InvalidCommandException(INVALID_COMMAND_NOTIFY);
         }
-    }
-
-    private static String getUserInput(String line, String toReplace) {
-        String userInput = line.replace(toReplace, "").trim();
-
-        return userInput;
     }
 }
