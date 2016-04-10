@@ -37,9 +37,9 @@
                     <Image url="@../../icons/sidebar.png" />
                 </image>
             </ImageView>
-            <Label text="Today" minHeight="-Infinity" styleClass="header" />
+            <Label text="Today" styleClass="header" />
             <VBox fx:id="todayList"></VBox>
-            <Label text="Others" minHeight="-Infinity" styleClass="header" />
+            <Label text="Others" styleClass="header" />
             <VBox fx:id="otherList"></VBox>
         </VBox>
     </fx:define>
@@ -53,8 +53,8 @@
     </fx:define>
     <fx:define>
         <VBox fx:id="helpPanel" styleClass="panel">
-            <Label text="Help" minHeight="-Infinity" styleClass="header" />
-            <ScrollPane>
+            <Label text="Help" styleClass="header" />
+            <ScrollPane VBox.vgrow="SOMETIMES">
                 <content>
                     <GridPane fx:id="helpList" styleClass="table">
                         <columnConstraints>
