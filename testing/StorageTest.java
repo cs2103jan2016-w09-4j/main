@@ -230,15 +230,4 @@ public class StorageTest {
 		loadFileWithDirectory_NewFileAndDirectory_LoadNewFile();
 	}
 	
-	@Test
-	public void getAutoCompletionList_AutoCompletionFileDeleted_ReturnEmptyArrayList() {
-		File autoCompletionFile = new File(autoCompletionTextFile);
-		autoCompletionFile.delete();
-		
-		ArrayList<Entry<String, Integer>> newAutoCompletionList = testStorage.getAutoCompletionList();
-		ArrayList<Entry<String, Integer>> emptyList = new ArrayList<Entry<String, Integer>>();
-		
-		assertEquals(emptyList,newAutoCompletionList);
-		
-	}
 }

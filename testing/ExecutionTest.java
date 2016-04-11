@@ -46,20 +46,7 @@ public class ExecutionTest{
     	
     }
     
-    @Test
-    public void editTask_AllTaskTypes_EditedTheSelectedTask() {
-    	
-    	execution.addTask(new Command(CommandType.ADD, "Testing"));
-    	execution.editTask(new Command(CommandType.EDIT, 1, "Sayonara no sora", null, null, null));
-    	mainList = execution.getMainList();
-    	
-    	compareList = new ArrayList<Task>();
-    	compareList.add(new Task("Hello", null, null, 1));
-    	compareList.add(new Task("Sayonara no sora", null, null, 2));
-    	compareList.add(new Task("Testing", null, null, 3));
-    	compareList.add(new Task("Testing", null, null, 4));
-    	assertArrayEquals(compareList.toArray(), mainList.toArray());
-    }
+
 	
     @Test
     public void deleteTask_AllTaskTypes_DeletedTheSelectedTask() {

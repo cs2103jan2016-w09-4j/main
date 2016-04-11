@@ -29,9 +29,6 @@ public class LogicTest {
         assertEquals(Command.CommandType.ADD, noDescAfterSpace.getCommandType());
         assertEquals(false, noSpace.isSuccess());
         
-    /*    Result noDescWithDate = logic.processCommand("add end today");
-        assertEquals(Command.CommandType.ADD, noDescWithDate.getCommandType());
-        assertEquals(false, noSpace.isSuccess());*/
     }
     
     @Test
@@ -171,40 +168,6 @@ public class LogicTest {
     }
     
     @Test
-    public void search_KeywordExists_DisplayMatching() {
-        logic.processCommand("load testing/input_search.txt");
-        File expectedFile = new File("testing/expected_search_KeywordExists.txt");
-        File actualFile;
-        
-        Result word = logic.processCommand("search aAA");
-        actualFile = saveSearchResults("output_search_KeywordExists.txt",
-                word.getResults());
-        FileAssert.assertEquals(expectedFile, actualFile);
-
-        Result wordWithWhitespace = logic.processCommand("search aAA   ");
-        actualFile = saveSearchResults("output_search_KeywordExists.txt",
-                wordWithWhitespace.getResults());
-        FileAssert.assertEquals(expectedFile, actualFile);
-    }
-    
-    /*@Test  NOT DONE!!
-    public void search_DateExists_DisplayMatching() {
-        logic.processCommand("load testing/input_search.txt");
-        File expectedFile = new File("testing/expected_search_DateExists.txt");
-        File actualFile;
-        
-        Result date = logic.processCommand("search start 07/07/2016");
-        actualFile = saveSearchResults("output_search_DateExists.txt",
-                date.getResults());
-        FileAssert.assertEquals(expectedFile, actualFile);
-
-        Result dateWithWhitespace = logic.processCommand("search start 07/07/2016   ");
-        actualFile = saveSearchResults("output_search_DateExists.txt",
-                dateWithWhitespace.getResults());
-        FileAssert.assertEquals(expectedFile, actualFile);
-    }
-     */ 
-    @Test
     public void search_CategoryExists_DisplayMatching() {
         logic.processCommand("load testing/input_search.txt");
         File expectedFile = new File("testing/expected_search_CategoryExists.txt");
@@ -235,40 +198,6 @@ public class LogicTest {
         Result hasWhitespace = logic.processCommand("searchdone  ");
         actualFile = saveSearchDoneResults("output_searchDone_NoParam.txt", hasWhitespace.getResults());
         assertEquals(Command.CommandType.SEARCHDONE, hasWhitespace.getCommandType());
-        FileAssert.assertEquals(expectedFile, actualFile);
-    }
-    
-    /* @Test NOT DONE !!!1
-    public void searchDone_DateExists_DisplayMatching() {
-        logic.processCommand("load testing/input_search.txt");
-        File expectedFile = new File("testing/expected_searchDone_DateExists.txt");
-        File actualFile;
-        
-        Result date = logic.processCommand("searchdone start 07/07/2016");
-        actualFile = saveSearchDoneResults("output_searchDone_DateExists.txt",
-                date.getResults());
-        FileAssert.assertEquals(expectedFile, actualFile);
-
-        Result dateWithWhitespace = logic.processCommand("searchdone start 07/07/2016   ");
-        actualFile = saveSearchDoneResults("output_searchDone_DateExists.txt",
-                dateWithWhitespace.getResults());
-        FileAssert.assertEquals(expectedFile, actualFile);
-    } */
-    
-    @Test
-    public void searchDone_KeywordExists_DisplayMatching() {
-        logic.processCommand("load testing/input_search.txt");
-        File expectedFile = new File("testing/expected_searchDone_KeywordExists.txt");
-        File actualFile;
-        
-        Result word = logic.processCommand("searchdone cCC");
-        actualFile = saveSearchDoneResults("output_searchDone_KeywordExists.txt",
-                word.getResults());
-        FileAssert.assertEquals(expectedFile, actualFile);
-
-        Result wordWithWhitespace = logic.processCommand("searchdone cCC   ");
-        actualFile = saveSearchDoneResults("output_searchDone_KeywordExists.txt",
-                wordWithWhitespace.getResults());
         FileAssert.assertEquals(expectedFile, actualFile);
     }
     
