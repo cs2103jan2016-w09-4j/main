@@ -10,6 +10,9 @@ import common.Command;
 import common.Command.CommandType;
 
 import parser.GeneralParser;
+import parser.InvalidCommandException;
+import parser.EmptyCommandException;
+import parser.WrongCommandFormatException;
 
 public class GeneralParserTest {
 
@@ -84,7 +87,7 @@ public class GeneralParserTest {
     }
 
     @Test
-    public void parseCommand_AddWithStartAndEnd_AddCommand() {
+    public void parseCommand_AddWithStartAndEndFullTimeFormat() {
         GeneralParser parser = new GeneralParser();
         Command expected = new Command(CommandType.ADD, "eat more food to get fat",
                 LocalDateTime.of(LocalDate.of(2000, 10, 20), LocalTime.of(22, 30)),
@@ -105,19 +108,53 @@ public class GeneralParserTest {
     @Test
     public void parseCommand_SaveNoDirectory_SaveCommand() {
         GeneralParser parser = new GeneralParser();
-        Command expected = new Command(CommandType.SAVE);
+        Command expected = new Command(CommandType.SAVE, "C:\\GridTask");
 
         try {
-            Command actual = parser.parseCommand("save");
+            Command actual = parser.parseCommand("save C:\\GridTask");
             assertEquals(expected.getType(), actual.getType());
+            assertEquals(expected.getDescription(), actual.getDescription());
         }
         catch (Exception e) {
             fail(e.getMessage());
         }
     }
 
-    @Test
-    public void parse_SimpleAdd_DescriptionParser(){
+    @Test(expected=InvalidCommandException.class)
+    public void parseCommand_InvalidCommandType() throws InvalidCommandException {
+        GeneralParser parser = new GeneralParser();
+        try {
+            Command actual = parser.parseCommand("clean");
+            fail();
+        }
+        catch (WrongCommandFormatException|EmptyCommandException e) {
+            fail();
+        }
+    }
 
+    @Test(expected=WrongCommandFormatException.class)
+    public void parseCommand_HashtagBeforeStartTime_ReturnWrongCommandFormatException() throws WrongCommandFormatException {
+        GeneralParser parser = new GeneralParser();
+
+        try {
+            Command actual = parser.parseCommand("add work part-time #important start 4pm");
+            fail();
+        }
+        catch (InvalidCommandException|EmptyCommandException e) {
+            fail();
+        }
+    }
+
+    @Test(expected=EmptyCommandException.class)
+    public void parseCommand_EmptyCommand_ReturnEmptyCommandException() throws EmptyCommandException {
+        GeneralParser parser = new GeneralParser();
+
+        try {
+            Command actual = parser.parseCommand("");
+            fail();
+        }
+        catch (InvalidCommandException|WrongCommandFormatException e) {
+            fail();
+        }
     }
 }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.time.LocalDateTime;
 
 /**
- * Represents the command entered by the user. 
+ * Represents the command entered by the user.
  */
 public class Command {
 
@@ -90,11 +90,7 @@ public class Command {
             if (description == null ? c2.description != null : !description.equals(c2.description)) {
                 return false;
             }
-    /*
-            if (categories == null ? c2.categories!=null : !categories.equals(c2.categories)) {
-                return false;
-            }
-    */
+
             return true;
         }
         return false;

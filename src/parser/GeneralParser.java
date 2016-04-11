@@ -20,62 +20,44 @@ public class GeneralParser {
     private static final String EXIT_COMMAND_CODE = "exit";
 
     private static final String INVALID_COMMAND_NOTIFY = "Invalid command";
+    private static final String INVALID_TASK_ID_NOTIFY = "Invalid task ID";
     private static final String EMPTY_COMMAND_NOTIFY = "Empty command entered";
 
     public GeneralParser() {
 
     }
 
-    private static String getFirstWord(String command) {
-        String result = command.trim().split("\\s+", 2)[0];
-        return result;
-    }
-
     public Command parseCommand(String commandString) throws EmptyCommandException, InvalidCommandException, WrongCommandFormatException {
-        String[] commandParts = commandString.trim().split("\\s+", 2);
-
-        if (commandParts.length==0) {
-            throw new EmptyCommandException(EMPTY_COMMAND_NOTIFY);
-        }
+        String[] commandParts = getCommandCodeAndContent(commandString);
 
         String commandCode = commandParts[0].toLowerCase();
         String commandContent = "";
         if (commandParts.length>=2) commandContent = commandParts[1];
 
-        if (commandCode.equals(ADD_COMMAND_CODE)) {
-            if (commandContent.equals("")) return new Command(CommandType.ADD);
-            TaskDetails details = new TaskDetails(commandContent);
-            return new Command(CommandType.ADD, details.getDescription(), details.getStartTime(), details.getEndTime(),details.getCategories());
+        if (commandCode.equals(EDIT_COMMAND_CODE)) {
+            return createEditCommand(commandContent);
 
-        } else if (commandCode.equals(DELETE_COMMAND_CODE)) {
-            return new Command(CommandType.DELETE, Integer.parseInt(commandString.substring(7).trim()));
-
-        } else if (commandCode.equals(EDIT_COMMAND_CODE)) {
-            String firstWord = getFirstWord(commandContent);
-            String description = commandContent.substring(firstWord.length()).trim();
-
-            TaskDetails details = new TaskDetails(description);
-            return new Command(CommandType.EDIT, Integer.parseInt(firstWord),
-                    details.getDescription(), details.getStartTime(), details.getEndTime(), details.getCategories());
-        } else if (commandCode.equals(DONE_COMMAND_CODE)) {
-            return new Command(CommandType.DONE, Integer.parseInt(commandString.substring(4).trim()));
+        } else if (commandCode.equals(ADD_COMMAND_CODE)) {
+            return createCommandWithDescription(CommandType.ADD, commandContent);
 
         } else if (commandCode.equals(SEARCHDONE_COMMAND_CODE)) {
-            TaskDetails details = new TaskDetails(commandContent);
-            return new Command(CommandType.SEARCHDONE, details.getDescription(), details.getStartTime(), details.getEndTime(),
-                    details.getCategories());
+            return createCommandWithDescription(CommandType.SEARCHDONE, commandContent);
 
         } else if (commandCode.equals(SEARCH_COMMAND_CODE)) {
-            TaskDetails details = new TaskDetails(commandContent);
+            return createCommandWithDescription(CommandType.SEARCH, commandContent);
 
-            return new Command(CommandType.SEARCH, details.getDescription(), details.getStartTime(), details.getEndTime(),
-                    details.getCategories());
+        } else if (commandCode.equals(DELETE_COMMAND_CODE)) {
+            return createCommandWithId(CommandType.DELETE, commandContent);
 
-        } else if (commandCode.equals(SAVE_COMMAND_CODE)) {
-            return new Command(CommandType.SAVE, commandString.substring(4).trim());
+        } else if (commandCode.equals(DONE_COMMAND_CODE)) {
+            return createCommandWithId(CommandType.DONE, commandContent);
+        }
+
+        else if (commandCode.equals(SAVE_COMMAND_CODE)) {
+            return new Command(CommandType.SAVE, commandContent);
 
         } else if (commandCode.equals(LOAD_COMMAND_CODE)) {
-            return new Command(CommandType.LOAD, commandString.substring(4).trim());
+            return new Command(CommandType.LOAD, commandContent);
 
         } else if (commandCode.equals(UNDO_COMMAND_CODE)) {
             return new Command(CommandType.UNDO);
@@ -94,5 +76,60 @@ public class GeneralParser {
         } else {
             throw new InvalidCommandException(INVALID_COMMAND_NOTIFY);
         }
+    }
+
+    /**
+     * @param commandContent
+     * @return
+     * @throws WrongCommandFormatException
+     */
+    public Command createEditCommand(String commandContent) throws WrongCommandFormatException {
+        String firstWord = getFirstWord(commandContent);
+        try {
+            int taskId = Integer.parseInt(firstWord);
+
+            String description = commandContent.substring(firstWord.length()).trim();
+
+            TaskDetails details = new TaskDetails(description);
+            return new Command(CommandType.EDIT, taskId,
+                    details.getDescription(), details.getStartTime(), details.getEndTime(), details.getCategories());
+        }
+        catch (NumberFormatException e) {
+            throw new WrongCommandFormatException(INVALID_TASK_ID_NOTIFY);
+        }
+    }
+
+    public Command createCommandWithDescription(CommandType commandType, String commandContent) throws WrongCommandFormatException {
+        TaskDetails details = new TaskDetails(commandContent);
+        return new Command(commandType, details.getDescription(), details.getStartTime(), details.getEndTime(),details.getCategories());
+    }
+
+    public Command createCommandWithId(CommandType commandType, String commandContent) throws WrongCommandFormatException {
+        try {
+            return new Command(CommandType.DELETE, Integer.parseInt(commandContent));
+        }
+        catch (NumberFormatException e) {
+            throw new WrongCommandFormatException(INVALID_TASK_ID_NOTIFY);
+        }
+    }
+
+    /**
+     * @param commandString
+     * @return commandParts[0] is code, commandParts[2] is content of command
+     * @throws EmptyCommandException
+     */
+
+    public String[] getCommandCodeAndContent(String commandString) throws EmptyCommandException {
+        String[] commandParts = commandString.trim().split("\\s+", 2);
+
+        if (commandParts.length==0) {
+            throw new EmptyCommandException(EMPTY_COMMAND_NOTIFY);
+        }
+        return commandParts;
+    }
+
+    private static String getFirstWord(String command) {
+        String result = command.trim().split("\\s+", 2)[0];
+        return result;
     }
 }

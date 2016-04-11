@@ -10,6 +10,7 @@ import parser.DateTimeParser;
 public class TaskDetails {
     private static final String START_TIME_MARKER = "\\bstart\\b";
     private static final String END_TIME_MARKER = "\\bend\\b";
+    private static final String CATEGORY_MARKER = "#";
     private static final String WRONG_POSITION_OF_CATEGORY_NOTIFY = "# should be put after time";
 
 	private LocalDateTime startTime;
@@ -18,47 +19,37 @@ public class TaskDetails {
 	private ArrayList<String> categories;
 
 	public TaskDetails(String input) throws WrongCommandFormatException {
-		input = input.trim();
-
 		Pattern startTimePattern = Pattern.compile(START_TIME_MARKER);
+        Matcher startTimeMatcher = startTimePattern.matcher(input);
+        int startTimeIndex = startTimeMatcher.find() ? startTimeMatcher.start() : -1;
+
 		Pattern endTimePattern = Pattern.compile(END_TIME_MARKER);
-
-		Matcher startTimeMatcher = startTimePattern.matcher(input);
 		Matcher endTimeMatcher = endTimePattern.matcher(input);
+		int endTimeIndex = endTimeMatcher.find() ? endTimeMatcher.start() : -1;
 
-		int startTimeIndex = startTimeMatcher.find() ? startTimeMatcher.start() : -1; //input.indexOf(" start ");
-		int endTimeIndex = endTimeMatcher.find() ? endTimeMatcher.start() : -1; //input.indexOf(" end ");
 		int categoryIndex = input.indexOf("#");
 
 		if (categoryIndex>-1 && categoryIndex < Integer.max(startTimeIndex, endTimeIndex)) {
 		    throw new WrongCommandFormatException(WRONG_POSITION_OF_CATEGORY_NOTIFY);
 		}
 
-		DateTimeParser dateTimeParser = new DateTimeParser();
-
-        ArrayList<String> storeCategories = new ArrayList<String>();
+		categories = new ArrayList<String>();
 
         if (categoryIndex != -1) {
             String categoryString = input.substring(categoryIndex, input.length());
-            String[] splitCategories = categoryString.split(" ");
-            String categoryName;
-            if (splitCategories.length == 1) {
-                categoryName = getUserInput(categoryString, "#");
-                storeCategories.add(categoryName);
+            String[] splitCategories = categoryString.split("\\s+");
 
-            } else {
-                for (int i = 0; i < splitCategories.length; i++) {
-                    categoryName = getUserInput(splitCategories[i], "#");
-                    storeCategories.add(categoryName.toLowerCase());
-                }
+            for (int i = 0; i < splitCategories.length; i++) {
+                String categoryName = splitCategories[i].replace(CATEGORY_MARKER, "");
+                categories.add(categoryName.toLowerCase());
             }
-
-            setCategories(storeCategories);
         }
 
         if (categoryIndex!=-1) input = input.substring(0, categoryIndex).trim();
 
-		if (startTimeIndex != -1) {
+        DateTimeParser dateTimeParser = new DateTimeParser();
+
+        if (startTimeIndex != -1) {
 			int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
 			String startTimeString = input.substring(startTimeMatcher.end(), startTimeCutIndex);
 			startTime = dateTimeParser.parse(startTimeString, false);
@@ -79,12 +70,6 @@ public class TaskDetails {
 		description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
 	}
 
-	private static String getUserInput(String line, String toReplace) {
-		String userInput = line.replace(toReplace, "").trim();
-
-		return userInput;
-	}
-
 	public LocalDateTime getStartTime() {
 		return startTime;
 	}
@@ -99,9 +84,5 @@ public class TaskDetails {
 
 	public ArrayList<String> getCategories() {
 		return categories;
-	}
-
-	public void setCategories(ArrayList<String> list) {
-		categories = list;
 	}
 }
