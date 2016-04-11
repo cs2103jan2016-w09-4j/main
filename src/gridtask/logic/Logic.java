@@ -1,13 +1,5 @@
-//@@author Gilbert
-package logic;
-
-import common.*;
-import common.Command.CommandType;
-import parser.GeneralParser;
-import parser.WrongCommandFormatException;
-import parser.EmptyCommandException;
-import parser.InvalidCommandException;
-import logic.Execution;
+//@@author A0123972A
+package gridtask.logic;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -15,6 +7,15 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+
+import gridtask.common.*;
+import gridtask.common.Command.CommandType;
+import gridtask.logic.Execution;
+import gridtask.parser.EmptyCommandException;
+import gridtask.parser.GeneralParser;
+import gridtask.parser.InvalidCommandException;
+import gridtask.parser.WrongCommandFormatException;
+
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -170,7 +171,7 @@ public class Logic {
         return null;
     }
 
-    //@@author Ruoling
+    //@@author A0131507R
     private ArrayList<String> getPredictionsForAdd(String[] params) {
         // Predictions based on task descriptions that user previously entered
         TreeSet<Entry<String, Integer>> dictionary = execution.getTaskDictionary();

@@ -1,6 +1,5 @@
 //@@author Khanh
-
-package parser;
+package gridtask.parser;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;

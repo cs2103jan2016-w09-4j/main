@@ -1,3 +1,4 @@
+//@@author A0123972A
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 
@@ -6,10 +7,11 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import common.*;
-import common.Command.CommandType;
-import logic.Logic;
-import logic.Execution;
+import gridtask.common.*;
+import gridtask.common.Command.CommandType;
+import gridtask.logic.Execution;
+import gridtask.logic.Logic;
+
 public class ExecutionTest{
 	
 	Logic logic = Logic.getInstance();

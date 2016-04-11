@@ -1,5 +1,5 @@
 //@@author Ruoling
-package common;
+package gridtask.common;
 
 import java.text.ParseException;
 import java.time.LocalDate;

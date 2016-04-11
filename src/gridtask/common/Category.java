@@ -1,4 +1,4 @@
-package common;
+package gridtask.common;
 
 /**
  * Represents a category entry.

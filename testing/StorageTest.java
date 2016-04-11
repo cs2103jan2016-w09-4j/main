@@ -1,3 +1,4 @@
+//@@author A0127257A
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
@@ -19,8 +20,8 @@ import junitx.framework.FileAssert;
 import org.junit.Before;
 import org.junit.Test;
 
-import common.Task;
-import storage.Storage;
+import gridtask.common.Task;
+import gridtask.storage.Storage;
 
 public class StorageTest {
 

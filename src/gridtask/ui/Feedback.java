@@ -1,6 +1,7 @@
-package ui;
+//@@author A0131507R
+package gridtask.ui;
 
-import common.Result;
+import gridtask.common.Result;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;

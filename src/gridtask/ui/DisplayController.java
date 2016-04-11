@@ -1,5 +1,5 @@
-//@@author Ruoling
-package ui;
+//@@author A0131507R
+package gridtask.ui;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -13,11 +13,11 @@ import java.util.logging.SimpleFormatter;
 
 import org.controlsfx.control.HiddenSidesPane;
 
-import common.Command.CommandType;
-import common.Category;
-import common.Result;
-import common.Task;
-import ui.MainApp;
+import gridtask.common.Category;
+import gridtask.common.Result;
+import gridtask.common.Task;
+import gridtask.common.Command.CommandType;
+import gridtask.ui.MainApp;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

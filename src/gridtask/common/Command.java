@@ -1,4 +1,4 @@
-package common;
+package gridtask.common;
 
 import java.util.ArrayList;
 
