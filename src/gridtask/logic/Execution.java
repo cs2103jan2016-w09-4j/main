@@ -558,7 +558,12 @@ public class Execution {
             boolean put = true;
             for (String category : categories) {
                 category = toSentenceCase(category);
-                if (!task.getCategories().contains(category)) {
+                if (category.equals(CATEGORY_PRIORITY)) {
+                    if (!task.isImportant()) {
+                        put = false;
+                        break;
+                    }
+                } else if (!task.getCategories().contains(category)) {
                     put = false;
                     break;                      
                 }
@@ -596,7 +601,6 @@ public class Execution {
                 LocalDateTime taskEnd = task.getEnd();
                 if (taskStart != null && start != null && taskEnd != null && end != null){
                 	if (taskStart.compareTo(start) >= 0 && taskEnd.compareTo(end) <= 0){
-                		System.out.println("hey sir");
 	                	searchResults.add(task);
 	                }
                 }
