@@ -1,4 +1,4 @@
-//@@author Ruoling
+//@@author A0131507R
 package gridtask.common;
 
 import java.text.ParseException;
