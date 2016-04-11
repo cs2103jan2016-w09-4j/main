@@ -1,4 +1,4 @@
-//@@author Khanh
+//@@author A0098084U
 package gridtask.parser;
 
 import java.time.LocalDateTime;
@@ -12,55 +12,42 @@ import java.util.regex.Matcher;
 public class TaskDetails {
     private static final String START_TIME_MARKER = "\\bstart\\b";
     private static final String END_TIME_MARKER = "\\bend\\b";
+    private static final String CATEGORY_MARKER = "#";
     private static final String WRONG_POSITION_OF_CATEGORY_NOTIFY = "# should be put after time";
 
+    private String description;
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
-	private String description;
 	private ArrayList<String> categories;
 
+	public TaskDetails(String description, LocalDateTime startTime, LocalDateTime endTime, ArrayList<String> categories) {
+	    this.description = description;
+	    this.startTime = startTime;
+	    this.endTime = endTime;
+	    this.categories = categories;
+	}
+
 	public TaskDetails(String input) throws WrongCommandFormatException {
-		input = input.trim();
-
 		Pattern startTimePattern = Pattern.compile(START_TIME_MARKER);
+        Matcher startTimeMatcher = startTimePattern.matcher(input);
+        int startTimeIndex = startTimeMatcher.find() ? startTimeMatcher.start() : -1;
+
 		Pattern endTimePattern = Pattern.compile(END_TIME_MARKER);
-
-		Matcher startTimeMatcher = startTimePattern.matcher(input);
 		Matcher endTimeMatcher = endTimePattern.matcher(input);
+		int endTimeIndex = endTimeMatcher.find() ? endTimeMatcher.start() : -1;
 
-		int startTimeIndex = startTimeMatcher.find() ? startTimeMatcher.start() : -1; //input.indexOf(" start ");
-		int endTimeIndex = endTimeMatcher.find() ? endTimeMatcher.start() : -1; //input.indexOf(" end ");
-		int categoryIndex = input.indexOf("#");
+		input = extractCategories(input, startTimeIndex, endTimeIndex);
 
-		if (categoryIndex>-1 && categoryIndex < Integer.max(startTimeIndex, endTimeIndex)) {
-		    throw new WrongCommandFormatException(WRONG_POSITION_OF_CATEGORY_NOTIFY);
-		}
+        extractTime(input, startTimeMatcher, startTimeIndex, endTimeMatcher, endTimeIndex);
 
-		DateTimeParser dateTimeParser = new DateTimeParser();
+		extractDescription(input, startTimeIndex, endTimeIndex);
+	}
 
-        ArrayList<String> storeCategories = new ArrayList<String>();
+    public void extractTime(String input, Matcher startTimeMatcher, int startTimeIndex, Matcher endTimeMatcher,
+            int endTimeIndex) {
+        DateTimeParser dateTimeParser = new DateTimeParser();
 
-        if (categoryIndex != -1) {
-            String categoryString = input.substring(categoryIndex, input.length());
-            String[] splitCategories = categoryString.split(" ");
-            String categoryName;
-            if (splitCategories.length == 1) {
-                categoryName = getUserInput(categoryString, "#");
-                storeCategories.add(categoryName);
-
-            } else {
-                for (int i = 0; i < splitCategories.length; i++) {
-                    categoryName = getUserInput(splitCategories[i], "#");
-                    storeCategories.add(categoryName.toLowerCase());
-                }
-            }
-
-            setCategories(storeCategories);
-        }
-
-        if (categoryIndex!=-1) input = input.substring(0, categoryIndex).trim();
-
-		if (startTimeIndex != -1) {
+        if (startTimeIndex != -1) {
 			int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
 			String startTimeString = input.substring(startTimeMatcher.end(), startTimeCutIndex);
 			startTime = dateTimeParser.parse(startTimeString, false);
@@ -71,21 +58,46 @@ public class TaskDetails {
 			String endTimeString = input.substring(endTimeMatcher.end(), endTimeCutIndex);
 			endTime = dateTimeParser.parse(endTimeString, true);
 		}
+    }
 
-		if (startTimeIndex == -1) {
+    public void extractDescription(String input, int startTimeIndex, int endTimeIndex) {
+        if (startTimeIndex == -1) {
 			startTimeIndex = input.length();
 		}
 		if (endTimeIndex == -1) {
 			endTimeIndex = input.length();
 		}
 		description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
-	}
+    }
 
-	private static String getUserInput(String line, String toReplace) {
-		String userInput = line.replace(toReplace, "").trim();
+    /**
+     * Find the categories in the description
+     * Return the description after categories are cut out
+     */
 
-		return userInput;
-	}
+    public String extractCategories(String input, int startTimeIndex, int endTimeIndex)
+            throws WrongCommandFormatException {
+        int categoryIndex = input.indexOf(CATEGORY_MARKER);
+
+		if (categoryIndex>-1 && categoryIndex < Integer.max(startTimeIndex, endTimeIndex)) {
+		    throw new WrongCommandFormatException(WRONG_POSITION_OF_CATEGORY_NOTIFY);
+		}
+
+		categories = new ArrayList<String>();
+
+        if (categoryIndex != -1) {
+            String categoryString = input.substring(categoryIndex, input.length());
+            String[] splitCategories = categoryString.split("\\s+");
+
+            for (int i = 0; i < splitCategories.length; i++) {
+                String categoryName = splitCategories[i].replace(CATEGORY_MARKER, "");
+                categories.add(categoryName.toLowerCase());
+            }
+        }
+
+        if (categoryIndex!=-1) input = input.substring(0, categoryIndex).trim();
+        return input;
+    }
 
 	public LocalDateTime getStartTime() {
 		return startTime;
@@ -101,9 +113,5 @@ public class TaskDetails {
 
 	public ArrayList<String> getCategories() {
 		return categories;
-	}
-
-	public void setCategories(ArrayList<String> list) {
-		categories = list;
 	}
 }

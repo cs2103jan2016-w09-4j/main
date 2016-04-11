@@ -79,6 +79,8 @@ public class Command {
           this.categories = categories;
 	}
 
+//@@author A0098084U
+
 	@Override
     public boolean equals(Object o) {
         if (o instanceof Command) {
@@ -98,6 +100,7 @@ public class Command {
             if (description == null ? c2.description != null : !description.equals(c2.description)) {
                 return false;
             }
+
             if (categories == null ? c2.categories!=null : !categories.equals(c2.categories)) {
                 return false;
             }
