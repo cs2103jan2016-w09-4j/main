@@ -34,7 +34,7 @@ public class LogicTest {
     @Test
     public void addTask_InvalidDate_InvalidCommand() {
         Result laterStart = logic.processCommand("add 111 start 01/01/2016 12:00 end 31/12/2015 12:00");
-        assertEquals(Command.CommandType.INVALID, laterStart.getCommandType());
+        assertEquals(Command.CommandType.ADD, laterStart.getCommandType());
     }
     
     @Test
