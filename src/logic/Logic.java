@@ -43,7 +43,6 @@ public class Logic {
     }
 
     public Result processCommand(String input) {
-        System.out.println(input);
         try {
             Command command = parser.parseCommand(input);
             return execute(command);
