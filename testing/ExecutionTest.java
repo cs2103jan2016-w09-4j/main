@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-//@@author Gilbert
-=======
 //@@author A0123972A
->>>>>>> branch 'master' of https://github.com/cs2103jan2016-w09-4j/main.git
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 
