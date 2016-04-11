@@ -509,7 +509,7 @@ public class Execution {
         canRedo = false;
         
         ArrayList<String> categories = command.getCategories();
-        if (categories != null) {
+        if (categories != null && !categories.isEmpty()) {
             ArrayList<Task> searchResults = searchTasksByCategory(mainList, categories);
             return new Result(CommandType.SEARCH, true, "Retrieved matching tasks", searchResults);
         }
@@ -534,7 +534,7 @@ public class Execution {
         canRedo = false;
         
         ArrayList<String> categories = command.getCategories();
-        if (categories != null) {
+        if (categories != null && !categories.isEmpty()) {
             ArrayList<Task> searchResults = searchTasksByCategory(doneList, categories);
             return new Result(CommandType.SEARCHDONE, true, "Searched", searchResults);
         }
@@ -590,7 +590,6 @@ public class Execution {
                 	}
                 }
             }
-            
         } else { // search by a range of time (the range)
             for (Task task: list) {
                 LocalDateTime taskStart = task.getStart();
