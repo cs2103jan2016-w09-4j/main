@@ -7,7 +7,6 @@ import parser.GeneralParser;
 import parser.WrongCommandFormatException;
 import parser.EmptyCommandException;
 import parser.InvalidCommandException;
-import storage.Storage;
 import logic.Execution;
 
 import java.util.AbstractMap;
@@ -25,7 +24,6 @@ public class Logic {
 
     // Objects to call into other classes
     private Execution execution;
-    private Storage storage;
     private GeneralParser parser;
     private static Logic logic = new Logic();
 
@@ -38,7 +36,6 @@ public class Logic {
 
     public Logic() {
         this.execution = new Execution();
-        this.storage = new Storage();
         this.parser = new GeneralParser();
     }
 
@@ -55,12 +52,9 @@ public class Logic {
     private Result execute(Command command){
 
         CommandType commandType = command.getType();
-        String description = command.getDescription();
-        int taskID = command.getId();
 
         LocalDateTime startDate = command.getStartDate();
         LocalDateTime endDate = command.getEndDate();
-        ArrayList<String> categories = command.getCategories();
 
         // verify that start date is before end date
         if (startDate != null && endDate != null) {
