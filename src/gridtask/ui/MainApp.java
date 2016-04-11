@@ -9,8 +9,6 @@ import gridtask.common.Category;
 import gridtask.common.Result;
 import gridtask.common.Task;
 import gridtask.logic.Logic;
-import gridtask.ui.DisplayController;
-import gridtask.ui.InputController;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;

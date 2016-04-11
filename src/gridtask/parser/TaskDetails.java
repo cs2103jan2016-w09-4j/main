@@ -3,13 +3,11 @@ package gridtask.parser;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import gridtask.parser.DateTimeParser;
-
-import java.util.regex.Matcher;
-
 public class TaskDetails {
+    
     private static final String START_TIME_MARKER = "\\bstart\\b";
     private static final String END_TIME_MARKER = "\\bend\\b";
     private static final String CATEGORY_MARKER = "#";
@@ -95,7 +93,9 @@ public class TaskDetails {
             }
         }
 
-        if (categoryIndex!=-1) input = input.substring(0, categoryIndex).trim();
+        if (categoryIndex!=-1) {
+            input = input.substring(0, categoryIndex).trim();
+        }
         return input;
     }
 
@@ -114,4 +114,5 @@ public class TaskDetails {
 	public ArrayList<String> getCategories() {
 		return categories;
 	}
+	
 }

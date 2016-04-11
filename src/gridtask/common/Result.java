@@ -1,7 +1,8 @@
 package gridtask.common;
 
-import gridtask.common.Command.CommandType;
 import java.util.ArrayList;
+
+import gridtask.common.Command.CommandType;
 
 /**
  * Contains information about the command that was executed.
