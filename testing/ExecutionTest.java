@@ -25,7 +25,6 @@ public class ExecutionTest{
     
     @Test
     public void addTask_AllTaskTypes_AddedInOrder() {
-    	
     	execution.setMainList(mainList);
     	
     	LocalDateTime start = LocalDateTime.of(2016, 5, 24, 14, 0);  // 24/5/2016 2pm

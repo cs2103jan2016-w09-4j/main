@@ -572,9 +572,9 @@ public class Storage {
 				} else if (field.equals(FIELDS_PRIORITY)) {
 					String checkPriority = splitLine[1];
 					if (checkPriority.equalsIgnoreCase(FIELDS_HAVE_PRIORITY)) {
-						currentTask.setImportance(true);
+						currentTask.setImportant(true);
 					} else if (checkPriority.equalsIgnoreCase(FIELDS_NO_PRIORITY)) {
-						currentTask.setImportance(false);
+						currentTask.setImportant(false);
 					}
 					countFields++;
 				}

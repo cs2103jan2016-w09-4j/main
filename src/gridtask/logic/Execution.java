@@ -631,7 +631,7 @@ public class Execution {
             ArrayList<String> list = new ArrayList<String>();
             for (String cat : inputCategories) {
                 if (cat.equalsIgnoreCase(CATEGORY_PRIORITY)) {
-                    newTask.setImportance(true);
+                    newTask.setImportant(true);
                     // update the number of task in priority category
                     Iterator<Entry<String, Integer>> iterator = categories.iterator();
                     updateNumOfTaskForPriority(iterator);
