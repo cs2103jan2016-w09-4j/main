@@ -13,10 +13,17 @@ public class TaskDetails {
     private static final String CATEGORY_MARKER = "#";
     private static final String WRONG_POSITION_OF_CATEGORY_NOTIFY = "# should be put after time";
 
+    private String description;
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
-	private String description;
 	private ArrayList<String> categories;
+
+	public TaskDetails(String description, LocalDateTime startTime, LocalDateTime endTime, ArrayList<String> categories) {
+	    this.description = description;
+	    this.startTime = startTime;
+	    this.endTime = endTime;
+	    this.categories = categories;
+	}
 
 	public TaskDetails(String input) throws WrongCommandFormatException {
 		Pattern startTimePattern = Pattern.compile(START_TIME_MARKER);
@@ -27,7 +34,48 @@ public class TaskDetails {
 		Matcher endTimeMatcher = endTimePattern.matcher(input);
 		int endTimeIndex = endTimeMatcher.find() ? endTimeMatcher.start() : -1;
 
-		int categoryIndex = input.indexOf("#");
+		input = extractCategories(input, startTimeIndex, endTimeIndex);
+
+        extractTime(input, startTimeMatcher, startTimeIndex, endTimeMatcher, endTimeIndex);
+
+		extractDescription(input, startTimeIndex, endTimeIndex);
+	}
+
+    public void extractTime(String input, Matcher startTimeMatcher, int startTimeIndex, Matcher endTimeMatcher,
+            int endTimeIndex) {
+        DateTimeParser dateTimeParser = new DateTimeParser();
+
+        if (startTimeIndex != -1) {
+			int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
+			String startTimeString = input.substring(startTimeMatcher.end(), startTimeCutIndex);
+			startTime = dateTimeParser.parse(startTimeString, false);
+		}
+
+		if (endTimeIndex != -1) {
+			int endTimeCutIndex = (startTimeIndex > endTimeIndex) ? startTimeIndex : input.length();
+			String endTimeString = input.substring(endTimeMatcher.end(), endTimeCutIndex);
+			endTime = dateTimeParser.parse(endTimeString, true);
+		}
+    }
+
+    public void extractDescription(String input, int startTimeIndex, int endTimeIndex) {
+        if (startTimeIndex == -1) {
+			startTimeIndex = input.length();
+		}
+		if (endTimeIndex == -1) {
+			endTimeIndex = input.length();
+		}
+		description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
+    }
+
+    /**
+     * Find the categories in the description
+     * Return the description after categories are cut out
+     */
+
+    public String extractCategories(String input, int startTimeIndex, int endTimeIndex)
+            throws WrongCommandFormatException {
+        int categoryIndex = input.indexOf(CATEGORY_MARKER);
 
 		if (categoryIndex>-1 && categoryIndex < Integer.max(startTimeIndex, endTimeIndex)) {
 		    throw new WrongCommandFormatException(WRONG_POSITION_OF_CATEGORY_NOTIFY);
@@ -46,29 +94,8 @@ public class TaskDetails {
         }
 
         if (categoryIndex!=-1) input = input.substring(0, categoryIndex).trim();
-
-        DateTimeParser dateTimeParser = new DateTimeParser();
-
-        if (startTimeIndex != -1) {
-			int startTimeCutIndex = (endTimeIndex > startTimeIndex) ? endTimeIndex : input.length();
-			String startTimeString = input.substring(startTimeMatcher.end(), startTimeCutIndex);
-			startTime = dateTimeParser.parse(startTimeString, false);
-		}
-
-		if (endTimeIndex != -1) {
-			int endTimeCutIndex = (startTimeIndex > endTimeIndex) ? startTimeIndex : input.length();
-			String endTimeString = input.substring(endTimeMatcher.end(), endTimeCutIndex);
-			endTime = dateTimeParser.parse(endTimeString, true);
-		}
-
-		if (startTimeIndex == -1) {
-			startTimeIndex = input.length();
-		}
-		if (endTimeIndex == -1) {
-			endTimeIndex = input.length();
-		}
-		description = input.substring(0, Math.min(startTimeIndex, endTimeIndex)).trim();
-	}
+        return input;
+    }
 
 	public LocalDateTime getStartTime() {
 		return startTime;

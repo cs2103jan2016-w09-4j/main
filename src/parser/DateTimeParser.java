@@ -89,32 +89,22 @@ public class DateTimeParser {
     public LocalDateTime parse(String timeString, boolean defaultEndDay) {
         timeString = timeString.trim().replace("am", "AM").replace("pm", "PM");
 
-        boolean timeFound = false,
-                dateFound = false;
-
         LocalDate date = LocalDate.MIN;
         LocalTime time = defaultEndDay ? LocalTime.of(23, 59) : LocalTime.of(0, 0);
+
+        boolean timeFound = false,
+                dateFound = false;
 
         for (int sIndex = 0; sIndex<timeString.length(); sIndex++) {
             for (int eIndex=timeString.length(); eIndex>sIndex; eIndex--) {
                 for (int i = 0; i < dateFormats.length; i++) {
                     if (dateFound) break;
-
                     try {
-                        // if the date format does not contain year info, get current year as default
-
-                        DateTimeFormatter formatter = (dateFormats[i].contains("y")) ?
-                            DateTimeFormatter.ofPattern(dateFormats[i]) :
-                                new DateTimeFormatterBuilder()
-                                .appendPattern(dateFormats[i])
-                                .parseDefaulting(ChronoField.YEAR, LocalDateTime.now().getYear())
-                                .toFormatter();
-
-                        String tryString = timeString.substring(sIndex, eIndex);
-                        date = LocalDate.parse(tryString, formatter);
+                        date = tryToParseDate(timeString, sIndex, eIndex, i);
                         dateFound = true;
                     }
                     catch (DateTimeParseException exc) {
+                        // the String does not match the pattern tried
                     }
                 }
             }
@@ -126,18 +116,25 @@ public class DateTimeParser {
                     if (timeFound) break;
 
                     try {
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(timeFormats[i]);
-                        String tryString = timeString.substring(sIndex, eIndex);
-                        time = LocalTime.parse(tryString, formatter);
+                        time = tryToParseTime(timeString, sIndex, eIndex, i);
                         timeFound = true;
                     }
                     catch (DateTimeParseException exc) {
-
+                        // the String does not match the pattern tried
                     }
                 }
             }
         }
 
+        LocalDateTime nattyResult = getNattyResult(timeString);
+        return getCombinedResult(timeFound, dateFound, date, time, nattyResult);
+    }
+
+    /**
+     * use Natty Library to get the date time to combine with self-calculated result
+     */
+
+    public LocalDateTime getNattyResult(String timeString) {
         LocalDateTime nattyResult = null;
 
         try {
@@ -148,10 +145,40 @@ public class DateTimeParser {
         }
         catch (Exception e) { // natty does not find any result
         }
+        return nattyResult;
+    }
 
+    /**
+     * Combine result from natty
+     * and self-calculated result
+     */
+    public LocalDateTime getCombinedResult(boolean timeFound, boolean dateFound, LocalDate date, LocalTime time,
+            LocalDateTime nattyResult) {
         if (!dateFound && !timeFound && nattyResult == null) return null;
-
         if (!dateFound) date = nattyResult.toLocalDate();
         return LocalDateTime.of(date, time);
+    }
+
+    public LocalDate tryToParseDate(String timeString, int sIndex, int eIndex, int patternIndex) {
+        LocalDate date;
+        // if the date format does not contain year info, get current year as default
+        DateTimeFormatter formatter = (dateFormats[patternIndex].contains("y")) ?
+            DateTimeFormatter.ofPattern(dateFormats[patternIndex]) :
+                new DateTimeFormatterBuilder()
+                .appendPattern(dateFormats[patternIndex])
+                .parseDefaulting(ChronoField.YEAR, LocalDateTime.now().getYear())
+                .toFormatter();
+
+        String tryString = timeString.substring(sIndex, eIndex);
+        date = LocalDate.parse(tryString, formatter);
+        return date;
+    }
+
+    public LocalTime tryToParseTime(String timeString, int sIndex, int eIndex, int patternIndex) {
+        LocalTime time;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(timeFormats[patternIndex]);
+        String tryString = timeString.substring(sIndex, eIndex);
+        time = LocalTime.parse(tryString, formatter);
+        return time;
     }
 }

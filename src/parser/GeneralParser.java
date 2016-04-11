@@ -79,10 +79,9 @@ public class GeneralParser {
     }
 
     /**
-     * @param commandContent
-     * @return
-     * @throws WrongCommandFormatException
+     * Returns a command of type EDIT
      */
+
     public Command createEditCommand(String commandContent) throws WrongCommandFormatException {
         String firstWord = getFirstWord(commandContent);
         try {
@@ -99,14 +98,23 @@ public class GeneralParser {
         }
     }
 
+    /**
+     * Returns a command that contains a description
+     * The input can contains: description, time (start and end) and categories
+     * Used to create the following commands: add, search, searchdone
+     */
     public Command createCommandWithDescription(CommandType commandType, String commandContent) throws WrongCommandFormatException {
         TaskDetails details = new TaskDetails(commandContent);
         return new Command(commandType, details.getDescription(), details.getStartTime(), details.getEndTime(),details.getCategories());
     }
 
+    /**
+     * Returns a Command that only has task ID.
+     * Used to create the following commands: delete, done
+     */
     public Command createCommandWithId(CommandType commandType, String commandContent) throws WrongCommandFormatException {
         try {
-            return new Command(CommandType.DELETE, Integer.parseInt(commandContent));
+            return new Command(commandType, Integer.parseInt(commandContent));
         }
         catch (NumberFormatException e) {
             throw new WrongCommandFormatException(INVALID_TASK_ID_NOTIFY);
