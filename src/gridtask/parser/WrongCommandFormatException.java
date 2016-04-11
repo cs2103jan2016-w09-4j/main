@@ -1,6 +1,5 @@
 //@@author Khanh
-
-package parser;
+package gridtask.parser;
 
 public class WrongCommandFormatException extends Exception {
     public WrongCommandFormatException() {

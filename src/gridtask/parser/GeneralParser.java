@@ -1,8 +1,8 @@
 //@@author Khanh
-package parser;
+package gridtask.parser;
 
-import common.*;
-import common.Command.CommandType;
+import gridtask.common.*;
+import gridtask.common.Command.CommandType;
 
 public class GeneralParser {
     private static final String ADD_COMMAND_CODE = "add";

@@ -1,4 +1,5 @@
-package logic;
+//@@author A0123972A
+package gridtask.logic;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -12,40 +13,46 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
-import common.Command;
-import common.Result;
-import common.Task;
-import common.Command.CommandType;
-import storage.Storage;
+import gridtask.common.Command;
+import gridtask.common.Result;
+import gridtask.common.Task;
+import gridtask.common.Command.CommandType;
+import gridtask.storage.Storage;
 
 public class Execution {
     
     private static Storage storage;
     
-    private static ArrayList<Task> mainList;
-    private static ArrayList<Task> weekList;
-    private static ArrayList<Task> doneList;
+    private ArrayList<Task> mainList;
+    private ArrayList<Task> weekList;
+    private ArrayList<Task> doneList;
     
-    private static ArrayList<Task> previousCopyOfMainList;
-    private static ArrayList<Task> previousCopyOfDoneList;
-    private static ArrayList<Task> copyOfMainListForRedo;
-    private static ArrayList<Task> copyOfDoneListForRedo;
+    private ArrayList<Task> previousCopyOfMainList;
+    private ArrayList<Task> previousCopyOfDoneList;
+    private ArrayList<Task> copyOfMainListForRedo;
+    private ArrayList<Task> copyOfDoneListForRedo;
 
     // Store user input history for auto-completion
     // TreeSet is used to avoid duplicate entries and for faster lookup
     // Integer is the frequency that the String is entered by the user
-    private static TreeSet<Entry<String, Integer>> taskDictionary;
-    private static TreeSet<Entry<String, Integer>> wordDictionary;
-    private static TreeSet<Entry<String, Integer>> fileDictionary;
+    private TreeSet<Entry<String, Integer>> taskDictionary;
+    private TreeSet<Entry<String, Integer>> wordDictionary;
+    private TreeSet<Entry<String, Integer>> fileDictionary;
 
     // Store information about categories
     // Integer is the number of tasks belonging to a category
-    private static TreeSet<Entry<String, Integer>> categories;
+    private TreeSet<Entry<String, Integer>> categories;
+    private static Logger logger = Logger.getLogger("Execution");
     
     // Keep track if user is allowed to perform undo or redo commands
-    private static boolean canUndo;
-    private static boolean canRedo;
+    private boolean canUndo;
+    private boolean canRedo;
     
     private static final String CATEGORY_PRIORITY = "Priority";
     private static final String CATEGORY_TODAY = "Today";
@@ -85,6 +92,7 @@ public class Execution {
 
         initializeDictionary();
         initializeCategories();
+        initializeLogger();
     }
 
     private void initializeTaskProgress() {
@@ -106,6 +114,21 @@ public class Execution {
             	addToTreeSet(taskDictionary, autoCompletionEntry, freqCount);        	
             	addToWordDictionary(autoCompletionEntry, freqCount);
             }
+        }
+    }
+    
+    private void initializeLogger() {
+        try {
+            Handler fh = new FileHandler("log_logic_Execution");
+            if (fh != null && logger != null) {
+            	logger.addHandler(fh);
+            	SimpleFormatter formatter = new SimpleFormatter();  
+            	fh.setFormatter(formatter);
+            }	
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -142,10 +165,12 @@ public class Execution {
         
         // validate user input
         if (description == null || description.isEmpty()) {
+        	logger.log(Level.INFO, "No description");
             return new Result(CommandType.ADD, false, "No description!", weekList);
         }
         if (start != null && end != null) {
             if (end.isBefore(start)) {
+            	logger.log(Level.INFO, "Cannot have a later start date");
                 return new Result(CommandType.ADD, false, "Cannot have a later start date!", weekList);                
             }
         }
@@ -171,9 +196,11 @@ public class Execution {
         try {
             saveMainList(mainList);
         } catch (IOException ioe) {
+        	logger.log(Level.SEVERE, "Couldn't save", ioe);
             return new Result(CommandType.ADD, false, "Couldn't save", weekList);
         }
         
+        logger.log(Level.INFO, "Task successfully added");
         return new Result(CommandType.ADD, true, "Added task", weekList);
     }
 
@@ -192,13 +219,16 @@ public class Execution {
         // validate user input
         int index = taskId - 1;
         if (!isValidIndex(index)) {
+        	logger.log(Level.INFO, "Task number is wrong");
             return new Result(CommandType.EDIT, false, "Wrong task number", weekList);
         }
         if (description == null || description.isEmpty()) {
+        	logger.log(Level.INFO, "No description");
             return new Result(CommandType.EDIT, false, "No description!", weekList);
         }
         if (start != null && end != null) {
             if (end.isBefore(start)) {
+            	logger.log(Level.INFO, "Cannot have a later start date");
                 return new Result(CommandType.EDIT, false, "Cannot have a later start date!", weekList);                
             }
         }
@@ -226,9 +256,11 @@ public class Execution {
         try {
             saveMainList(mainList);
         } catch (IOException ioe) {
+        	logger.log(Level.SEVERE, "Couldn't save", ioe);
             return new Result(CommandType.EDIT, false, "Couldn't save", weekList);
         }
         
+        logger.log(Level.INFO, "Task successfully edited");
         return new Result(CommandType.EDIT, true, "Edited task", weekList);
     }
     
@@ -243,6 +275,7 @@ public class Execution {
         // validate user input
         int index = taskId - 1;
         if (!isValidIndex(index)) {
+        	logger.log(Level.INFO, "Wrong task number");
             return new Result(CommandType.DELETE, false, "Wrong task number", weekList);
         }
 
@@ -260,9 +293,11 @@ public class Execution {
         try {
             saveMainList(mainList);
         } catch (IOException ioe) {
+        	logger.log(Level.SEVERE, "Couldn't save", ioe);
             return new Result(CommandType.DELETE, false, "Couldn't save", weekList);
         }
         
+        logger.log(Level.INFO, "Task has been succesfully deleted");
         return new Result(CommandType.DELETE, true, "Deleted task", weekList);
     }
     
@@ -278,6 +313,7 @@ public class Execution {
         // validate user input
         int index = taskId - 1;
         if (!isValidIndex(index)) {
+        	logger.log(Level.INFO, "Wrong task number");
             return new Result(CommandType.DONE, false, "Wrong task number", weekList);
         }
 
@@ -296,9 +332,11 @@ public class Execution {
         try {
             saveMainAndDoneList(mainList, doneList);
         } catch (IOException ioe) {
+        	logger.log(Level.SEVERE, "Couldn't save", ioe);
             return new Result(CommandType.DONE, false, "Couldn't save", weekList);
         }
         
+        logger.log(Level.INFO, "Task has been succesfully marked as done");
         return new Result(CommandType.DONE, true, "Marked as done", weekList);
     }
 
@@ -685,7 +723,7 @@ public class Execution {
         }
     }
 
-    // @@author Ruoling
+    // @@author A0131507R
     private void saveAutoCompletionList() {
         // convert TreeSet to ArrayList
     	ArrayList<Entry<String,Integer>> autoCompletionList = new ArrayList<Entry<String,Integer>>();
@@ -756,7 +794,7 @@ public class Execution {
         return index >= 0 ? true : false;
     }
 
-    // @@author Gilbert
+    //@@author A0123972A
     /******************
      * GETTER METHODS *
      ******************/
@@ -792,31 +830,31 @@ public class Execution {
     public TreeSet<Entry<String, Integer>> getFileDictionary() {
         return fileDictionary;
     }
-    
-    public int getCategoryCount(String text) {
-    	int count = removeFromTreeSet(categories, text);
-    	return count;
-    }
-    
+
     /******************
      * HELPER METHODS *
      ******************/
-
+    
     public void setMainList(ArrayList<Task> mainList) {
-        Execution.mainList = mainList;
+        this.mainList = mainList;
         sortList(mainList);
     }
-
-    public void sortList(ArrayList<Task> thisList) {
-        Collections.sort(thisList);
+    
+    public int getCategoryCount(String text) {
+        int count = removeFromTreeSet(categories, text);
+        return count;
+    }
+    
+    private void sortList(ArrayList<Task> list) {
+        Collections.sort(list);
         int id = 1;
-        for (Task task : thisList) {
+        for (Task task : list) {
             task.setId(id);
             id++;
         }    
     }
     
-    public void updateWeekList() {
+    private void updateWeekList() {
         weekList.clear();
         
         LocalDateTime today = LocalDateTime.now();
@@ -834,7 +872,8 @@ public class Execution {
                     weekList.add(task);
                 }
             }
-        }    }
+        }
+    }
 
     // Sets the status of all tasks to be unmodified
     private void clearModifiedStatus() {
@@ -843,6 +882,7 @@ public class Execution {
         }
     }
     
+    // Checks if index is within range
     private boolean isValidIndex(int index) {
         int maxIndex = mainList.size() - 1;
         if (index < 0 || index > maxIndex) {
@@ -851,18 +891,18 @@ public class Execution {
         return true;
     }
     
-    public void saveMainListForUndo() {
+    private void saveMainListForUndo() {
         previousCopyOfMainList.clear();
         previousCopyOfMainList.addAll(mainList);
     }
 
-    public void saveDoneListForUndo() {
+    private void saveDoneListForUndo() {
         previousCopyOfDoneList.clear();
         previousCopyOfDoneList.addAll(doneList);
     }
    
-    private void saveMainList(ArrayList<Task> thisList) throws IOException {
-        storage.setMainList(thisList);
+    private void saveMainList(ArrayList<Task> list) throws IOException {
+        storage.setMainList(list);
         storage.writeToFile();
     }
 
@@ -873,6 +913,7 @@ public class Execution {
         storage.writeToFile();
     }
 
+    //@@author A0131507R
     /**
      * Formats a string to sentence case.
      * Leading and trailing whitespace will be removed. The first non-whitespace character
@@ -881,7 +922,7 @@ public class Execution {
      * @param text  String to format
      * @return      String formatted in sentence case
      */
-    public String toSentenceCase(String text) {
+    private String toSentenceCase(String text) {
         if (text == null) {
             throw new NullPointerException();
         }

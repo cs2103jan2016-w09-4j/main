@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import common.Command;
-import common.Command.CommandType;
+import gridtask.common.Command;
+import gridtask.common.Command.CommandType;
 
-import parser.GeneralParser;
-import parser.InvalidCommandException;
-import parser.EmptyCommandException;
-import parser.WrongCommandFormatException;
+import gridtask.parser.GeneralParser;
+import gridtask.parser.InvalidCommandException;
+import gridtask.parser.EmptyCommandException;
+import gridtask.parser.WrongCommandFormatException;
+
 
 public class GeneralParserTest {
 

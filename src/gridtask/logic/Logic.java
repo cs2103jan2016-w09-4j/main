@@ -1,13 +1,5 @@
-//@@author Gilbert
-package logic;
-
-import common.*;
-import common.Command.CommandType;
-import parser.GeneralParser;
-import parser.WrongCommandFormatException;
-import parser.EmptyCommandException;
-import parser.InvalidCommandException;
-import logic.Execution;
+//@@author A0123972A
+package gridtask.logic;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -15,9 +7,25 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+import gridtask.common.*;
+import gridtask.common.Command.CommandType;
+import gridtask.logic.Execution;
+import gridtask.parser.EmptyCommandException;
+import gridtask.parser.GeneralParser;
+import gridtask.parser.InvalidCommandException;
+import gridtask.parser.WrongCommandFormatException;
+
+
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class Logic {
@@ -26,6 +34,7 @@ public class Logic {
     private Execution execution;
     private GeneralParser parser;
     private static Logic logic = new Logic();
+    private static Logger logger = Logger.getLogger("Logic");
 
     private static final int MAX_PREDICTIONS = 5;
     private static final Comparator<Entry<String, Integer>> freqComparator = new Comparator<Entry<String, Integer>>() {
@@ -37,13 +46,31 @@ public class Logic {
     public Logic() {
         this.execution = new Execution();
         this.parser = new GeneralParser();
+        initializeLogger();
+    }
+    
+    private void initializeLogger() {
+        try {
+            Handler fh = new FileHandler("log_logic_Logic");
+            if (fh != null && logger != null) {
+            	logger.addHandler(fh);
+            	SimpleFormatter formatter = new SimpleFormatter();  
+            	fh.setFormatter(formatter);
+            }	
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public Result processCommand(String input) {
         try {
             Command command = parser.parseCommand(input);
+            logger.log(Level.INFO, "input successfully parsed");
             return execute(command);
         } catch (WrongCommandFormatException|EmptyCommandException|InvalidCommandException e) {
+        	logger.log(Level.SEVERE, "failed to process command", e);
             return new Result();
         }
     }
@@ -58,6 +85,7 @@ public class Logic {
         // verify that start date is before end date
         if (startDate != null && endDate != null) {
             if (endDate.isBefore(startDate)) {
+            	logger.log(Level.INFO, "invalid start date: Cannot have a later start date");
                 return new Result(CommandType.INVALID, false, "Cannot have a later start date!", new ArrayList<Task>());
             }
         }
@@ -169,7 +197,7 @@ public class Logic {
         return null;
     }
 
-    //@@author Ruoling
+    //@@author A0131507R
     private ArrayList<String> getPredictionsForAdd(String[] params) {
         // Predictions based on task descriptions that user previously entered
         TreeSet<Entry<String, Integer>> dictionary = execution.getTaskDictionary();

@@ -1,11 +1,13 @@
 //@@author Khanh
-package parser;
+package gridtask.parser;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+
+import gridtask.parser.DateTimeParser;
+
 import java.util.regex.Matcher;
-import parser.DateTimeParser;
 
 public class TaskDetails {
     private static final String START_TIME_MARKER = "\\bstart\\b";

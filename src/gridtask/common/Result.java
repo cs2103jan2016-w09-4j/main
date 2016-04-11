@@ -1,8 +1,8 @@
-package common;
+package gridtask.common;
 
 import java.util.ArrayList;
 
-import common.Command.CommandType;
+import gridtask.common.Command.CommandType;
 
 /**
  * Used by Logic to pass information on the executed command to the

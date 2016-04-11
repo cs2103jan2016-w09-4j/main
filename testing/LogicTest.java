@@ -1,3 +1,4 @@
+//@@author A0131507R
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 
@@ -10,9 +11,9 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import common.*;
+import gridtask.common.*;
+import gridtask.logic.Logic;
 import junitx.framework.FileAssert;
-import logic.Logic;
 
 public class LogicTest {
     

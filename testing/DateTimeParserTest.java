@@ -1,3 +1,4 @@
+//@@author Khanh
 import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
@@ -6,7 +7,7 @@ import java.time.LocalTime;
 
 import org.junit.Test;
 
-import parser.DateTimeParser;
+import gridtask.parser.DateTimeParser;
 
 public class DateTimeParserTest {
 

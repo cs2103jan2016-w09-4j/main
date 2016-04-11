@@ -1,5 +1,5 @@
-//@@author Ching
-package storage;
+//@@author A0127257A
+package gridtask.storage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import common.Task;
+import gridtask.common.Task;
 
 public class Storage {
 
@@ -64,7 +64,7 @@ public class Storage {
 		doneList = new ArrayList<Task>();
 		autoCompletionList = new ArrayList<Entry<String,Integer>>();
 
-		// initializeLogger();
+		initializeLogger();
 
 		// Create default file for load recent feature
 		try {

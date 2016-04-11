@@ -1,3 +1,4 @@
+//@@author A0127257A
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
@@ -19,8 +20,8 @@ import junitx.framework.FileAssert;
 import org.junit.Before;
 import org.junit.Test;
 
-import common.Task;
-import storage.Storage;
+import gridtask.common.Task;
+import gridtask.storage.Storage;
 
 public class StorageTest {
 
@@ -47,26 +48,24 @@ public class StorageTest {
 		getDataFromFile = new ArrayList<Task>();
 
 		if (mainList.isEmpty()) {
-			System.out.println("main list is empty");
+			System.out.println("Main list is empty");
 		} else {
 			mainList.clear();
 		}
 
 		if (autocompletionList.isEmpty()) {
-			System.out.println("autocompletion list is empty");
+			System.out.println("Autocompletion list is empty");
 		} else {
 			autocompletionList.clear();
 		}
 
 		if (completedList.isEmpty()) {
-			System.out.println("completedList is empty");
+			System.out.println("CompletedList is empty");
 		} else {
 			completedList.clear();
 		}
 
-		// Add task into mainList
-		//System.out.println("Adding tasks");
-
+		// add task into mainList
 		// first task have all 3 fields
 		Task task1 = new Task("meeting at night");
 		task1.setStart("22/03/2016 13:00");
@@ -107,7 +106,6 @@ public class StorageTest {
 	@Test
 	public void writeToFile_ContentsOfAnotherFile_CorrectNumOfTasksAndContent() throws IOException {
 		String readLine;
-		int count;
 		testStorage.writeToFile();
 
 		// read file into arraylist
@@ -189,7 +187,7 @@ public class StorageTest {
 		assertEquals("Invalid File", outputException);
 	}
 
-	// @Test
+	@Test
 	public void saveToFileWithDirectory_NewFileAndDirectory_FileSaved() throws NotDirectoryException, IOException {
 		testStorage.saveToFileWithDirectory(expectedDirectory, testfile);
 		
@@ -209,7 +207,6 @@ public class StorageTest {
 
 	}
 
-	// @Test
 	public void loadFileWithDirectory_NewFileAndDirectory_LoadNewFile()
 			throws NotDirectoryException, FileNotFoundException, IOException, ParseException {
 		testStorage.loadFileWithDirectory(expectedDirectory, testfile);
@@ -227,7 +224,6 @@ public class StorageTest {
 		FileAssert.assertEquals(defaultTextFile, loadFile);
 	}
 
-	@Test
 	public void saveAndLoadWithDirectory_NewFile_SaveAndLoadFile()
 			throws NotDirectoryException, IOException, ParseException {
 		saveToFileWithDirectory_NewFileAndDirectory_FileSaved();

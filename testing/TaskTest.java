@@ -1,3 +1,4 @@
+//@@author A0131507R
 import static org.junit.Assert.*;
 
 import java.text.ParseException;
@@ -7,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 import org.junit.Test;
 
-import common.Task;
+import gridtask.common.Task;
 
 public class TaskTest {
     
@@ -22,7 +23,8 @@ public class TaskTest {
     
     /*
      * Equivalence partitioning:
-     * Start and end dates can take up the possible values
+     * Using 1/1/2016 as the point of comparison,
+     * start and end dates can take up the possible values
      * [between "1/1/2016 00:00" and "1/1/2016 23:59"],
      * [<= "31/12/2015 23:59"], [>= "2/1/2016 00:00"], [null]
      * 

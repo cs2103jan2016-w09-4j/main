@@ -1,15 +1,16 @@
-//@@author Ruoling
-package ui;
+//@@author A0131507R
+package gridtask.ui;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import common.Category;
-import common.Result;
-import common.Task;
-import ui.DisplayController;
-import ui.InputController;
+import gridtask.common.Category;
+import gridtask.common.Result;
+import gridtask.common.Task;
+import gridtask.logic.Logic;
+import gridtask.ui.DisplayController;
+import gridtask.ui.InputController;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -19,7 +20,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import logic.Logic;
 
 public class MainApp extends Application {
 

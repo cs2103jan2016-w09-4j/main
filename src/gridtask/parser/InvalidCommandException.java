@@ -1,6 +1,5 @@
 //@@author Khanh
-
-package parser;
+package gridtask.parser;
 
 public class InvalidCommandException extends Exception{
     public InvalidCommandException() {
