@@ -80,6 +80,8 @@ public class Command {
           this.categories = categories;
 	}
 
+//@@author A0098084U
+
 	@Override
     public boolean equals(Object o) {
         if (o instanceof Command) {
