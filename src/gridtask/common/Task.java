@@ -8,24 +8,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
- * Represents a single task with several fields such as
- * description, start date, end date and categories.
+ * Represents a single task with task details.
  *
  * Floating task - no end date
  * Deadline task - has end date only
- * Event task - has start and end date
+ * Event task - has start and end dates
  */
 public class Task implements Comparable<Task> {
-    
-    private static final int LESS_THAN = -1;
-    private static final int GREATER_THAN = 1;
-    private static final String TASK_STRING = "%s|%s|%s|%s|%s|%s";
-    private static final String TASK_STRING_NO_ID = "%s|%s|%s|%s|%s";
-    private static final String TASK_DETAILS_DATE_FLOATING = "From %s";
-    private static final String TASK_DETAILS_DATE_DEADLINE = "By %s";
-    private static final String TASK_DETAILS_DATE_EVENT = "From %s to %s";
-    private static final String TASK_DETAILS_DATE_EVENT_ONE_DAY = "On %s, from %s to %s";
 
+    // Task details
     private String description;
     private int id;
     private LocalDateTime start;
@@ -34,22 +25,49 @@ public class Task implements Comparable<Task> {
     private boolean isImportant;
     private boolean isModified;
     
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    // Return values for compareTo method defined in Comparable interface
+    private static final int GREATER_THAN = 1;
+    private static final int LESS_THAN = -1;
+
+    // For formatting start and end dates/times of different task types
+    private static final String TASK_DETAILS_DATE_FLOATING = "From %s";
+    private static final String TASK_DETAILS_DATE_DEADLINE = "By %s";
+    private static final String TASK_DETAILS_DATE_EVENT = "From %s to %s";
+    private static final String TASK_DETAILS_DATE_EVENT_ONE_DAY = "On %s, from %s to %s";
+    
+    // For formatting the String representation of a Task
+    private static final String TASK_STRING = "%s|%s|%s|%s|%s|%s";
+    private static final String TASK_STRING_NO_ID = "%s|%s|%s|%s|%s";
+    
+    // For formatting a LocalDateTime into a String
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
+    /**
+     * Class constructor specifying the task description
+     */
     public Task(String description) {
         this(description, null, null, 0);
     }
     
+    /**
+     * Class constructor specifying the task description and id
+     */
     public Task(String description, int id) {
         this(description, null, null, id);
     }
     
+    /**
+     * Class constructor specifying the task description and date/time
+     */
     public Task(String description, LocalDateTime start, LocalDateTime end) {
         this(description, start, end, 0);
     }
     
+    /**
+     * Class constructor specifying the task description, date/time and id
+     */
     public Task(String description, LocalDateTime start, LocalDateTime end, int id) {
         this.description = description;
         this.start = start;
@@ -83,6 +101,12 @@ public class Task implements Comparable<Task> {
         return null;
     }
     
+    /**
+     * Returns the start date/time formatted as dd/MM/yyyy HH:mm.
+     * A task without a start date/time will return an empty String.
+     * 
+     * @return          the formatted start date
+     */
     public String getStartString() {
         if (start != null) {
             return formatDateTime(start);
@@ -90,6 +114,13 @@ public class Task implements Comparable<Task> {
         return "";
     }
     
+    /**
+     * Returns the start date/time formatted as dd/MM/yyyy HH:mm, relative to the given date.
+     * If the start date is the same the given date, returns only HH:mm.
+     * A task without a start date/time will return an empty String.
+     * 
+     * @return          the formatted start date
+     */
     public String getRelativeStartString(LocalDate now) {
         if (start != null) {
             return formatRelativeDateTime(start, now);
@@ -108,6 +139,12 @@ public class Task implements Comparable<Task> {
         return null;
     }
     
+    /**
+     * Returns the end date/time formatted as dd/MM/yyyy HH:mm.
+     * A floating task will return an empty String.
+     * 
+     * @return          the formatted end date
+     */
     public String getEndString() {
         if (end != null) {
             return formatDateTime(end);
@@ -115,6 +152,13 @@ public class Task implements Comparable<Task> {
         return "";
     }
     
+    /**
+     * Returns the end date/time formatted as dd/MM/yyyy HH:mm, relative to the given date.
+     * If the end date is the same the given date, returns only HH:mm.
+     * A floating task will return an empty String.
+     * 
+     * @return          the formatted end date
+     */
     public String getRelativeEndString(LocalDate now) {
         if (end != null) {
             return formatRelativeDateTime(end, now);
@@ -122,6 +166,12 @@ public class Task implements Comparable<Task> {
         return "";
     }
     
+    /**
+     * Returns the start, end date/time formatted based on the task type.
+     * For example, an event is formatted as "From dd/MM/yyyy HH:mm to dd/MM/yyy HH:mm".
+     * 
+     * @return          the formatted start and end date
+     */
     public String getStartEndString() {
         String startEndString = "";
         if (isFloating()) {
@@ -140,6 +190,12 @@ public class Task implements Comparable<Task> {
         return startEndString;
     }
     
+    /**
+     * Returns the start, end date/time formatted based on the task type, relative to the given date.
+     * For example, an event occurring on the same day is formatted as "From HH:mm to HH:mm".
+     * 
+     * @return          the formatted start and end date
+     */
     public String getRelativeStartEndString(LocalDate now) {
         String startEndString = "";
         if (isFloating()) {
@@ -171,6 +227,11 @@ public class Task implements Comparable<Task> {
         return categories;
     }
     
+    /**
+     * Returns the categories associated with this task in a formatted String.
+     * 
+     * @return          the formatted String of categories
+     */
     public String getCategoriesString() {
         String allCategories = "";
         for (String cat : categories) {
@@ -221,7 +282,7 @@ public class Task implements Comparable<Task> {
         this.categories = categories;
     }
     
-    public void setImportance(boolean isImportant) {
+    public void setImportant(boolean isImportant) {
         this.isImportant = isImportant;
     }
         

@@ -78,7 +78,7 @@ public class StorageTest {
 		// have 2 fields
 		Task task2 = new Task("gathering");
 		task2.setEnd("25/03/2016 14:00");
-		task2.setImportance(true);
+		task2.setImportant(true);
 
 		mainList.add(task1);
 		mainList.add(task2);
@@ -91,7 +91,7 @@ public class StorageTest {
 
 		// have 1 field
 		Task task4 = new Task("meet friends");
-		task4.setImportance(true);
+		task4.setImportant(true);
 
 		completedList.add(task3);
 		completedList.add(task4);

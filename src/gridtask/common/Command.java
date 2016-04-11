@@ -5,15 +5,18 @@ import java.util.ArrayList;
 import java.time.LocalDateTime;
 
 /**
- * Represents the command entered by the user. 
+ * Represents the command entered by the user.
+ * Contains several fields such as the command type and command parameters.
  */
 public class Command {
 
+    // Types of commands available
     public enum CommandType {
         ADD, DELETE, EDIT, DONE, UNDO, REDO, SAVE, LOAD,
         SEARCH, SEARCHDONE, HOME, HELP, EXIT, INVALID;
     }
 
+    // Command type
     private CommandType type;
 
     // Command parameters entered by the user
@@ -27,8 +30,19 @@ public class Command {
         this.type = type;
     }
 
+    /**
+     * Class constructor specifying the command type and task description.
+     */
+    public Command(CommandType type, String description) {
+        this.type = type;
+        this.description = description;
+    }
+
+    /**
+     * Class constructor specifying the command type and all task details.
+     */
     public Command(CommandType type, String description,
-            LocalDateTime start, LocalDateTime end, ArrayList<String> categories) { // add
+            LocalDateTime start, LocalDateTime end, ArrayList<String> categories) {
         this.type = type;
         this.description = description;
         this.start = start;
@@ -36,24 +50,28 @@ public class Command {
         this.categories = categories;
     }
 
-    public Command(CommandType type, String description) {  // add, search
-        this.type = type;
-        this.description = description;
-    }
-
+    /**
+     * Class constructor specifying the command type and task id.
+     */
     public Command(CommandType type, int id) { // delete
         this.type = type;
         this.id = id;
     }
 
-    public Command(CommandType type, int id, String description) { // edit
+    /**
+     * Class constructor specifying the command type, task id and task description.
+     */
+    public Command(CommandType type, int id, String description) {
         this.type = type;
         this.id = id;
         this.description = description;
     }
 
+    /**
+     * Class constructor specifying the command type, task id and all task details.
+     */
     public Command(CommandType type, int id, String description,
-            LocalDateTime start, LocalDateTime end, ArrayList<String> categories) { // edit
+            LocalDateTime start, LocalDateTime end, ArrayList<String> categories) {
     	  this.type = type;
           this.id = id;
           this.description = description;
@@ -61,15 +79,6 @@ public class Command {
           this.end = end;
           this.categories = categories;
 	}
-
-    public Command(CommandType type, int id, String description,
-            LocalDateTime start, LocalDateTime end) { // edit
-        this.type = type;
-        this.id = id;
-        this.description = description;
-        this.start = start;
-        this.end = end;
-    }
 
 	@Override
     public boolean equals(Object o) {
@@ -90,11 +99,9 @@ public class Command {
             if (description == null ? c2.description != null : !description.equals(c2.description)) {
                 return false;
             }
-    /*
             if (categories == null ? c2.categories!=null : !categories.equals(c2.categories)) {
                 return false;
             }
-    */
             return true;
         }
         return false;

@@ -2,12 +2,14 @@ package gridtask.common;
 
 /**
  * Represents a category entry.
+ * Contains information on the category name and the
+ * number of ongoing tasks that belong to this category.
  */
 public class Category {
 
-    // Category name
+    // Name of the category
     private String name;
-    // Number of ongoing tasks in this category
+    // Number of ongoing tasks left in this category
     private int count;
     
     public Category(String name) {
