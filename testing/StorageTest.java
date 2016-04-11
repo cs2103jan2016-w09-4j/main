@@ -42,7 +42,7 @@ public class StorageTest {
 	public void init() throws IOException, ParseException {
 		testStorage = new Storage();
 		mainList = testStorage.getMainList();
-		completedList = testStorage.getCompletedList();
+		completedList = testStorage.getDoneList();
 		autocompletionList = testStorage.getAutoCompletionList();
 		getDataFromFile = new ArrayList<Task>();
 

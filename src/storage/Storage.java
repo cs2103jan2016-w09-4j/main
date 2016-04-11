@@ -44,7 +44,7 @@ public class Storage {
 	private static final String FIELDS_HEADERLINE = "=================";
 
 	private static ArrayList<Task> mainList;
-	private static ArrayList<Task> completedList;
+	private static ArrayList<Task> doneList;
 	private static ArrayList<Entry<String,Integer>> autoCompletionList;
 
 	private String fileName;
@@ -61,7 +61,7 @@ public class Storage {
 		recentFileName = "";
 
 		mainList = new ArrayList<Task>();
-		completedList = new ArrayList<Task>();
+		doneList = new ArrayList<Task>();
 		autoCompletionList = new ArrayList<Entry<String,Integer>>();
 
 		// initializeLogger();
@@ -130,9 +130,9 @@ public class Storage {
 		return mainList;
 	}
 
-	// For Logic to get completed list
-	public ArrayList<Task> getCompletedList() {
-		return completedList;
+	// For Logic to get done list
+	public ArrayList<Task> getDoneList() {
+		return doneList;
 	}
 
 	// For Logic to get autocompletion list
@@ -286,7 +286,7 @@ public class Storage {
 		writeCurrentHeader(writer);
 		writeTasksFromMainList(writer);
 		writeCompletedHeader(writer);
-		writeTaskFromCompletedList(writer);
+		writeTaskFromDoneList(writer);
 
 		writer.close();
 	}
@@ -321,11 +321,11 @@ public class Storage {
 		}
 	}
 
-	private void writeTaskFromCompletedList(FileWriter writer) throws IOException {
-		ArrayList<String> completedTaskToString = convertTaskToString(completedList);
+	private void writeTaskFromDoneList(FileWriter writer) throws IOException {
+		ArrayList<String> doneTaskToString = convertTaskToString(doneList);
 
-		for (int i = 0; i < completedTaskToString.size(); i++) {
-			String lineToWrite = completedTaskToString.get(i);
+		for (int i = 0; i < doneTaskToString.size(); i++) {
+			String lineToWrite = doneTaskToString.get(i);
 			writer.write(lineToWrite + "\r\n");
 		}
 	}
@@ -425,16 +425,16 @@ public class Storage {
 		completedStartIndex = getCompletedIndex(listFromFile, completedStartIndex);
 
 		ArrayList<Task> updatedMainListFromLoad = convertStringToTask(listFromFile, startIndex);
-		ArrayList<Task> updatedCompletedListFromLoad = convertStringToTask(listFromFile, completedStartIndex);
+		ArrayList<Task> updatedDoneListFromLoad = convertStringToTask(listFromFile, completedStartIndex);
 		mainList.clear();
-		completedList.clear();
+		doneList.clear();
 
 		// transfer contents from file to main list
 		updateList(updatedMainListFromLoad, mainList);
-		updateList(updatedCompletedListFromLoad, completedList);
+		updateList(updatedDoneListFromLoad, doneList);
 
 		setMainList(mainList);
-		setCompletedList(completedList);
+		setDoneList(doneList);
 
 		return mainList;
 	}
@@ -502,16 +502,16 @@ public class Storage {
 		completedStartIndex = getCompletedIndex(listFromLoadFile, completedStartIndex);
 
 		ArrayList<Task> updatedMainListFromLoad = convertStringToTask(listFromLoadFile, startIndex);
-		ArrayList<Task> updatedCompletedListFromLoad = convertStringToTask(listFromLoadFile, completedStartIndex);
+		ArrayList<Task> updatedDoneListFromLoad = convertStringToTask(listFromLoadFile, completedStartIndex);
 		mainList.clear();
-		completedList.clear();
+		doneList.clear();
 
 		// transfer contents from file to main list
 		updateList(updatedMainListFromLoad, mainList);
-		updateList(updatedCompletedListFromLoad, completedList);
+		updateList(updatedDoneListFromLoad, doneList);
 
 		setMainList(mainList);
-		setCompletedList(completedList);
+		setDoneList(doneList);
 
 		return mainList;
 	}
@@ -704,8 +704,8 @@ public class Storage {
 		Storage.mainList = mainList;
 	}
 
-	public void setCompletedList(ArrayList<Task> completedList) {
-		Storage.completedList = completedList;
+	public void setDoneList(ArrayList<Task> doneList) {
+		Storage.doneList = doneList;
 	}
 
 	public void setAutoCompletionList(ArrayList<Entry<String,Integer>> autoCompletionList) {

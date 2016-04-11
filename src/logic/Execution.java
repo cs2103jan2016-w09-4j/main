@@ -68,7 +68,7 @@ public class Execution {
         storage = new Storage();
         // load tasks from storage
         mainList = storage.getMainList();
-        doneList = storage.getCompletedList();
+        doneList = storage.getDoneList();
         weekList = new ArrayList<Task>();
         // sort tasks
         sortList(mainList);
@@ -433,7 +433,7 @@ public class Execution {
             }
             
             mainList = storage.getMainList();
-            doneList = storage.getCompletedList();
+            doneList = storage.getDoneList();
 
             /// post-processing
             sortList(mainList);
@@ -869,7 +869,7 @@ public class Execution {
     private void saveMainAndDoneList(ArrayList<Task> mainList, ArrayList<Task> doneList)
             throws IOException {
         storage.setMainList(mainList);
-        storage.setCompletedList(doneList);
+        storage.setDoneList(doneList);
         storage.writeToFile();
     }
 
