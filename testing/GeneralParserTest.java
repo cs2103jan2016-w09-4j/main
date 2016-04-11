@@ -1,15 +1,16 @@
+//@@author Khanh
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
+
+import gridtask.common.Command;
+import gridtask.common.Command.CommandType;
+import gridtask.parser.GeneralParser;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import common.Command;
-import common.Command.CommandType;
-
-import parser.GeneralParser;
 
 public class GeneralParserTest {
 

@@ -1,5 +1,5 @@
-//@@author Ruoling
-package ui;
+//@@author A0131507R
+package gridtask.ui;
 
 import java.io.IOException;
 import java.util.logging.FileHandler;
@@ -8,9 +8,11 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import org.controlsfx.control.textfield.TextFields;
+
+import gridtask.ui.MainApp;
+
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 
-import ui.MainApp;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

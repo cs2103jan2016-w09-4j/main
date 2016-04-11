@@ -1,3 +1,4 @@
+//@@author Khanh
 import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
@@ -8,8 +9,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import gridtask.parser.DateTimeParser;
 import net.fortuna.ical4j.model.TimeZone;
-import parser.DateTimeParser;
 
 public class DateTimeParserTest {
 
