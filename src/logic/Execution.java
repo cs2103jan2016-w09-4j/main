@@ -12,6 +12,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import common.Command;
 import common.Result;
@@ -42,6 +47,7 @@ public class Execution {
     // Store information about categories
     // Integer is the number of tasks belonging to a category
     private static TreeSet<Entry<String, Integer>> categories;
+    private static Logger logger = Logger.getLogger("Execution");
     
     // Keep track if user is allowed to perform undo or redo commands
     private static boolean canUndo;
@@ -85,6 +91,7 @@ public class Execution {
 
         initializeDictionary();
         initializeCategories();
+        initializeLogger();
     }
 
     private void initializeTaskProgress() {
@@ -106,6 +113,21 @@ public class Execution {
             	addToTreeSet(taskDictionary, autoCompletionEntry, freqCount);        	
             	addToWordDictionary(autoCompletionEntry, freqCount);
             }
+        }
+    }
+    
+    private void initializeLogger() {
+        try {
+            Handler fh = new FileHandler("log_logic_Execution");
+            if (fh != null && logger != null) {
+            	logger.addHandler(fh);
+            	SimpleFormatter formatter = new SimpleFormatter();  
+            	fh.setFormatter(formatter);
+            }	
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -142,10 +164,12 @@ public class Execution {
         
         // validate user input
         if (description == null || description.isEmpty()) {
+        	logger.log(Level.INFO, "No description");
             return new Result(CommandType.ADD, false, "No description!", weekList);
         }
         if (start != null && end != null) {
             if (end.isBefore(start)) {
+            	logger.log(Level.INFO, "Cannot have a later start date");
                 return new Result(CommandType.ADD, false, "Cannot have a later start date!", weekList);                
             }
         }
@@ -171,9 +195,11 @@ public class Execution {
         try {
             saveMainList(mainList);
         } catch (IOException ioe) {
+        	logger.log(Level.SEVERE, "Couldn't save", ioe);
             return new Result(CommandType.ADD, false, "Couldn't save", weekList);
         }
         
+        logger.log(Level.INFO, "Task successfully added");
         return new Result(CommandType.ADD, true, "Added task", weekList);
     }
 
@@ -192,13 +218,16 @@ public class Execution {
         // validate user input
         int index = taskId - 1;
         if (!isValidIndex(index)) {
+        	logger.log(Level.INFO, "Task number is wrong");
             return new Result(CommandType.EDIT, false, "Wrong task number", weekList);
         }
         if (description == null || description.isEmpty()) {
+        	logger.log(Level.INFO, "No description");
             return new Result(CommandType.EDIT, false, "No description!", weekList);
         }
         if (start != null && end != null) {
             if (end.isBefore(start)) {
+            	logger.log(Level.INFO, "Cannot have a later start date");
                 return new Result(CommandType.EDIT, false, "Cannot have a later start date!", weekList);                
             }
         }
@@ -226,9 +255,11 @@ public class Execution {
         try {
             saveMainList(mainList);
         } catch (IOException ioe) {
+        	logger.log(Level.SEVERE, "Couldn't save", ioe);
             return new Result(CommandType.EDIT, false, "Couldn't save", weekList);
         }
         
+        logger.log(Level.INFO, "Task successfully edited");
         return new Result(CommandType.EDIT, true, "Edited task", weekList);
     }
     
@@ -243,6 +274,7 @@ public class Execution {
         // validate user input
         int index = taskId - 1;
         if (!isValidIndex(index)) {
+        	logger.log(Level.INFO, "Wrong task number");
             return new Result(CommandType.DELETE, false, "Wrong task number", weekList);
         }
 
@@ -260,9 +292,11 @@ public class Execution {
         try {
             saveMainList(mainList);
         } catch (IOException ioe) {
+        	logger.log(Level.SEVERE, "Couldn't save", ioe);
             return new Result(CommandType.DELETE, false, "Couldn't save", weekList);
         }
         
+        logger.log(Level.INFO, "Task has been succesfully deleted");
         return new Result(CommandType.DELETE, true, "Deleted task", weekList);
     }
     
@@ -278,6 +312,7 @@ public class Execution {
         // validate user input
         int index = taskId - 1;
         if (!isValidIndex(index)) {
+        	logger.log(Level.INFO, "Wrong task number");
             return new Result(CommandType.DONE, false, "Wrong task number", weekList);
         }
 
@@ -296,9 +331,11 @@ public class Execution {
         try {
             saveMainAndDoneList(mainList, doneList);
         } catch (IOException ioe) {
+        	logger.log(Level.SEVERE, "Couldn't save", ioe);
             return new Result(CommandType.DONE, false, "Couldn't save", weekList);
         }
         
+        logger.log(Level.INFO, "Task has been succesfully marked as done");
         return new Result(CommandType.DONE, true, "Marked as done", weekList);
     }
 
