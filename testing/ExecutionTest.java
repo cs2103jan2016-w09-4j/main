@@ -22,13 +22,6 @@ public class ExecutionTest{
     private static final String CATEGORY_TODAY = "Today";
     
     @Test
-    public void testUserSession() {
-        addTask_AllTaskTypes_AddedInOrder();
-        editTask_AllTaskTypes_EditedTheSelectedTask();
-        deleteTask_AllTaskTypes_DeletedTheSelectedTask();
-        updateTaskProgress_AllCategoryTypes_SuccessfullyUpdated();
-    }
-    
     public void addTask_AllTaskTypes_AddedInOrder() {
     	
     	execution.setMainList(mainList);
@@ -52,21 +45,33 @@ public class ExecutionTest{
     	
     }
     
+    @Test
     public void editTask_AllTaskTypes_EditedTheSelectedTask() {
     	
-    	execution.editTask(new Command(CommandType.EDIT, 3, "Sayonara no sora", null, null, null));
+    	execution.addTask(new Command(CommandType.ADD, "Testing"));
+    	execution.editTask(new Command(CommandType.EDIT, 1, "Sayonara no sora", null, null, null));
     	mainList = execution.getMainList();
     	
-    	compareList.get(2).setDescription("Sayonara no sora");
+    	compareList = new ArrayList<Task>();
+    	compareList.add(new Task("Hello", null, null, 1));
+    	compareList.add(new Task("Sayonara no sora", null, null, 2));
+    	compareList.add(new Task("Testing", null, null, 3));
+    	compareList.add(new Task("Testing", null, null, 4));
     	assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
 	
+    @Test
     public void deleteTask_AllTaskTypes_DeletedTheSelectedTask() {
     	
     	execution.deleteTask(new Command(CommandType.DELETE, 1));
     	mainList = execution.getMainList();
     	
+    	compareList.add(new Task("Only end time", null, LocalDateTime.of(2016, 05, 24, 18, 0), 1));
+    	compareList.add(new Task("Start and end time", LocalDateTime.of(2016, 5, 24, 14, 0), LocalDateTime.of(2016, 5, 24, 18, 0), 2));
+    	compareList.add(new Task("Hello", null, null, 3));
+    	compareList.add(new Task("Testing", null, null, 4));
     	compareList.remove(0);
+    	
     	int index = 1;
     	for (Task task : compareList) {
     	    task.setId(index++);
@@ -74,6 +79,7 @@ public class ExecutionTest{
     	assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
     
+    @Test
     public void updateTaskProgress_AllCategoryTypes_SuccessfullyUpdated() {
     	ArrayList<String> cat = new ArrayList<String>();
     	cat.add(CATEGORY_TODAY);
