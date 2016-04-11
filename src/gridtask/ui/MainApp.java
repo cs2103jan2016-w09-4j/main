@@ -53,7 +53,7 @@ public class MainApp extends Application {
     }
     
     private void initializeLogic() {
-        logic = new Logic();
+        logic = Logic.getInstance();
     }
 
     private void initializeWindow(Stage primaryStage) {

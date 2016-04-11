@@ -1,6 +1,15 @@
 //@@author A0123972A
 package gridtask.logic;
 
+import gridtask.common.*;
+import gridtask.common.Command.CommandType;
+import gridtask.logic.Execution;
+import gridtask.parser.EmptyCommandException;
+import gridtask.parser.GeneralParser;
+import gridtask.parser.InvalidCommandException;
+import gridtask.parser.WrongCommandFormatException;
+
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,38 +21,34 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-
-import gridtask.common.*;
-import gridtask.common.Command.CommandType;
-import gridtask.logic.Execution;
-import gridtask.parser.EmptyCommandException;
-import gridtask.parser.GeneralParser;
-import gridtask.parser.InvalidCommandException;
-import gridtask.parser.WrongCommandFormatException;
-
-
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.io.IOException;
-import java.time.LocalDateTime;
 
 public class Logic {
+
+    // Single instance of Logic
+    private static Logic logic = new Logic();
+    
+    // For logging
+    private static Logger logger = Logger.getLogger("Logic");
 
     // Objects to call into other classes
     private Execution execution;
     private GeneralParser parser;
-    private static Logic logic = new Logic();
-    private static Logger logger = Logger.getLogger("Logic");
 
+    // Maximum number of autocompletion predictions to display
     private static final int MAX_PREDICTIONS = 5;
+    
+    // Comparator for Entry<String, Integer> that compares the frequency count of the entries
     private static final Comparator<Entry<String, Integer>> freqComparator = new Comparator<Entry<String, Integer>>() {
+        @Override
         public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
             return entry1.getValue().compareTo(entry2.getValue());
         }
     };
 
-    public Logic() {
+    private Logic() {
         this.execution = new Execution();
         this.parser = new GeneralParser();
         initializeLogger();
@@ -64,37 +69,38 @@ public class Logic {
         }
     }
 
+    /** 
+     * Returns the instance of the Logic class.
+     */
+    public static Logic getInstance() {
+        if (logic == null) {
+            return logic = new Logic();
+        }
+        return logic;
+    }
+
+    /**
+     * Attempts to execute the given input as a command.
+     * 
+     * @param input     input entered by the user
+     * @return          Result as feedback
+     */
     public Result processCommand(String input) {
-        System.out.println(input);
+        logger.log(Level.INFO, "user input: " + input);
         try {
             Command command = parser.parseCommand(input);
             logger.log(Level.INFO, "input successfully parsed");
             return execute(command);
-        } catch (WrongCommandFormatException|EmptyCommandException|InvalidCommandException e) {
-        	logger.log(Level.SEVERE, "failed to process command", e);
+        } catch (WrongCommandFormatException | EmptyCommandException | InvalidCommandException e) {
+        	logger.log(Level.INFO, "failed to process command", e);
             return new Result();
         }
     }
 
-    private Result execute(Command command){
-
-        CommandType commandType = command.getType();
-
-        LocalDateTime startDate = command.getStartDate();
-        LocalDateTime endDate = command.getEndDate();
-
-        // verify that start date is before end date
-        if (startDate != null && endDate != null) {
-            if (endDate.isBefore(startDate)) {
-            	logger.log(Level.INFO, "invalid start date: Cannot have a later start date");
-                return new Result(CommandType.INVALID, false, "Cannot have a later start date!", new ArrayList<Task>());
-            }
-        }
-
-        execution.updateTaskProgress();
-
-        switch(commandType) {
-
+    private Result execute(Command command) {
+        CommandType type = command.getType();
+        
+        switch (type) {
             case ADD :
             	return execution.addTask(command);
 
@@ -129,7 +135,7 @@ public class Logic {
                 return execution.filterTasks();
 
             case HELP :
-                return new Result(commandType, true, "Help", null);
+                return new Result(type, true, "Help", null);
 
             case EXIT :
                 System.exit(0);
@@ -139,22 +145,7 @@ public class Logic {
 
             default :
                 return new Result();
-
         }
-    }
-
-    public static Logic getInstance() {
-        if (logic == null){
-            return logic = new Logic();
-        }
-        return logic;
-    }
-
-    public Execution getExecutionInstance() {
-    	if (execution == null){
-    		return execution = new Execution();
-    	}
-    	return execution;
     }
 
     public ArrayList<Task> getMainList() {
@@ -165,17 +156,28 @@ public class Logic {
         return execution.getDoneList();
     }
 
+    /**
+     * Returns the current list of category entries.
+     * 
+     * @return          list of categories
+     */
     public ArrayList<Category> getCategories() {
-        TreeSet<Entry<String, Integer>> list = execution.getCategories();
+        TreeSet<Entry<String, Integer>> entries = execution.getCategories();
         ArrayList<Category> categories = new ArrayList<Category>();
-        Iterator<Entry<String, Integer>> iterator = list.iterator();
+        Iterator<Entry<String, Integer>> iterator = entries.iterator();
         while (iterator.hasNext()) {
             Entry<String, Integer> next = iterator.next();
+            // convert Entry to Category
             categories.add(new Category(next.getKey(), next.getValue()));
         }
         return categories;
     }
 
+    /**
+     * Retrieves predictions for autocompletion based on input.
+     * @param input     current user input
+     * @return          list of String predictions
+     */
     public ArrayList<String> getPredictions(String input) {
         String inputTrimmed = input.trim();
         if (inputTrimmed.isEmpty()) {
@@ -206,7 +208,7 @@ public class Logic {
     }
 
     private ArrayList<String> getPredictionsForSearch(String[] params) {
-        // Predictions based on task descriptions that user previously entered
+        // Predictions based on words that user previously entered
         TreeSet<Entry<String, Integer>> dictionary = execution.getWordDictionary();
         return getPredictionsFromDictionary(dictionary, params);
     }

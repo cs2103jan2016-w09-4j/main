@@ -1,6 +1,12 @@
 //@@author A0123972A
 package gridtask.logic;
 
+import gridtask.common.Command;
+import gridtask.common.Result;
+import gridtask.common.Task;
+import gridtask.common.Command.CommandType;
+import gridtask.storage.Storage;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -19,28 +25,29 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import gridtask.common.Command;
-import gridtask.common.Result;
-import gridtask.common.Task;
-import gridtask.common.Command.CommandType;
-import gridtask.storage.Storage;
-
 public class Execution {
     
-    private static Storage storage;
+    private Storage storage;
+
+    // For logging
+    private static Logger logger = Logger.getLogger("Execution");
     
+    // List of ongoing tasks
     private ArrayList<Task> mainList;
+    // List of ongoing tasks that are overdue or due in the next 7 days
     private ArrayList<Task> weekList;
+    // List of completed tasks
     private ArrayList<Task> doneList;
     
-    private ArrayList<Task> previousCopyOfMainList;
-    private ArrayList<Task> previousCopyOfDoneList;
+    // Copies of previous lists for the undo and redo function
+    private ArrayList<Task> copyOfPreviousMainList;
+    private ArrayList<Task> copyOfPreviousDoneList;
     private ArrayList<Task> copyOfMainListForRedo;
     private ArrayList<Task> copyOfDoneListForRedo;
 
     // Store user input history for auto-completion
     // TreeSet is used to avoid duplicate entries and for faster lookup
-    // Integer is the frequency that the String is entered by the user
+    // Integer is the frequency that the String appears in the user's commands
     private TreeSet<Entry<String, Integer>> taskDictionary;
     private TreeSet<Entry<String, Integer>> wordDictionary;
     private TreeSet<Entry<String, Integer>> fileDictionary;
@@ -48,12 +55,12 @@ public class Execution {
     // Store information about categories
     // Integer is the number of tasks belonging to a category
     private TreeSet<Entry<String, Integer>> categories;
-    private static Logger logger = Logger.getLogger("Execution");
     
     // Keep track if user is allowed to perform undo or redo commands
     private boolean canUndo;
     private boolean canRedo;
     
+    // Names for special categories 
     private static final String CATEGORY_PRIORITY = "Priority";
     private static final String CATEGORY_TODAY = "Today";
 
@@ -62,9 +69,9 @@ public class Execution {
                                                     "by", "for", "in", "of","or", 
                                                     "the", "to", "with" };
 
-    // Comparator where element uniqueness depends only on
-    // the String key and not the frequency count
+    // Comparator where element uniqueness depends only on the String key and not the frequency count
     private static final Comparator<Entry<String, Integer>> keyComparator = new Comparator<Entry<String, Integer>>() {
+        @Override
         public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
             // element uniqueness depends only on the entry's key
             return entry1.getKey().compareToIgnoreCase(entry2.getKey());
@@ -72,19 +79,20 @@ public class Execution {
     };
 
     public Execution() {
+        // initialize Storage
         storage = new Storage();
         // load tasks from storage
         mainList = storage.getMainList();
         doneList = storage.getDoneList();
         weekList = new ArrayList<Task>();
-        // sort tasks
+        // sort and filter tasks
         sortList(mainList);
         updateWeekList();
         initializeTaskProgress();
 
-        // for undo and redo
-        previousCopyOfMainList = new ArrayList<Task>();
-        previousCopyOfDoneList = new ArrayList<Task>();
+        // initialize variables for undo and redo
+        copyOfPreviousMainList = new ArrayList<Task>();
+        copyOfPreviousDoneList = new ArrayList<Task>();
         copyOfMainListForRedo = new ArrayList<Task>();
         copyOfDoneListForRedo = new ArrayList<Task>();
         canUndo = false;
@@ -99,6 +107,7 @@ public class Execution {
         categories = new TreeSet<Entry<String, Integer>>(keyComparator);
         updateTaskProgress();
     }
+    
     private void initializeDictionary() {
         taskDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
         wordDictionary = new TreeSet<Entry<String, Integer>>(keyComparator);
@@ -352,13 +361,13 @@ public class Execution {
         copyOfMainListForRedo.clear();
         copyOfMainListForRedo.addAll(mainList);
         mainList.clear();
-        mainList.addAll(previousCopyOfMainList);
+        mainList.addAll(copyOfPreviousMainList);
 
         // transfer content from previousCopyOfDoneList to doneList
         copyOfDoneListForRedo.clear();
         copyOfDoneListForRedo.addAll(doneList);
         doneList.clear();
-        doneList.addAll(previousCopyOfDoneList);
+        doneList.addAll(copyOfPreviousDoneList);
         
         // post-processing
         sortList(mainList);
@@ -812,7 +821,7 @@ public class Execution {
     }
 
     public ArrayList<Task> getPreviousList() {
-        return previousCopyOfMainList;
+        return copyOfPreviousMainList;
     }
     
     public ArrayList<Task> getWeekList() {
@@ -892,13 +901,13 @@ public class Execution {
     }
     
     private void saveMainListForUndo() {
-        previousCopyOfMainList.clear();
-        previousCopyOfMainList.addAll(mainList);
+        copyOfPreviousMainList.clear();
+        copyOfPreviousMainList.addAll(mainList);
     }
 
     private void saveDoneListForUndo() {
-        previousCopyOfDoneList.clear();
-        previousCopyOfDoneList.addAll(doneList);
+        copyOfPreviousDoneList.clear();
+        copyOfPreviousDoneList.addAll(doneList);
     }
    
     private void saveMainList(ArrayList<Task> list) throws IOException {
@@ -919,8 +928,8 @@ public class Execution {
      * Leading and trailing whitespace will be removed. The first non-whitespace character
      * is capitalised and the remaining text is converted to lower case
      * 
-     * @param text  String to format
-     * @return      String formatted in sentence case
+     * @param text      String to format
+     * @return          String formatted in sentence case
      */
     private String toSentenceCase(String text) {
         if (text == null) {
@@ -935,7 +944,6 @@ public class Execution {
             sentenceCase += textTrimmed.substring(1).toLowerCase();
         }
         return sentenceCase;
-            
     }
 
 }

@@ -1,8 +1,7 @@
 package gridtask.common;
 
-import java.util.ArrayList;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 /**
  * Represents the command entered by the user.
