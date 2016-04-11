@@ -1,10 +1,11 @@
 //@@author A0098084U
 package gridtask.parser;
 
-import gridtask.common.*;
+import gridtask.common.Command;
 import gridtask.common.Command.CommandType;
 
 public class GeneralParser {
+    
     private static final String ADD_COMMAND_CODE = "add";
     private static final String EDIT_COMMAND_CODE = "edit";
     private static final String DELETE_COMMAND_CODE = "delete";
@@ -81,7 +82,6 @@ public class GeneralParser {
     /**
      * Returns a command of type EDIT
      */
-
     public Command createEditCommand(String commandContent) throws WrongCommandFormatException {
         String firstWord = getFirstWord(commandContent);
         try {
@@ -90,10 +90,9 @@ public class GeneralParser {
             String description = commandContent.substring(firstWord.length()).trim();
 
             TaskDetails details = new TaskDetails(description);
-            return new Command(CommandType.EDIT, taskId,
-                    details.getDescription(), details.getStartTime(), details.getEndTime(), details.getCategories());
-        }
-        catch (NumberFormatException e) {
+            return new Command(CommandType.EDIT, taskId, details.getDescription(), 
+                    details.getStartTime(), details.getEndTime(), details.getCategories());
+        } catch (NumberFormatException e) {
             throw new WrongCommandFormatException(INVALID_TASK_ID_NOTIFY);
         }
     }
@@ -115,8 +114,7 @@ public class GeneralParser {
     public Command createCommandWithId(CommandType commandType, String commandContent) throws WrongCommandFormatException {
         try {
             return new Command(commandType, Integer.parseInt(commandContent));
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new WrongCommandFormatException(INVALID_TASK_ID_NOTIFY);
         }
     }
@@ -140,4 +138,5 @@ public class GeneralParser {
         String result = command.trim().split("\\s+", 2)[0];
         return result;
     }
+    
 }

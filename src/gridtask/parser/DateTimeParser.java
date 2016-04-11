@@ -1,8 +1,8 @@
 //@@author A0098084U
 package gridtask.parser;
 
-import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +16,7 @@ import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
 public class DateTimeParser {
+    
     private final String[] dateFormats = {
             "dd-MM-yyyy",
             "dd-MMM-yyyy",
@@ -180,4 +181,5 @@ public class DateTimeParser {
         time = LocalTime.parse(tryString, formatter);
         return time;
     }
+    
 }

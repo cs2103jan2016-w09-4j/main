@@ -14,10 +14,9 @@ import java.util.logging.SimpleFormatter;
 import org.controlsfx.control.HiddenSidesPane;
 
 import gridtask.common.Category;
+import gridtask.common.Command.CommandType;
 import gridtask.common.Result;
 import gridtask.common.Task;
-import gridtask.common.Command.CommandType;
-import gridtask.ui.MainApp;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,7 +33,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 public class DisplayController extends HiddenSidesPane {
 
@@ -62,7 +60,7 @@ public class DisplayController extends HiddenSidesPane {
     public DisplayController(MainApp main) {
         this.main = main;
         this.setFocusTraversable(false);
-        //initializeLogger();
+        initializeLogger();
         loadFXML();
         initializeTaskPanel();
         initializeHelpPanel();

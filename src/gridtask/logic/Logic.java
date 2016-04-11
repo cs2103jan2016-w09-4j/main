@@ -1,14 +1,6 @@
 //@@author A0123972A
 package gridtask.logic;
 
-import gridtask.common.*;
-import gridtask.common.Command.CommandType;
-import gridtask.logic.Execution;
-import gridtask.parser.EmptyCommandException;
-import gridtask.parser.GeneralParser;
-import gridtask.parser.InvalidCommandException;
-import gridtask.parser.WrongCommandFormatException;
-
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -16,14 +8,24 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+
+import gridtask.common.Category;
+import gridtask.common.Command;
+import gridtask.common.Command.CommandType;
+import gridtask.common.Result;
+import gridtask.common.Task;
+import gridtask.parser.EmptyCommandException;
+import gridtask.parser.GeneralParser;
+import gridtask.parser.InvalidCommandException;
+import gridtask.parser.WrongCommandFormatException;
 
 public class Logic {
 

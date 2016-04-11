@@ -15,7 +15,7 @@ import gridtask.logic.Logic;
 public class ExecutionTest{
 	
 	Logic logic = Logic.getInstance();
-	Execution execution = logic.getExecutionInstance();
+	Execution execution = new Execution();
 	
     ArrayList<Task> mainList = new ArrayList<Task>();
     ArrayList<Task> compareList = new ArrayList<Task>();;

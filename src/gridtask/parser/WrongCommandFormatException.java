@@ -2,6 +2,7 @@
 package gridtask.parser;
 
 public class WrongCommandFormatException extends Exception {
+    
     public WrongCommandFormatException() {
         super();
     }

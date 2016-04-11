@@ -110,15 +110,15 @@ public class StorageTest {
 
 		// read file into arraylist
 		File defaultTextFile = new File(fileName1);
-		BufferedReader readFile = new BufferedReader(new FileReader(defaultTextFile));
-
-		ArrayList<String> stringList = new ArrayList<String>();
-		while ((readLine = readFile.readLine()) != null) {
-			stringList.add(readLine);
+		try (BufferedReader readFile = new BufferedReader(new FileReader(defaultTextFile))) {
+    		ArrayList<String> stringList = new ArrayList<String>();
+    		while ((readLine = readFile.readLine()) != null) {
+    			stringList.add(readLine);
+    		}
+    		
+    		File testFile = new File("testing/expected_writeToFile_AllTaskTypes");
+    		FileAssert.assertEquals(defaultTextFile, testFile);
 		}
-		
-		File testFile = new File("testing/expected_writeToFile_AllTaskTypes");
-		FileAssert.assertEquals(defaultTextFile, testFile);
 	}
 
 	@Test
@@ -129,27 +129,27 @@ public class StorageTest {
 
 		// read file into arraylist
 		File defaultTextFile = new File(autoCompletionTextFile);
-		BufferedReader readFile = new BufferedReader(new FileReader(defaultTextFile));
-
-		ArrayList<String> stringList = new ArrayList<String>();
-		while ((readLine = readFile.readLine()) != null) {
-			stringList.add(readLine);
+		try (BufferedReader readFile = new BufferedReader(new FileReader(defaultTextFile))) {
+    		ArrayList<String> stringList = new ArrayList<String>();
+    		while ((readLine = readFile.readLine()) != null) {
+    			stringList.add(readLine);
+    		}
+    
+    		assertEquals(autocompletionList.size(), stringList.size());
+    
+    		int count = 0;
+    		for (int i = 0; i < stringList.size(); i++) {
+    			String line1 = stringList.get(i);
+    			String line2 = autocompletionList.get(i).getKey() + " : " + "Frequency : "
+    					+ autocompletionList.get(i).getValue();
+    
+    			if (line1.equals(line2)) {
+    				count++;
+    			}
+    		}
+    		// test content
+    		assertEquals(autocompletionList.size(), count);
 		}
-
-		assertEquals(autocompletionList.size(), stringList.size());
-
-		int count = 0;
-		for (int i = 0; i < stringList.size(); i++) {
-			String line1 = stringList.get(i);
-			String line2 = autocompletionList.get(i).getKey() + " : " + "Frequency : "
-					+ autocompletionList.get(i).getValue();
-
-			if (line1.equals(line2)) {
-				count++;
-			}
-		}
-		// test content
-		assertEquals(autocompletionList.size(), count);
 	}
 
 	@Test
@@ -215,13 +215,14 @@ public class StorageTest {
 		ArrayList<String> stringList = new ArrayList<String>();
 		String readLine;
 
-		BufferedReader readFile = new BufferedReader(new FileReader(loadFile));
-		while ((readLine = readFile.readLine()) != null) {
-			stringList.add(readLine);
+		try (BufferedReader readFile = new BufferedReader(new FileReader(loadFile))) {
+    		while ((readLine = readFile.readLine()) != null) {
+    			stringList.add(readLine);
+    		}
+    		
+    		File defaultTextFile = new File(fileName1);
+    		FileAssert.assertEquals(defaultTextFile, loadFile);
 		}
-		
-		File defaultTextFile = new File(fileName1);
-		FileAssert.assertEquals(defaultTextFile, loadFile);
 	}
 
 	public void saveAndLoadWithDirectory_NewFile_SaveAndLoadFile()

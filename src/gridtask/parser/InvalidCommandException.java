@@ -1,7 +1,8 @@
 //@@author A0098084U
 package gridtask.parser;
 
-public class InvalidCommandException extends Exception{
+public class InvalidCommandException extends Exception {
+    
     public InvalidCommandException() {
         super();
     }
@@ -17,4 +18,5 @@ public class InvalidCommandException extends Exception{
     public InvalidCommandException(String message, Throwable cause) {
         super(message, cause);
     }
+    
 }

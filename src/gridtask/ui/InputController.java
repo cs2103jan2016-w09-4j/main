@@ -7,11 +7,8 @@ import java.util.logging.Handler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import org.controlsfx.control.textfield.TextFields;
-
-import gridtask.ui.MainApp;
-
 import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,7 +26,7 @@ public class InputController extends VBox {
 
     public InputController(MainApp main) {
         this.main = main;
-        //initializeLogger();
+        initializeLogger();
         loadFXML();
         bindAutoCompletion();
     }
