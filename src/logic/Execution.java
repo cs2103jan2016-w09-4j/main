@@ -793,6 +793,11 @@ public class Execution {
         return fileDictionary;
     }
     
+    public int getCategoryCount(String text) {
+    	int count = removeFromTreeSet(categories, text);
+    	return count;
+    }
+    
     /******************
      * HELPER METHODS *
      ******************/

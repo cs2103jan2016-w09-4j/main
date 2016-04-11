@@ -1,8 +1,6 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 
-import java.io.File;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -10,10 +8,8 @@ import org.junit.Test;
 
 import common.*;
 import common.Command.CommandType;
-import junitx.framework.FileAssert;
 import logic.Logic;
 import logic.Execution;
-
 public class ExecutionTest{
 	
 	Logic logic = Logic.getInstance();
@@ -22,15 +18,15 @@ public class ExecutionTest{
     ArrayList<Task> mainList = new ArrayList<Task>();
     ArrayList<Task> compareList = new ArrayList<Task>();;
     
+    private static final String CATEGORY_PRIORITY = "Priority";
+    private static final String CATEGORY_TODAY = "Today";
+    
     @Test
-    public void testUserSessionOne() {
-     //   loadTasks_WithFileName_Success();
+    public void testUserSession() {
         addTask_AllTaskTypes_AddedInOrder();
         editTask_AllTaskTypes_EditedTheSelectedTask();
         deleteTask_AllTaskTypes_DeletedTheSelectedTask();
-        doneTask_AllTaskTypes_DoneTheSelectedTask();
-      //  saveTasks_WithFileName_Success();
-      //  loadTasks_WithFileName_Success();
+        updateTaskProgress_AllCategoryTypes_SuccessfullyUpdated();
     }
     
     public void addTask_AllTaskTypes_AddedInOrder() {
@@ -78,16 +74,28 @@ public class ExecutionTest{
     	assertArrayEquals(compareList.toArray(), mainList.toArray());
     }
     
-    public void doneTask_AllTaskTypes_DoneTheSelectedTask() {
+    public void updateTaskProgress_AllCategoryTypes_SuccessfullyUpdated() {
+    	ArrayList<String> cat = new ArrayList<String>();
+    	cat.add(CATEGORY_TODAY);
+    	execution.addTask(new Command(CommandType.ADD, "Update task progress", null, null, cat));
+    	execution.updateTaskProgress();
+    	int categoryCount = execution.getCategoryCount(CATEGORY_TODAY);
+    	assertEquals(categoryCount, 1);
     	
-    	execution.doneTask(new Command(CommandType.DONE, 1));
-    	mainList = execution.getDoneList();
+    	ArrayList<String> cate = new ArrayList<String>();
+    	cate.add(CATEGORY_PRIORITY);
+    	execution.addTask(new Command(CommandType.ADD, "Update task progress", null, null, cate));
+    	execution.updateTaskProgress();
+    	int cateCount = execution.getCategoryCount(CATEGORY_PRIORITY);
+    	assertEquals(cateCount, 1);
     	
-    	ArrayList<Task> done = new ArrayList<Task>();
-    	done.add(compareList.remove(0));
-    	assertArrayEquals(done.toArray(), mainList.toArray());
+    	ArrayList<String> ct = new ArrayList<String>();
+    	ct.add("hello");
+    	execution.addTask(new Command(CommandType.ADD, "Final add", null, null, ct));
+    	execution.addTask(new Command(CommandType.ADD, "Final add +1", null, null, ct));
+    	execution.updateTaskProgress();
+    	int ctCount = execution.getCategoryCount("hello");
+    	assertEquals(ctCount, 2);
     }
     
-    
-	
 }
