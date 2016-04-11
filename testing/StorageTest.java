@@ -108,7 +108,6 @@ public class StorageTest {
 	@Test
 	public void writeToFile_ContentsOfAnotherFile_CorrectNumOfTasksAndContent() throws IOException {
 		String readLine;
-		int count;
 		testStorage.writeToFile();
 
 		// read file into arraylist
@@ -190,7 +189,7 @@ public class StorageTest {
 		assertEquals("Invalid File", outputException);
 	}
 
-	// @Test
+	@Test
 	public void saveToFileWithDirectory_NewFileAndDirectory_FileSaved() throws NotDirectoryException, IOException {
 		testStorage.saveToFileWithDirectory(expectedDirectory, testfile);
 		
@@ -210,7 +209,7 @@ public class StorageTest {
 
 	}
 
-	// @Test
+	@Test
 	public void loadFileWithDirectory_NewFileAndDirectory_LoadNewFile()
 			throws NotDirectoryException, FileNotFoundException, IOException, ParseException {
 		testStorage.loadFileWithDirectory(expectedDirectory, testfile);

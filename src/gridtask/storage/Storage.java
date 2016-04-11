@@ -64,7 +64,7 @@ public class Storage {
 		doneList = new ArrayList<Task>();
 		autoCompletionList = new ArrayList<Entry<String,Integer>>();
 
-		// initializeLogger();
+		initializeLogger();
 
 		// Create default file for load recent feature
 		try {
